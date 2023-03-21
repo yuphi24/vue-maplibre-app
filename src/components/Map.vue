@@ -2,27 +2,52 @@
   <div class="map-wrap">
     <div class="map" ref="mapContainer">
       <div class="navButtons">
-        <button @click="toggleSettings" type="button" class="btn btn-primary">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#offcanvasExample"
+          aria-controls="offcanvasExample"
+        >
           Settings
         </button>
-        <button @click="toggleFilter" type="button" class="btn btn-primary">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#offcanvasExample"
+          aria-controls="offcanvasExample"
+        >
           Filter
         </button>
-        <button @click="toggleStatistics" type="button" class="btn btn-primary">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#offcanvasExample"
+          aria-controls="offcanvasExample"
+        >
           Statistics
         </button>
-        <button @click="toggleAnalysis" type="button" class="btn btn-primary">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#offcanvasExample"
+          aria-controls="offcanvasExample"
+        >
           Analysis
         </button>
       </div>
 
-      <SettingsPanel v-if="showSettingsPanel" :toggleSet="toggleSettings" />
-      <FilterPanal v-if="showFilterPanel" :toggleFil="toggleFilter" />
-      <StatisticsPanal
-        v-if="showStatisticsPanel"
-        :toggleStat="toggleStatistics"
-      />
-      <AnalysisPanal v-if="showAnalysisPanel" :toggleAna="toggleAnalysis" />
+      <div
+        class="offcanvas offcanvas-start"
+        tabindex="-1"
+        id="offcanvasExample"
+        aria-labelledby="offcanvasExampleLabel"
+      >
+        <LeftPanel />
+      </div>
     </div>
   </div>
 </template>
@@ -30,41 +55,18 @@
 <script>
 import { FullscreenControl, Map, NavigationControl } from "maplibre-gl";
 import { shallowRef, onMounted, onUnmounted, markRaw } from "vue";
-import SettingsPanel from "./left-panel/settings-panel/SettingsPanel.vue";
-import FilterPanal from "./left-panel/filter-panel/FilterPanal.vue";
-import StatisticsPanal from "./left-panel/statistics-panel/StatisticsPanal.vue";
-import AnalysisPanal from "./left-panel/analysis-panel/AnalysisPanal.vue";
+
+import LeftPanel from "./left-panel/LeftPanel.vue";
 
 export default {
   name: "MapComponent",
   data() {
-    return {
-      showSettingsPanel: false,
-      showFilterPanel: false,
-      showStatisticsPanel: false,
-      showAnalysisPanel: false,
-    };
+    return {};
   },
   components: {
-    SettingsPanel,
-    FilterPanal,
-    StatisticsPanal,
-    AnalysisPanal,
+    LeftPanel,
   },
-  methods: {
-    toggleSettings() {
-      this.showSettingsPanel = !this.showSettingsPanel;
-    },
-    toggleFilter() {
-      this.showFilterPanel = !this.showFilterPanel;
-    },
-    toggleStatistics() {
-      this.showStatisticsPanel = !this.showStatisticsPanel;
-    },
-    toggleAnalysis() {
-      this.showAnalysisPanel = !this.showAnalysisPanel;
-    },
-  },
+  methods: {},
   setup() {
     const mapContainer = shallowRef(null);
     const map = shallowRef(null);
@@ -72,7 +74,7 @@ export default {
     onMounted(() => {
       map.value = markRaw(
         new Map({
-          mapId: "whfd-map",
+          mapId: "map_1",
           container: mapContainer.value,
           attributionControl: true,
           style: {
@@ -100,8 +102,8 @@ export default {
         })
       );
 
-      // map.value.addControl(new FullscreenControl(), "top-right");
-      // map.value.addControl(new NavigationControl(), "top-right");
+      map.value.addControl(new FullscreenControl(), "top-right");
+      map.value.addControl(new NavigationControl(), "top-right");
       console.log(map.value.scrollZoom.isEnabled());
     }),
       onUnmounted(() => {
@@ -138,6 +140,10 @@ export default {
   bottom: 5%;
   margin-left: auto;
   margin-right: auto;
+  z-index: 2;
+}
+
+.btn {
   z-index: 2;
 }
 </style>
