@@ -1,6 +1,6 @@
 <template>
   <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="offcanvasExampleLabel">Offcanvas</h5>
+    <h5 class="offcanvas-title" id="offcanvasTitle">{{ this.title }}</h5>
     <button
       type="button"
       class="btn-close"
@@ -8,31 +8,41 @@
       aria-label="Close"
     ></button>
   </div>
+
   <div class="offcanvas-body">
-    <div>
-      Some text as placeholder. In real life you can have the elements you have
-      chosen. Like, text, images, lists, etc.
-    </div>
-    <div class="dropdown mt-3">
-      <button
-        class="btn btn-secondary dropdown-toggle"
-        type="button"
-        data-bs-toggle="dropdown"
-      >
-        Dropdown button
-      </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#">Action</a></li>
-        <li><a class="dropdown-item" href="#">Another action</a></li>
-        <li><a class="dropdown-item" href="#">Something else here</a></li>
-      </ul>
-    </div>
+    <SettingsPanel v-if="this.title === ' Settings '" />
+    <FilterPanal v-if="this.title === ' Filter '" />
+    <StatisticsPanal v-if="this.title === ' Statistics '" />
+    <AnalysisPanal v-if="this.title === ' Analysis '" />
   </div>
 </template>
 
 <script>
+import SettingsPanel from "./settings-panel/SettingsPanel.vue";
+import FilterPanal from "./filter-panel/FilterPanal.vue";
+import StatisticsPanal from "./statistics-panel/StatisticsPanal.vue";
+import AnalysisPanal from "./analysis-panel/AnalysisPanal.vue";
+
 export default {
   name: "LeftPanel",
+  props: ["title"],
+  data() {
+    return {
+      a: "hallö",
+    };
+  },
+  components: {
+    SettingsPanel,
+    FilterPanal,
+    StatisticsPanal,
+    AnalysisPanal,
+  },
+  methods: {
+    isTitle() {
+      console.log(" Settings " == this.title);
+    },
+  },
 };
 </script>
+
 <style></style>

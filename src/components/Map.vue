@@ -1,8 +1,10 @@
 <template>
   <div class="map-wrap">
     <div class="map" ref="mapContainer">
+      <!-- Navigation buttons -->
       <div class="navButtons">
         <button
+          @click="setPanelTitle"
           type="button"
           class="btn btn-primary"
           data-bs-toggle="offcanvas"
@@ -12,6 +14,7 @@
           Settings
         </button>
         <button
+          @click="setPanelTitle"
           type="button"
           class="btn btn-primary"
           data-bs-toggle="offcanvas"
@@ -21,6 +24,7 @@
           Filter
         </button>
         <button
+          @click="setPanelTitle"
           type="button"
           class="btn btn-primary"
           data-bs-toggle="offcanvas"
@@ -30,6 +34,7 @@
           Statistics
         </button>
         <button
+          @click="setPanelTitle"
           type="button"
           class="btn btn-primary"
           data-bs-toggle="offcanvas"
@@ -46,7 +51,7 @@
         id="offcanvasExample"
         aria-labelledby="offcanvasExampleLabel"
       >
-        <LeftPanel />
+        <LeftPanel :title="this.panelTitle" />
       </div>
     </div>
   </div>
@@ -61,12 +66,18 @@ import LeftPanel from "./left-panel/LeftPanel.vue";
 export default {
   name: "MapComponent",
   data() {
-    return {};
+    return {
+      panelTitle: "default",
+    };
   },
   components: {
     LeftPanel,
   },
-  methods: {},
+  methods: {
+    setPanelTitle(event) {
+      this.panelTitle = event.srcElement.innerHTML;
+    },
+  },
   setup() {
     const mapContainer = shallowRef(null);
     const map = shallowRef(null);
@@ -104,11 +115,13 @@ export default {
 
       map.value.addControl(new FullscreenControl(), "top-right");
       map.value.addControl(new NavigationControl(), "top-right");
-      console.log(map.value.scrollZoom.isEnabled());
+      // console.log(map.value.scrollZoom.isEnabled());
     }),
       onUnmounted(() => {
         map.value?.remove();
       });
+
+    console.log(map);
 
     return {
       map,
