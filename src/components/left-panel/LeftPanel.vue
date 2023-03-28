@@ -1,6 +1,6 @@
 <template>
   <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="offcanvasTitle">{{ this.title }}</h5>
+    <h3 class="offcanvas-title" id="offcanvasTitle">{{ this.title }}</h3>
     <button
       type="button"
       class="btn-close"

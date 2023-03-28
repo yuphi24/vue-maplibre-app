@@ -1,23 +1,27 @@
 <template>
-  <div class="mapStyle">
-    <h3>Map Style</h3>
+  <div class="settings-content">
+    <BasemapsPanel />
   </div>
-  <div class="cluster">
-    <h3>Cluster</h3>
-    <input
-      type="checkbox"
-      class="btn-check"
-      id="btn-check-outlined"
-      autocomplete="off"
-    />
-    <label class="btn btn-outline-primary" for="btn-check-outlined">Off</label
-    ><br />
+  <div class="settings-content">
+    <ClusterPanel />
   </div>
 </template>
 
 <script>
+import BasemapsPanel from "./content/Basemaps.vue";
+import ClusterPanel from "./content/Cluster.vue";
+
 export default {
   name: "SettingsPanel",
+  components: {
+    BasemapsPanel,
+    ClusterPanel,
+  },
+  methods: {
+    consoloLog() {
+      console.log("hallö");
+    },
+  },
 };
 </script>
 
