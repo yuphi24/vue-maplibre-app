@@ -25,4 +25,12 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.settings-content {
+  display: block;
+  padding: 2px;
+  margin: 2px;
+  border-top: 4px inset;
+  overflow: auto;
+}
+</style>

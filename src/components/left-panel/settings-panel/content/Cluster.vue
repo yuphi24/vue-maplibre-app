@@ -1,36 +1,39 @@
 <template>
   <div class="cluster">
-    <h3>Cluster</h3>
-    <!--
+    <div class="settings-content-title">
+      <h3>Cluster</h3>
+      <!--
         Set default  
         ClusterMaxZoom
         ClusterRadius
-    -->
-    <input
-      type="checkbox"
-      class="btn-check"
-      id="btn-check-outlined"
-      autocomplete="off"
-      @click="toggleCluster"
-    />
-    <label
-      v-if="!isClustered"
-      class="btn btn-outline-primary"
-      for="btn-check-outlined"
-      >Cluster</label
-    >
-    <label
-      v-if="isClustered"
-      class="btn btn-outline-primary"
-      for="btn-check-outlined"
-      >Uncluster</label
-    >
-    <div v-if="isClustered" class="clusterOptions">
-      <label for="customRange1" class="form-label">ClusterMaxZoom</label>
-      <input type="range" class="form-range" id="customRange1" />
+    --></div>
+    <div class="settings-content-body">
+      <input
+        type="checkbox"
+        class="btn-check"
+        id="btn-check-outlined"
+        autocomplete="off"
+        @click="toggleCluster"
+      />
+      <label
+        v-if="!isClustered"
+        class="btn btn-outline-primary"
+        for="btn-check-outlined"
+        >Cluster</label
+      >
+      <label
+        v-if="isClustered"
+        class="btn btn-outline-primary"
+        for="btn-check-outlined"
+        >Uncluster</label
+      >
+      <div v-if="isClustered" class="clusterOptions">
+        <label for="customRange1" class="form-label">ClusterMaxZoom</label>
+        <input type="range" class="form-range" id="customRange1" />
 
-      <label for="customRange1" class="form-label">ClusterRadius</label>
-      <input type="range" class="form-range" id="customRange1" />
+        <label for="customRange1" class="form-label">ClusterRadius</label>
+        <input type="range" class="form-range" id="customRange1" />
+      </div>
     </div>
   </div>
 </template>
@@ -54,4 +57,11 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.cluster {
+  display: block;
+  height: auto;
+  height: 100;
+  padding: 1rem;
+}
+</style>
