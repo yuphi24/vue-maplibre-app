@@ -3,46 +3,48 @@
     <div class="map" ref="mapContainer">
       <!-- Navigation buttons -->
       <div class="navButtons">
-        <button
-          @click="setPanelTitle"
-          type="button"
-          class="btn btn-primary"
-          data-bs-toggle="offcanvas"
-          data-bs-target="#offcanvasExample"
-          aria-controls="offcanvasExample"
-        >
-          Settings
-        </button>
-        <button
-          @click="setPanelTitle"
-          type="button"
-          class="btn btn-primary"
-          data-bs-toggle="offcanvas"
-          data-bs-target="#offcanvasExample"
-          aria-controls="offcanvasExample"
-        >
-          Filter
-        </button>
-        <button
-          @click="setPanelTitle"
-          type="button"
-          class="btn btn-primary"
-          data-bs-toggle="offcanvas"
-          data-bs-target="#offcanvasExample"
-          aria-controls="offcanvasExample"
-        >
-          Statistics
-        </button>
-        <button
-          @click="setPanelTitle"
-          type="button"
-          class="btn btn-primary"
-          data-bs-toggle="offcanvas"
-          data-bs-target="#offcanvasExample"
-          aria-controls="offcanvasExample"
-        >
-          Analysis
-        </button>
+        <div class="fixed-bottom">
+          <button
+            @click="setPanelTitle"
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasExample"
+            aria-controls="offcanvasExample"
+          >
+            Settings
+          </button>
+          <button
+            @click="setPanelTitle"
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasExample"
+            aria-controls="offcanvasExample"
+          >
+            Filter
+          </button>
+          <button
+            @click="setPanelTitle"
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasExample"
+            aria-controls="offcanvasExample"
+          >
+            Statistics
+          </button>
+          <button
+            @click="setPanelTitle"
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasExample"
+            aria-controls="offcanvasExample"
+          >
+            Analysis
+          </button>
+        </div>
       </div>
 
       <div
@@ -59,6 +61,7 @@
 
 <script>
 import { FullscreenControl, Map, NavigationControl } from "maplibre-gl";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { shallowRef, onMounted, onUnmounted, markRaw } from "vue";
 
 import LeftPanel from "./left-panel/LeftPanel.vue";
@@ -115,13 +118,23 @@ export default {
 
       map.value.addControl(new FullscreenControl(), "top-right");
       map.value.addControl(new NavigationControl(), "top-right");
-      // console.log(map.value.scrollZoom.isEnabled());
+      map.value.addControl(
+        new MapboxDraw({
+          displayControlsDefault: false,
+          controls: {
+            polygon: true,
+            line: true,
+            trash: true,
+          },
+        })
+      );
+      console.log("Here we are");
+      console.log(map.value);
+      console.log("now");
     }),
       onUnmounted(() => {
         map.value?.remove();
       });
-
-    console.log(map);
 
     return {
       map,
@@ -133,6 +146,7 @@ export default {
 
 <style scoped>
 @import "~maplibre-gl/dist/maplibre-gl.css";
+@import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
 .map-wrap {
   position: absolute;
@@ -144,16 +158,15 @@ export default {
   position: relative;
   width: 100%;
   height: 100%;
-  display: flex;
-  justify-content: center;
 }
 
 .navButtons {
+  z-index: 2;
+}
+
+.fixed-bottom {
   position: absolute;
   bottom: 5%;
-  margin-left: auto;
-  margin-right: auto;
-  z-index: 2;
 }
 
 .btn {

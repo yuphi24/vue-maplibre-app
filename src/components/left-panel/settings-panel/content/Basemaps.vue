@@ -11,7 +11,7 @@
         v-for="map in basemaps"
         :key="map.id"
       >
-        <img class="card-img-top" :src="map.titleImage" alt="Card image cap" />
+        <img class="card-img-top" :src="map.cardImage" alt="Card image cap" />
         <div class="card-body">
           <h5 class="card-title">{{ map.title }}</h5>
         </div>
@@ -51,5 +51,9 @@ export default {
   height: auto;
   padding: 2px;
   float: left;
+}
+
+.card-body {
+  background-color: lightblue;
 }
 </style>
