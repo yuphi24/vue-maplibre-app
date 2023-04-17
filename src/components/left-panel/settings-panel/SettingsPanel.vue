@@ -1,26 +1,31 @@
 <template>
   <div class="settings-content">
-    <BasemapsPanel />
+    <BaseMapSettings />
   </div>
   <div class="settings-content">
-    <ClusterPanel />
+    <ClusterSettings />
   </div>
   <div class="settings-content">
-    <CircleStyling />
+    <CircleStylingSettings />
+  </div>
+  <div class="settings-content">
+    <GraticuleSettings />
   </div>
 </template>
 
 <script>
-import BasemapsPanel from "./content/Basemaps.vue";
-import ClusterPanel from "./content/Cluster.vue";
-import CircleStyling from "./content/CircleStyling.vue";
+import BaseMapSettings from "./content/BaseMapSettings.vue";
+import ClusterSettings from "./content/ClusterSettings.vue";
+import CircleStylingSettings from "./content/CircleStylingSettings.vue";
+import GraticuleSettings from "./content/GraticuleSettings.vue";
 
 export default {
   name: "SettingsPanel",
   components: {
-    BasemapsPanel,
-    ClusterPanel,
-    CircleStyling,
+    BaseMapSettings,
+    ClusterSettings,
+    CircleStylingSettings,
+    GraticuleSettings,
   },
   methods: {
     consoloLog() {

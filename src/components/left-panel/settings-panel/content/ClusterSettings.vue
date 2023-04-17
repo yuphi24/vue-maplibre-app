@@ -1,5 +1,5 @@
 <template>
-  <div class="cluster">
+  <div class="clusterSettings">
     <div class="settings-content-title">
       <h3>Cluster</h3>
       <!--
@@ -40,7 +40,7 @@
 
 <script>
 export default {
-  name: "ClusterPanel",
+  name: "ClusterSettings",
   data() {
     return {
       isClustered: false,
@@ -58,7 +58,7 @@ export default {
 </script>
 
 <style>
-.cluster {
+.clusterSettings {
   display: block;
   height: auto;
   height: 100;

@@ -1,5 +1,5 @@
 <template>
-  <div class="baseMap">
+  <div class="baseMapSettings">
     <div class="settings-content-title">
       <h3>Base Map</h3>
     </div>
@@ -24,7 +24,7 @@
 import maps from "./maps.json";
 
 export default {
-  name: "BaseMapsPanel",
+  name: "BaseMapSettings",
   data() {
     return {
       basemaps: maps,
@@ -39,7 +39,7 @@ export default {
 </script>
 
 <style>
-.baseMap {
+.baseMapSettings {
   display: block;
   height: auto;
   height: 100;
@@ -49,11 +49,11 @@ export default {
 .card {
   display: inline-block;
   height: auto;
+  width: 10rem;
   padding: 2px;
   float: left;
 }
 
-.card-body {
-  background-color: lightblue;
+.card-body :active {
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="CircleStyling">
+  <div class="CircleStylingSettings">
     <div class="settings-content-title">
       <h3>Style Circle</h3>
     </div>
@@ -12,7 +12,7 @@
 
 <script>
 export default {
-  name: "CircleStyling",
+  name: "CircleStylingSettings",
 };
 </script>
 

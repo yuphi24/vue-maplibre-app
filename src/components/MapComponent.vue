@@ -1,6 +1,6 @@
 <template>
   <div class="map-wrap">
-    <div class="map" ref="mapContainer">
+    <div class="map" ref="mapContainer" @mousemove="consolLog">
       <!-- Navigation buttons -->
       <div class="navButtons">
         <div class="fixed-bottom">
@@ -55,6 +55,10 @@
       >
         <LeftPanel :title="this.panelTitle" />
       </div>
+      <div class="test123">
+        <h1>{{ latCoord }}</h1>
+      </div>
+      <CursorPosition :lat="this.latCoord" :lng="this.lngCoord" />
     </div>
   </div>
 </template>
@@ -63,6 +67,7 @@
 import { FullscreenControl, Map, NavigationControl } from "maplibre-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { shallowRef, onMounted, onUnmounted, markRaw } from "vue";
+import CursorPosition from "./CursorPosition.vue";
 
 import LeftPanel from "./left-panel/LeftPanel.vue";
 
@@ -75,6 +80,7 @@ export default {
   },
   components: {
     LeftPanel,
+    CursorPosition,
   },
   methods: {
     setPanelTitle(event) {
@@ -84,6 +90,8 @@ export default {
   setup() {
     const mapContainer = shallowRef(null);
     const map = shallowRef(null);
+    let latCoord = "";
+    let lngCoord = "";
 
     onMounted(() => {
       map.value = markRaw(
@@ -131,6 +139,14 @@ export default {
       console.log("Here we are");
       console.log(map.value);
       console.log("now");
+
+      map.value.on("mousemove", function (e) {
+        latCoord = e.lngLat.wrap().lat;
+        lngCoord = e.lngLat.wrap().lng;
+        console.log("Here we are");
+        console.log("now");
+        console.log(latCoord + " " + lngCoord);
+      });
     }),
       onUnmounted(() => {
         map.value?.remove();
