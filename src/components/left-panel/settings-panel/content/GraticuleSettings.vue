@@ -1,5 +1,5 @@
 <template>
-  <div class="graticuleSettings">
+  <div class="graticule-settings">
     <div class="settings-content-title">
       <h3>Grid</h3>
     </div>

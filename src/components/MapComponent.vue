@@ -1,7 +1,8 @@
 <template>
-  <div class="map-wrap">
-    <div class="map" ref="mapContainer" @mousemove="consolLog">
+  <div class="map-wrap" @mousemove="consoleLog">
+    <div class="map" ref="mapContainer" @mousemove="updateLatLng">
       <!-- Navigation buttons -->
+      <div class="test"></div>
       <div class="navButtons">
         <div class="fixed-bottom">
           <button
@@ -44,6 +45,7 @@
           >
             Analysis
           </button>
+          <div class="cursor-position">Move Cursor</div>
         </div>
       </div>
 
@@ -55,10 +57,6 @@
       >
         <LeftPanel :title="this.panelTitle" />
       </div>
-      <div class="test123">
-        <h1>{{ latCoord }}</h1>
-      </div>
-      <CursorPosition :lat="this.latCoord" :lng="this.lngCoord" />
     </div>
   </div>
 </template>
@@ -67,7 +65,6 @@
 import { FullscreenControl, Map, NavigationControl } from "maplibre-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { shallowRef, onMounted, onUnmounted, markRaw } from "vue";
-import CursorPosition from "./CursorPosition.vue";
 
 import LeftPanel from "./left-panel/LeftPanel.vue";
 
@@ -76,11 +73,12 @@ export default {
   data() {
     return {
       panelTitle: "default",
+      latCoord: "",
+      lngCoord: "",
     };
   },
   components: {
     LeftPanel,
-    CursorPosition,
   },
   methods: {
     setPanelTitle(event) {
@@ -90,8 +88,6 @@ export default {
   setup() {
     const mapContainer = shallowRef(null);
     const map = shallowRef(null);
-    let latCoord = "";
-    let lngCoord = "";
 
     onMounted(() => {
       map.value = markRaw(
@@ -124,6 +120,13 @@ export default {
         })
       );
 
+      map.value.on("mousemove", function (e) {
+        let latValue = "Lat: " + e.lngLat.wrap().lat.toFixed(5);
+        let lngValue = "Lng: " + e.lngLat.wrap().lng.toFixed(5);
+        document.getElementsByClassName("cursor-position")[0].innerHTML =
+          latValue + ", " + lngValue;
+      });
+
       map.value.addControl(new FullscreenControl(), "top-right");
       map.value.addControl(new NavigationControl(), "top-right");
       map.value.addControl(
@@ -136,17 +139,6 @@ export default {
           },
         })
       );
-      console.log("Here we are");
-      console.log(map.value);
-      console.log("now");
-
-      map.value.on("mousemove", function (e) {
-        latCoord = e.lngLat.wrap().lat;
-        lngCoord = e.lngLat.wrap().lng;
-        console.log("Here we are");
-        console.log("now");
-        console.log(latCoord + " " + lngCoord);
-      });
     }),
       onUnmounted(() => {
         map.value?.remove();
@@ -182,10 +174,40 @@ export default {
 
 .fixed-bottom {
   position: absolute;
-  bottom: 5%;
+}
+
+.cursor-position {
+  display: block;
+  position: relative;
+  margin: 0px auto;
+  width: fit-content;
+  padding: 10px;
+  border: none;
+  border-radius: 3px;
+  font-size: 10px;
+  text-align: left;
+  color: black;
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .btn {
+  z-index: 2;
+}
+
+.control-icon {
+  z-index: 2;
+}
+
+.cursor-coord-collapse {
+  z-index: 2;
+}
+
+.cursor-position {
+  background: rgba(255, 255, 255, 0.5);
+  z-index: 2;
+}
+
+.test {
   z-index: 2;
 }
 </style>

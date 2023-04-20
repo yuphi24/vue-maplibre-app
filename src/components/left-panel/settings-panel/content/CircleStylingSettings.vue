@@ -1,5 +1,5 @@
 <template>
-  <div class="CircleStylingSettings">
+  <div class="circle-styling-settings">
     <div class="settings-content-title">
       <h3>Style Circle</h3>
     </div>

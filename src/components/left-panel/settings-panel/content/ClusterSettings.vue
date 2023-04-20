@@ -1,5 +1,5 @@
 <template>
-  <div class="clusterSettings">
+  <div class="cluster-settings">
     <div class="settings-content-title">
       <h3>Cluster</h3>
       <!--
@@ -58,7 +58,7 @@ export default {
 </script>
 
 <style>
-.clusterSettings {
+.cluster-settings {
   display: block;
   height: auto;
   height: 100;

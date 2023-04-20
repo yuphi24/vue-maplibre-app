@@ -1,5 +1,5 @@
 <template>
-  <div class="baseMapSettings">
+  <div class="base-map-settings">
     <div class="settings-content-title">
       <h3>Base Map</h3>
     </div>
@@ -7,7 +7,7 @@
       <div
         @click="consoleLog"
         class="card"
-        style="width: 10rem"
+        style="width: 9rem"
         v-for="map in basemaps"
         :key="map.id"
       >
@@ -39,7 +39,7 @@ export default {
 </script>
 
 <style>
-.baseMapSettings {
+.base-map-settings {
   display: block;
   height: auto;
   height: 100;
@@ -47,13 +47,10 @@ export default {
 }
 
 .card {
-  display: inline-block;
+  /* display: inline-block; */
   height: auto;
   width: 10rem;
   padding: 2px;
   float: left;
-}
-
-.card-body :active {
 }
 </style>
