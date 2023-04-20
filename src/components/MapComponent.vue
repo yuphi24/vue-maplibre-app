@@ -1,12 +1,15 @@
 <template>
-  <div class="map-wrap" @mousemove="consoleLog">
+  <div class="map-wrap">
     <div class="map" ref="mapContainer" @mousemove="updateLatLng">
       <!-- Navigation buttons -->
       <div class="test"></div>
       <div class="navButtons">
         <div class="fixed-bottom">
           <button
-            @click="setPanelTitle"
+            @click="
+              this.toggleSidebar();
+              this.setPanelTitle($event);
+            "
             type="button"
             class="btn btn-primary"
             data-bs-toggle="offcanvas"
@@ -16,7 +19,10 @@
             Settings
           </button>
           <button
-            @click="setPanelTitle"
+            @click="
+              this.toggleSidebar();
+              this.setPanelTitle($event);
+            "
             type="button"
             class="btn btn-primary"
             data-bs-toggle="offcanvas"
@@ -26,7 +32,10 @@
             Filter
           </button>
           <button
-            @click="setPanelTitle"
+            @click="
+              this.toggleSidebar();
+              this.setPanelTitle($event);
+            "
             type="button"
             class="btn btn-primary"
             data-bs-toggle="offcanvas"
@@ -36,26 +45,34 @@
             Statistics
           </button>
           <button
-            @click="setPanelTitle"
+            @click="
+              toggleSidebar();
+              setPanelTitle($event);
+            "
             type="button"
             class="btn btn-primary"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#offcanvasExample"
-            aria-controls="offcanvasExample"
           >
             Analysis
           </button>
-          <div class="cursor-position">Move Cursor</div>
+          <div class="cursor-position">Lat: -, Lng: -</div>
         </div>
       </div>
 
-      <div
+      <!-- <div
         class="offcanvas offcanvas-start"
         tabindex="-1"
         id="offcanvasExample"
         aria-labelledby="offcanvasExampleLabel"
       >
         <LeftPanel :title="this.panelTitle" />
+      </div> -->
+      <div id="left" class="sidebar flex-center left collapsed">
+        <div class="sidebar-content rounded-rect flex-center">
+          <LeftPanel :title="this.panelTitle" />
+          <!-- <div class="sidebar-toggle rounded-rect right" @click="toggleSidebar">
+            &rarr;
+          </div> -->
+        </div>
       </div>
     </div>
   </div>
@@ -82,7 +99,20 @@ export default {
   },
   methods: {
     setPanelTitle(event) {
+      console.log(event);
       this.panelTitle = event.srcElement.innerHTML;
+      console.log(this.panelTitle);
+    },
+    // Source code for sidebar https://docs.mapbox.com/mapbox-gl-js/example/offset-vanishing-point-with-padding/
+    toggleSidebar() {
+      const elem = document.getElementById("left");
+      // Add or remove the 'collapsed' CSS class from the sidebar element.
+      // Returns boolean "true" or "false" whether 'collapsed' is in the class list.
+      const collapsed = elem.classList.toggle("collapsed");
+      const padding = {};
+      // 'id' is 'right' or 'left'. When run at start, this object looks like: '{left: 300}';
+      padding["left"] = collapsed ? 0 : 300; // 0 if collapsed, 300 px if not. This matches the width of the sidebars in the .sidebar CSS class.
+      // Use `map.easeTo()` with a padding option to adjust the map's center accounting for the position of sidebars.
     },
   },
   setup() {
@@ -207,7 +237,71 @@ export default {
   z-index: 2;
 }
 
-.test {
+.rounded-rect {
   z-index: 2;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 0 50px -25px black;
+}
+
+.flex-center {
+  z-index: 2;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-center.left {
+  z-index: 2;
+  left: 0px;
+}
+
+.sidebar-content {
+  z-index: 2;
+  position: absolute;
+  width: 95%;
+  height: 95%;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 32px;
+  color: gray;
+}
+
+.sidebar-toggle {
+  z-index: 2;
+  position: absolute;
+  width: 1.3em;
+  height: 1.3em;
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebar-toggle.left {
+  z-index: 2;
+  right: -1.5em;
+}
+
+.sidebar-toggle:hover {
+  z-index: 2;
+  color: #0aa1cf;
+  cursor: pointer;
+}
+
+.sidebar {
+  z-index: 2;
+  transition: transform 1s;
+  z-index: 3;
+  width: 300px;
+  height: 100%;
+}
+
+/*
+The sidebar styling has them "expanded" by default, we use CSS transforms to push them offscreen
+The toggleSidebar() function removes this class from the element in order to expand it.
+*/
+.left.collapsed {
+  transform: translateX(-295px);
 }
 </style>
