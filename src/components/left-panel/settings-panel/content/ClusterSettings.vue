@@ -1,20 +1,11 @@
-<script>
-export default {
-  name: "ClusterSettings",
-  data() {
-    return {
-      isClustered: false,
-    };
-  },
-  methods: {
-    toggleCluster() {
-      this.isClustered = !this.isClustered;
-    },
-    consoloLog() {
-      console.log("hallö");
-    },
-  },
-};
+<script setup>
+import { ref } from "vue";
+
+const isClustered = ref(false);
+
+function toggleCluster() {
+  isClustered.value = !isClustered.value;
+}
 </script>
 
 <template>

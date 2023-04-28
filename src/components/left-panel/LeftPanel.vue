@@ -1,29 +1,12 @@
-<script>
+<script setup>
+import { defineProps } from "vue";
+
 import SettingsPanel from "./settings-panel/SettingsPanel.vue";
 import FilterPanal from "./filter-panel/FilterPanal.vue";
 import StatisticsPanal from "./statistics-panel/StatisticsPanal.vue";
 import AnalysisPanal from "./analysis-panel/AnalysisPanal.vue";
 
-export default {
-  name: "LeftPanel",
-  props: ["title"],
-  data() {
-    return {
-      a: "hallö",
-    };
-  },
-  components: {
-    SettingsPanel,
-    FilterPanal,
-    StatisticsPanal,
-    AnalysisPanal,
-  },
-  methods: {
-    isTitle() {
-      console.log(" Settings " == this.title);
-    },
-  },
-};
+const props = defineProps(["title"]);
 </script>
 
 <template>
@@ -39,10 +22,10 @@ export default {
     </div>
 
     <div class="sidebar-body">
-      <SettingsPanel v-if="this.title === ' Settings '" />
-      <FilterPanal v-if="this.title === ' Filter '" />
-      <StatisticsPanal v-if="this.title === ' Statistics '" />
-      <AnalysisPanal v-if="this.title === ' Analysis '" />
+      <SettingsPanel v-if="props.title === ' Settings '" />
+      <FilterPanal v-if="props.title === ' Filter '" />
+      <StatisticsPanal v-if="props.title === ' Statistics '" />
+      <AnalysisPanal v-if="props.title === ' Analysis '" />
     </div>
   </div>
 </template>

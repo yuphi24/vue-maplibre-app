@@ -1,8 +1,4 @@
-<script>
-export default {
-  name: "FilterPanel",
-};
-</script>
+<script setup></script>
 
 <template>
   <button class="addFilter">Add Filter</button>

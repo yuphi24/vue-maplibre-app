@@ -1,8 +1,4 @@
-<script>
-export default {
-  name: "GraticuleSettings",
-};
-</script>
+<script setup></script>
 
 <template>
   <div class="graticule-settings">

@@ -1,8 +1,4 @@
-<script>
-export default {
-  name: "StatisticsPanel",
-};
-</script>
+<script setup></script>
 
 <template>
   <div>

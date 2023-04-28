@@ -1,19 +1,13 @@
-<script>
+<script setup>
+import { ref } from "vue";
+
 import maps from "./maps.json";
 
-export default {
-  name: "BaseMapSettings",
-  data() {
-    return {
-      basemaps: maps,
-    };
-  },
-  methods: {
-    consoleLog() {
-      console.log(this.basemaps);
-    },
-  },
-};
+const basemaps = ref(maps);
+
+function consoleLog() {
+  console.log(this.basemaps);
+}
 </script>
 
 <template>

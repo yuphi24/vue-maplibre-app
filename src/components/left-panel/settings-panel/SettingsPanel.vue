@@ -1,23 +1,8 @@
-<script>
+<script setup>
 import BaseMapSettings from "./content/BaseMapSettings.vue";
 import ClusterSettings from "./content/ClusterSettings.vue";
 import CircleStylingSettings from "./content/CircleStylingSettings.vue";
 import GraticuleSettings from "./content/GraticuleSettings.vue";
-
-export default {
-  name: "SettingsPanel",
-  components: {
-    BaseMapSettings,
-    ClusterSettings,
-    CircleStylingSettings,
-    GraticuleSettings,
-  },
-  methods: {
-    consoloLog() {
-      console.log("hallö");
-    },
-  },
-};
 </script>
 
 <template>
