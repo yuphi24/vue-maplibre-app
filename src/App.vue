@@ -1,19 +1,19 @@
+<script setup>
+import MapComponent from "./components/MapComponent.vue";
+
+// export default {
+//   name: "App",
+//   components: {
+//     MapComponent,
+//   },
+// };
+</script>
+
 <template>
   <div class="app">
     <MapComponent />
   </div>
 </template>
-
-<script>
-import MapComponent from "./components/MapComponent.vue";
-
-export default {
-  name: "App",
-  components: {
-    MapComponent,
-  },
-};
-</script>
 
 <style>
 body {

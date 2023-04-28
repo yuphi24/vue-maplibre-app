@@ -1,3 +1,21 @@
+<script>
+import maps from "./maps.json";
+
+export default {
+  name: "BaseMapSettings",
+  data() {
+    return {
+      basemaps: maps,
+    };
+  },
+  methods: {
+    consoleLog() {
+      console.log(this.basemaps);
+    },
+  },
+};
+</script>
+
 <template>
   <div class="base-map-settings">
     <div class="settings-content-title">
@@ -20,24 +38,6 @@
   </div>
 </template>
 
-<script>
-import maps from "./maps.json";
-
-export default {
-  name: "BaseMapSettings",
-  data() {
-    return {
-      basemaps: maps,
-    };
-  },
-  methods: {
-    consoleLog() {
-      console.log(this.basemaps);
-    },
-  },
-};
-</script>
-
 <style>
 .base-map-settings {
   display: block;
@@ -46,11 +46,16 @@ export default {
   padding: 1rem;
 }
 
+.settings-content-body {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .card {
   /* display: inline-block; */
   height: auto;
   width: 10rem;
   padding: 2px;
-  float: left;
+  cursor: pointer;
 }
 </style>

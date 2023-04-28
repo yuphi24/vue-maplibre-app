@@ -1,3 +1,9 @@
+<script>
+export default {
+  name: "GraticuleSettings",
+};
+</script>
+
 <template>
   <div class="graticule-settings">
     <div class="settings-content-title">
@@ -20,11 +26,5 @@
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  name: "GraticuleSettings",
-};
-</script>
 
 <style></style>

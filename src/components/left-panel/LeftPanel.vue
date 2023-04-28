@@ -1,22 +1,3 @@
-<template>
-  <div class="offcanvas-header">
-    <h3 class="offcanvas-title" id="offcanvasTitle">{{ this.title }}</h3>
-    <button
-      type="button"
-      class="btn-close"
-      data-bs-dismiss="offcanvas"
-      aria-label="Close"
-    ></button>
-  </div>
-
-  <div class="offcanvas-body">
-    <SettingsPanel v-if="this.title === ' Settings '" />
-    <FilterPanal v-if="this.title === ' Filter '" />
-    <StatisticsPanal v-if="this.title === ' Statistics '" />
-    <AnalysisPanal v-if="this.title === ' Analysis '" />
-  </div>
-</template>
-
 <script>
 import SettingsPanel from "./settings-panel/SettingsPanel.vue";
 import FilterPanal from "./filter-panel/FilterPanal.vue";
@@ -45,4 +26,29 @@ export default {
 };
 </script>
 
-<style></style>
+<template>
+  <div class="sidebar-content">
+    <div class="sidebar-header">
+      <h3 class="sidebar-title" id="sidebarTitle">{{ this.title }}</h3>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="sidebar"
+        aria-label="Close"
+      ></button>
+    </div>
+
+    <div class="sidebar-body">
+      <SettingsPanel v-if="this.title === ' Settings '" />
+      <FilterPanal v-if="this.title === ' Filter '" />
+      <StatisticsPanal v-if="this.title === ' Statistics '" />
+      <AnalysisPanal v-if="this.title === ' Analysis '" />
+    </div>
+  </div>
+</template>
+
+<style>
+.sidebar-content {
+  overflow-y: auto;
+}
+</style>

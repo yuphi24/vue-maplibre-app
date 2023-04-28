@@ -1,3 +1,9 @@
+<script>
+export default {
+  name: "FilterPanel",
+};
+</script>
+
 <template>
   <button class="addFilter">Add Filter</button>
   <div class="filter">Here filter options</div>
@@ -17,11 +23,5 @@
     </ul>
   </div>
 </template>
-
-<script>
-export default {
-  name: "FilterPanel",
-};
-</script>
 
 <style></style>

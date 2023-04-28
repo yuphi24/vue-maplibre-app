@@ -1,3 +1,22 @@
+<script>
+export default {
+  name: "ClusterSettings",
+  data() {
+    return {
+      isClustered: false,
+    };
+  },
+  methods: {
+    toggleCluster() {
+      this.isClustered = !this.isClustered;
+    },
+    consoloLog() {
+      console.log("hallö");
+    },
+  },
+};
+</script>
+
 <template>
   <div class="cluster-settings">
     <div class="settings-content-title">
@@ -37,25 +56,6 @@
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  name: "ClusterSettings",
-  data() {
-    return {
-      isClustered: false,
-    };
-  },
-  methods: {
-    toggleCluster() {
-      this.isClustered = !this.isClustered;
-    },
-    consoloLog() {
-      console.log("hallö");
-    },
-  },
-};
-</script>
 
 <style>
 .cluster-settings {

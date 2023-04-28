@@ -1,3 +1,9 @@
+<script>
+export default {
+  name: "CircleStylingSettings",
+};
+</script>
+
 <template>
   <div class="circle-styling-settings">
     <div class="settings-content-title">
@@ -9,11 +15,5 @@
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  name: "CircleStylingSettings",
-};
-</script>
 
 <style></style>
