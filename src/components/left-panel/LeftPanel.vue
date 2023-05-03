@@ -6,7 +6,7 @@ import FilterPanal from "./filter-panel/FilterPanal.vue";
 import StatisticsPanal from "./statistics-panel/StatisticsPanal.vue";
 import AnalysisPanal from "./analysis-panel/AnalysisPanal.vue";
 
-const props = defineProps(["title"]);
+const props = defineProps(["title", "map", "activeBaseLayer"]);
 </script>
 
 <template>
@@ -22,7 +22,11 @@ const props = defineProps(["title"]);
     </div>
 
     <div class="sidebar-body">
-      <SettingsPanel v-if="props.title === ' Settings '" />
+      <SettingsPanel
+        v-if="props.title === ' Settings '"
+        :map="props.map"
+        :activeBaseLayer="props.activeBaseLayer"
+      />
       <FilterPanal v-if="props.title === ' Filter '" />
       <StatisticsPanal v-if="props.title === ' Statistics '" />
       <AnalysisPanal v-if="props.title === ' Analysis '" />

@@ -1,7 +1,13 @@
 <script setup>
-import { FullscreenControl, Map, NavigationControl } from "maplibre-gl";
+import {
+  FullscreenControl,
+  Map,
+  NavigationControl,
+  ScaleControl,
+} from "maplibre-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { shallowRef, onMounted, onUnmounted, markRaw, ref } from "vue";
+import maps from "./left-panel/settings-panel/content/maps.json";
 
 // import clickOutSide from "@mahdikhashan/vue3-click-outside";
 
@@ -11,8 +17,9 @@ const mapContainer = shallowRef(null);
 const map = shallowRef(null);
 const latCoord = ref();
 const lngCoord = ref();
-// const isSidebarOpen = ref(false);
 const panelTitle = ref("");
+const basemaps = ref(maps);
+const activeBaseLayer = ref("");
 
 // Source code for sidebar https://docs.mapbox.com/mapbox-gl-js/example/offset-vanishing-point-with-padding/
 function toggleSidebar() {
@@ -26,11 +33,57 @@ function toggleSidebar() {
   // Use `map.easeTo()` with a padding option to adjust the map's center accounting for the position of sidebars.
 }
 
-function consoleLog() {
-  console.log("yes");
-}
+// function consoleLog() {
+//   console.log("yes");
+// }
+
 function setPanelTitle(event) {
+  //
   panelTitle.value = event.srcElement.innerHTML;
+}
+
+function setBaseMapsSource(basemaps) {
+  // create object for base map sources
+  let sourceObjects = {};
+
+  basemaps.forEach((baseMapSource) => {
+    sourceObjects[baseMapSource.id] = {
+      type: "raster",
+      tiles: [baseMapSource.tiles],
+      tileSize: 256,
+      attribution: baseMapSource.attribution,
+      minzoom: 0,
+      maxzoom: 22,
+    };
+  });
+  return sourceObjects;
+}
+
+function setBaseMapsLayer(basemaps) {
+  // create object for base map layers
+  let layerObjects = [];
+
+  basemaps.forEach((baseMapLayer, ix) => {
+    let layerObject = {
+      id: baseMapLayer.id,
+      type: "raster",
+      source: baseMapLayer.id,
+    };
+    if (ix == 0) {
+      activeBaseLayer.value = baseMapLayer.id;
+      // first object in maps.json will be default base map
+      layerObject.layout = {
+        visibility: "visible",
+      };
+    } else {
+      // others are already added but not visible
+      layerObject.layout = {
+        visibility: "none",
+      };
+    }
+    layerObjects.push(layerObject);
+  });
+  return layerObjects;
 }
 
 onMounted(() => {
@@ -41,23 +94,8 @@ onMounted(() => {
       attributionControl: true,
       style: {
         version: 8,
-        sources: {
-          osm: {
-            type: "raster",
-            tiles: ["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"],
-            tileSize: 256,
-            attribution: "&copy; OpenStreetMap Contributors",
-            minzoom: 0,
-            maxzoom: 22,
-          },
-        },
-        layers: [
-          {
-            id: "osm",
-            type: "raster",
-            source: "osm",
-          },
-        ],
+        sources: setBaseMapsSource(basemaps.value),
+        layers: setBaseMapsLayer(basemaps.value),
         glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf", // https://maplibre.org/maplibre-gl-js-docs/style-spec/glyphs/
       },
     })
@@ -68,6 +106,7 @@ onMounted(() => {
     lngCoord.value = e.lngLat.wrap().lng.toFixed(5);
   });
 
+  map.value.addControl(new ScaleControl(), "bottom-right");
   map.value.addControl(new FullscreenControl(), "top-right");
   map.value.addControl(new NavigationControl(), "top-right");
   map.value.addControl(
@@ -139,13 +178,13 @@ onMounted(() => {
         </div>
       </div>
 
-      <div
-        id="left-panel"
-        class="sidebar flex-center left collapsed"
-        v-click-out-side="consoleLog"
-      >
+      <div id="left-panel" class="sidebar flex-center left collapsed">
         <div class="sidebar-content rounded-rect">
-          <LeftPanel :title="panelTitle" />
+          <LeftPanel
+            :title="panelTitle"
+            :map="map"
+            :activeBaseLayer="activeBaseLayer"
+          />
         </div>
       </div>
     </div>

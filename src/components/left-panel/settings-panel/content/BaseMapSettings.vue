@@ -1,12 +1,21 @@
 <script setup>
-import { ref } from "vue";
+import { ref, defineProps } from "vue";
 
-import maps from "./maps.json";
+import baseMapsObject from "./maps.json";
 
-const basemaps = ref(maps);
+const props = defineProps(["title", "map", "activeBaseLayer"]);
 
-function consoleLog() {
-  console.log(this.basemaps);
+const baseMaps = ref(baseMapsObject);
+const activeBaseLayer = ref(props.activeBaseLayer);
+
+function changeBaseLayer(oldBaseLayer, newBaseLayer) {
+  if (newBaseLayer == oldBaseLayer) {
+    return;
+  } else {
+    props.map.setLayoutProperty(oldBaseLayer, "visibility", "none");
+    props.map.setLayoutProperty(newBaseLayer, "visibility", "visible");
+    activeBaseLayer.value = newBaseLayer;
+  }
 }
 </script>
 
@@ -17,15 +26,19 @@ function consoleLog() {
     </div>
     <div class="settings-content-body">
       <div
-        @click="consoleLog"
         class="card"
         style="width: 9rem"
-        v-for="map in basemaps"
-        :key="map.id"
+        v-for="baseMap in baseMaps"
+        :key="baseMap.id"
+        @click="changeBaseLayer(activeBaseLayer, baseMap.id)"
       >
-        <img class="card-img-top" :src="map.cardImage" alt="Card image cap" />
+        <img
+          class="card-img-top"
+          :src="baseMap.cardImage"
+          alt="Card image cap"
+        />
         <div class="card-body">
-          <h5 class="card-title">{{ map.title }}</h5>
+          <h5 class="card-title">{{ baseMap.title }}</h5>
         </div>
       </div>
     </div>

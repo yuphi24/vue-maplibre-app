@@ -1,13 +1,20 @@
 <script setup>
+import { defineProps } from "vue";
+
 import BaseMapSettings from "./content/BaseMapSettings.vue";
 import ClusterSettings from "./content/ClusterSettings.vue";
 import CircleStylingSettings from "./content/CircleStylingSettings.vue";
 import GraticuleSettings from "./content/GraticuleSettings.vue";
+
+const props = defineProps(["map", "activeBaseLayer"]);
 </script>
 
 <template>
   <div class="settings-content">
-    <BaseMapSettings />
+    <BaseMapSettings
+      :map="props.map"
+      :activeBaseLayer="props.activeBaseLayer"
+    />
   </div>
   <div class="settings-content">
     <ClusterSettings />
