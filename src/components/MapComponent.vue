@@ -8,7 +8,7 @@ import {
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { shallowRef, onMounted, onUnmounted, markRaw, ref } from "vue";
 import maps from "./left-panel/settings-panel/content/maps.json";
-import sitesURL from "@/components/sites.geojson";
+import sitesURL from "@/assets/data/sites.geojson";
 
 // import clickOutSide from "@mahdikhashan/vue3-click-outside";
 
@@ -35,17 +35,13 @@ function toggleSidebar() {
   // Use `map.easeTo()` with a padding option to adjust the map's center accounting for the position of sidebars.
 }
 
-// function consoleLog() {
-//   console.log("yes");
-// }
-
+// get title of corresponding button and set it as title of sidepanel
 function setPanelTitle(event) {
-  //
   panelTitle.value = event.srcElement.innerHTML;
 }
 
+// create object for base map sources
 function setBaseMapsSource(basemaps) {
-  // create object for base map sources
   let sourceObjects = {};
 
   basemaps.forEach((baseMapSource) => {
@@ -61,8 +57,8 @@ function setBaseMapsSource(basemaps) {
   return sourceObjects;
 }
 
+// create object for base map layers
 function setBaseMapsLayer(basemaps) {
-  // create object for base map layers
   let layerObjects = [];
 
   basemaps.forEach((baseMapLayer, ix) => {
@@ -89,6 +85,7 @@ function setBaseMapsLayer(basemaps) {
 }
 
 onMounted(() => {
+  // instantiate map object
   map.value = markRaw(
     new Map({
       mapId: "map_1",
@@ -103,14 +100,18 @@ onMounted(() => {
     })
   );
 
+  // get lat, lng coord. of cursor and asign it to variables
   map.value.on("mousemove", function (e) {
     latCoord.value = e.lngLat.wrap().lat.toFixed(5);
     lngCoord.value = e.lngLat.wrap().lng.toFixed(5);
   });
 
+  // add controls included in maplibre
   map.value.addControl(new ScaleControl(), "bottom-right");
   map.value.addControl(new FullscreenControl(), "top-right");
   map.value.addControl(new NavigationControl(), "top-right");
+
+  // add thrid-party controls
   map.value.addControl(
     new MapboxDraw({
       displayControlsDefault: false,
@@ -123,169 +124,13 @@ onMounted(() => {
   );
 
   map.value.once("load", () => {
+    // add data source
     map.value.addSource("sites", {
       type: "geojson",
       data: sites.value,
-      // {
-      //   type: "FeatureCollection",
-      //   features: [
-      //     {
-      //       id: "GHFS-32CM6XLT6Q",
-      //       type: "Feature",
-      //       geometry: { type: "Point", coordinates: [115.81, 42.35861] },
-      //       properties: {
-      //         name: "A10",
-      //         elevation: 1364.0,
-      //         q: 109.5,
-      //         q_unc: 17.0,
-      //         q_acq: null,
-      //         env: "Onshore",
-      //         wat_temp: null,
-      //         method: "drilling",
-      //         expl: "hydrocarbon",
-      //         q_comment: null,
-      //       },
-      //     },
-      //     {
-      //       id: "GHFS-UVCQEGXRQH",
-      //       type: "Feature",
-      //       geometry: { type: "Point", coordinates: [117.85111, 46.41083] },
-      //       properties: {
-      //         name: "ZK3-3-47",
-      //         elevation: 802.0,
-      //         q: 92.0,
-      //         q_unc: 9.4,
-      //         q_acq: null,
-      //         env: "Onshore",
-      //         wat_temp: null,
-      //         method: "drilling",
-      //         expl: "hydrocarbon",
-      //         q_comment: null,
-      //       },
-      //     },
-      //     {
-      //       id: "GHFS-XFT2HWZDLV",
-      //       type: "Feature",
-      //       geometry: { type: "Point", coordinates: [117.89556, 46.42639] },
-      //       properties: {
-      //         name: "ZK3-3",
-      //         elevation: 806.0,
-      //         q: 86.0,
-      //         q_unc: 8.0,
-      //         q_acq: null,
-      //         env: "Onshore",
-      //         wat_temp: null,
-      //         method: "drilling",
-      //         expl: "hydrocarbon",
-      //         q_comment: null,
-      //       },
-      //     },
-      //     {
-      //       id: "GHFS-5PGFUNZ5T6",
-      //       type: "Feature",
-      //       geometry: { type: "Point", coordinates: [117.81194, 46.43111] },
-      //       properties: {
-      //         name: "ZK17-80",
-      //         elevation: 801.0,
-      //         q: 79.3,
-      //         q_unc: 9.6,
-      //         q_acq: null,
-      //         env: "Onshore",
-      //         wat_temp: null,
-      //         method: "drilling",
-      //         expl: "hydrocarbon",
-      //         q_comment: null,
-      //       },
-      //     },
-      //     {
-      //       id: "GHFS-YZCE4QFPAM",
-      //       type: "Feature",
-      //       geometry: { type: "Point", coordinates: [117.84472, 46.42472] },
-      //       properties: {
-      //         name: "ZK17-14",
-      //         elevation: 801.0,
-      //         q: 81.4,
-      //         q_unc: 7.5,
-      //         q_acq: null,
-      //         env: "Onshore",
-      //         wat_temp: null,
-      //         method: "drilling",
-      //         expl: "hydrocarbon",
-      //         q_comment: null,
-      //       },
-      //     },
-      //     {
-      //       id: "GHFS-AKAH899PNL",
-      //       type: "Feature",
-      //       geometry: { type: "Point", coordinates: [116.23, 45.02194] },
-      //       properties: {
-      //         name: "AC1",
-      //         elevation: 834.0,
-      //         q: 82.4,
-      //         q_unc: 12.8,
-      //         q_acq: null,
-      //         env: "Onshore",
-      //         wat_temp: null,
-      //         method: "drilling",
-      //         expl: "hydrocarbon",
-      //         q_comment: null,
-      //       },
-      //     },
-      //     {
-      //       id: "GHFS-HLL2J574DY",
-      //       type: "Feature",
-      //       geometry: { type: "Point", coordinates: [118.28, 45.13] },
-      //       properties: {
-      //         name: "GC1",
-      //         elevation: 904.0,
-      //         q: 69.2,
-      //         q_unc: 10.7,
-      //         q_acq: null,
-      //         env: "Onshore",
-      //         wat_temp: null,
-      //         method: "drilling",
-      //         expl: "hydrocarbon",
-      //         q_comment: null,
-      //       },
-      //     },
-      //     {
-      //       id: "GHFS-ZXCPMC5RL2",
-      //       type: "Feature",
-      //       geometry: { type: "Point", coordinates: [107.84161, 42.00936] },
-      //       properties: {
-      //         name: "Xi24",
-      //         elevation: 1347.0,
-      //         q: 80.4,
-      //         q_unc: 18.2,
-      //         q_acq: null,
-      //         env: "Onshore",
-      //         wat_temp: null,
-      //         method: "drilling",
-      //         expl: "hydrocarbon",
-      //         q_comment: null,
-      //       },
-      //     },
-      //     {
-      //       id: "GHFS-35JPMAGLGP",
-      //       type: "Feature",
-      //       geometry: { type: "Point", coordinates: [118.28278, 45.38] },
-      //       properties: {
-      //         name: "B1",
-      //         elevation: 852.0,
-      //         q: 94.6,
-      //         q_unc: 14.7,
-      //         q_acq: null,
-      //         env: "Onshore",
-      //         wat_temp: null,
-      //         method: "drilling",
-      //         expl: "hydrocarbon",
-      //         q_comment: null,
-      //       },
-      //     },
-      //   ],
-      // },
     });
 
+    // add data layer
     map.value.addLayer({
       id: "sites",
       type: "circle",

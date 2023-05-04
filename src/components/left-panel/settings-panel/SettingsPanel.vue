@@ -20,7 +20,7 @@ const props = defineProps(["map", "activeBaseLayer"]);
     <ClusterSettings />
   </div>
   <div class="settings-content">
-    <CircleStylingSettings />
+    <CircleStylingSettings :map="props.map" />
   </div>
   <div class="settings-content">
     <GraticuleSettings />
