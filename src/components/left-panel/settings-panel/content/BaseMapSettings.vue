@@ -9,6 +9,7 @@ const baseMaps = ref(baseMapsObject);
 const activeBaseLayer = ref(props.activeBaseLayer);
 
 function changeBaseLayer(oldBaseLayer, newBaseLayer) {
+  // change base map on click
   if (newBaseLayer == oldBaseLayer) {
     return;
   } else {
