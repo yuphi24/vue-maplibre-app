@@ -10,3 +10,5 @@ import "bootstrap/dist/js/bootstrap.js";
 const app = createApp(App);
 
 app.mount("#app");
+
+console.log("hello");

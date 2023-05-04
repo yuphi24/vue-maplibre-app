@@ -1,12 +1,5 @@
 <script setup>
 import MapComponent from "./components/MapComponent.vue";
-
-// export default {
-//   name: "App",
-//   components: {
-//     MapComponent,
-//   },
-// };
 </script>
 
 <template>
