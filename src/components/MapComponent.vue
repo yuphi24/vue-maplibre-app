@@ -8,7 +8,7 @@ import {
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { shallowRef, onMounted, onUnmounted, markRaw, ref } from "vue";
 import maps from "./left-panel/settings-panel/content/maps.json";
-import sitesURL from "@/assets/data/sites.geojson";
+import sitesURL from "@/assets/data/small_sites.geojson";
 
 // import clickOutSide from "@mahdikhashan/vue3-click-outside";
 
