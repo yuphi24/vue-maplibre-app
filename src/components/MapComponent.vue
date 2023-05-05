@@ -22,6 +22,7 @@ const panelTitle = ref("");
 const basemaps = ref(maps);
 const activeBaseLayer = ref("");
 const sites = ref(sitesURL);
+const defaultCircleColor = ref("#41b6c4");
 
 // Source code for sidebar https://docs.mapbox.com/mapbox-gl-js/example/offset-vanishing-point-with-padding/
 function toggleSidebar() {
@@ -136,9 +137,9 @@ onMounted(() => {
       type: "circle",
       source: "sites",
       paint: {
-        "circle-color": "#11b4da",
+        "circle-color": defaultCircleColor.value,
         "circle-radius": 4,
-        "circle-stroke-width": 1,
+        "circle-stroke-width": 0.5,
         "circle-stroke-color": "#fff",
       },
       layout: {
