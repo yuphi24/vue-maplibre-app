@@ -2,9 +2,9 @@
 import { defineProps } from "vue";
 
 import BaseMapSettings from "./content/BaseMapSettings.vue";
-import ClusterSettings from "./content/ClusterSettings.vue";
+// import ClusterSettings from "./content/ClusterSettings.vue";
 import CircleStylingSettings from "./content/CircleStylingSettings.vue";
-import GraticuleSettings from "./content/GraticuleSettings.vue";
+// import GraticuleSettings from "./content/GraticuleSettings.vue";
 
 const props = defineProps(["map", "activeBaseLayer"]);
 </script>
@@ -16,15 +16,15 @@ const props = defineProps(["map", "activeBaseLayer"]);
       :activeBaseLayer="props.activeBaseLayer"
     />
   </div>
-  <div class="settings-content">
+  <!-- <div class="settings-content">
     <ClusterSettings />
-  </div>
+  </div> -->
   <div class="settings-content">
     <CircleStylingSettings :map="props.map" />
   </div>
-  <div class="settings-content">
+  <!-- <div class="settings-content">
     <GraticuleSettings />
-  </div>
+  </div> -->
 </template>
 
 <style>

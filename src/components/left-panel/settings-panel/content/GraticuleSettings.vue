@@ -13,7 +13,7 @@
         id="flexSwitchCheckDefault"
       />
       <label class="form-check-label" for="flexSwitchCheckDefault"
-        >Default switch checkbox input</label
+        >Show grid</label
       >
     </div>
     <div class="settings-content-body">
