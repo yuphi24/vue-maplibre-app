@@ -67,6 +67,7 @@ function setCircleColor(colorHEX) {
 // }
 
 function setDataDrivenPaintProperties(featuresProperty) {
+  // TODO: Include case attribute with prefedined classes
   const paintProperties = generateInterpolatePaintProperty(featuresProperty);
 
   props.map.setPaintProperty("sites", "circle-color", paintProperties);
@@ -102,9 +103,9 @@ function generateInterpolatePaintProperty(featuresProperty) {
   paintProperties.push(expression);
   paintProperties.push(["get", featuresProperty]); // TODO: adjust interpolation type or get rid of outlier
   paintProperties.push(min, "rgba(33,102,172,0)"); // TODO: include https://www.vis4.net/chromajs/ for color selection
-  paintProperties.push(100, "green");
-  // paintProperties.push(100, "blue");
-  // paintProperties.push(1000, "orange");
+  paintProperties.push(10, "green");
+  paintProperties.push(100, "blue");
+  paintProperties.push(1000, "orange");
   paintProperties.push(max, "yellow");
 
   console.log(paintProperties);
