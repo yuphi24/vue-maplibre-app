@@ -63,12 +63,23 @@ function setCircleColor(colorHEX) {
 }
 
 // function consoleLog() {
-//   console.log("Selected interpolation: " + selectedInterpolationType.value);
+//   console.log(generateClassificationPaintProperty("env"));
 // }
+
+// consoleLog();
 
 function setDataDrivenPaintProperties(featuresProperty) {
   // TODO: Include case attribute with prefedined classes
-  const paintProperties = generateInterpolatePaintProperty(featuresProperty);
+  let paintProperties = [];
+
+  console.log(featuresProperty == "env");
+  // TODO: Include schema file for differenciation between continouse numeric values or enumerate classes
+  if (featuresProperty == "env") {
+    paintProperties = generateClassificationPaintProperty(featuresProperty);
+  } else {
+    paintProperties = generateInterpolatePaintProperty(featuresProperty);
+  }
+  console.log(paintProperties);
 
   props.map.setPaintProperty("sites", "circle-color", paintProperties);
 }
@@ -102,13 +113,11 @@ function generateInterpolatePaintProperty(featuresProperty) {
   paintProperties.push("interpolate");
   paintProperties.push(expression);
   paintProperties.push(["get", featuresProperty]); // TODO: adjust interpolation type or get rid of outlier
-  paintProperties.push(min, "rgba(33,102,172,0)"); // TODO: include https://www.vis4.net/chromajs/ for color selection
+  paintProperties.push(min, "rgb(33,102,172)"); // TODO: include https://www.vis4.net/chromajs/ for color selection
   paintProperties.push(10, "green");
   paintProperties.push(100, "blue");
   paintProperties.push(1000, "orange");
   paintProperties.push(max, "yellow");
-
-  console.log(paintProperties);
 
   return paintProperties;
 }
@@ -125,6 +134,10 @@ function getMin(featuresProperty) {
   return min;
 }
 
+/**
+ *
+ * @param {String} featuresProperty
+ */
 function getMax(featuresProperty) {
   // get maximum value of number propery of all containing features
   let max =
@@ -135,6 +148,45 @@ function getMax(featuresProperty) {
     }
   });
   return max;
+}
+
+/**
+ *
+ * @param {Set} classifications
+ */
+function generateClassificationPaintProperty(featuresProperty) {
+  // only for continuous number value, later on it should be working for any kind of property
+  const classifications = getClassifications(featuresProperty);
+  let paintProperties = new Array();
+  let red = 0;
+
+  paintProperties.push("match");
+  paintProperties.push(["get", featuresProperty]);
+
+  // TODO: include chromajs lib for color ramps
+  classifications.forEach((entry) => {
+    paintProperties.push(entry, "rgb(" + red + ",102,172)");
+    red += 30;
+  });
+  paintProperties.push(/* other */ "#ccc");
+
+  console.log("Generate Class: " + paintProperties);
+  return paintProperties;
+}
+
+/**
+ *
+ * @param {String} featuresProperty
+ */
+function getClassifications(featuresProperty) {
+  //
+  let classes = new Set();
+
+  props.map.getSource("sites")._data.features.forEach((feature) => {
+    classes.add(feature.properties[featuresProperty]);
+  });
+
+  return classes;
 }
 
 /**
@@ -221,6 +273,7 @@ function getMax(featuresProperty) {
               class="data-driven-coloring-interpolation"
               v-if="isPropertySelected"
             >
+              <!-- TODO: include data schema, show selecion only for continouse numeric values -->
               <label>Type of interpolation</label>
               <select
                 name="data-driven-coloring"
