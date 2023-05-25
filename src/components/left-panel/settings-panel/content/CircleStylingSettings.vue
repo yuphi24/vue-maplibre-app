@@ -1,8 +1,9 @@
 <script setup>
-import { defineProps, ref, watch } from "vue";
+import { onMounted, defineProps, ref, watch } from "vue";
 import testData from "@/assets/data/small_sites.geojson";
 
 import chroma from "chroma-js";
+import Plotly from "plotly.js-dist";
 
 /*
 TODO: implement API request for data model (schemas) to know which data type or data structure an attribute is.
@@ -42,7 +43,7 @@ const interpolationTypes = ref({
     expression: "cubic-bezier",
   },
 });
-const colorSteps = ref(8);
+const colorSteps = ref(6);
 const colorPalettes = ref([]);
 const colorPaletteOrRd = ref(chroma.scale("OrRd").colors(colorSteps.value));
 const colorPaletteYlGnBu = ref(chroma.scale("YlGnBu").colors(colorSteps.value));
@@ -59,16 +60,63 @@ watch(circleRadius, (currentValue) => {
   props.map.setPaintProperty("sites", "circle-radius", parseInt(currentValue));
 });
 
-watch(colorSteps, (currentValue) => {
-  console.log("hier");
-  console.log(currentValue);
-  console.log(colorSteps.value);
-  console.log(selectedColorPalette.value);
-  console.log(colorPalettes.value[0].colors(currentValue));
-});
+// watch(colorSteps, (currentValue) => {
+//   console.log("hier");
+//   console.log(currentValue);
+//   console.log(colorSteps.value);
+//   console.log(selectedColorPalette.value);
+//   console.log(colorPalettes.value[0].colors(currentValue));
+// });
 
 /**--------------------------------------------------------------------- */
 // Methods
+onMounted(() => {
+  function testMethods() {
+    // let values = turfJenks(props.map.getSource("sites")._data, "elevation", 6);
+    // console.log("natrual breaks at: " + values);
+    // console.log(selectedColorPalette.value);
+    // props.map.setPaintProperty("sites", "circle-color", [
+    //   "case",
+    //   ["==", ["get", "elevation"], null],
+    //   "white",
+    //   [
+    //     "step",
+    //     ["get", "elevation"],
+    //     "#fff7ec",
+    //     -7490,
+    //     "#fddcaf",
+    //     -4489.9,
+    //     "#fdb27b",
+    //     -3290,
+    //     "#f26d4b",
+    //     -2090,
+    //     "#c91d13",
+    //     -640,
+    //     "#7f0000",
+    //     1050,
+    //     "#253494",
+    //   ],
+    // ]);
+
+    let x = [];
+    props.map.getSource("sites")._data.features.forEach((feature) => {
+      x.push(feature.properties["elevation"]);
+    });
+
+    let trace = {
+      x: x,
+      type: "histogram",
+      showlegend: true,
+    };
+
+    let data = [trace];
+    let plot = Plotly.newPlot("myTestDiv", data);
+    console.log(plot);
+  }
+
+  testMethods();
+});
+
 /**
  * @description
  * @param {Array} newColorPalette
@@ -242,6 +290,7 @@ function getClassifications(featuresProperty) {
 </script>
 
 <template>
+  <div class="myTestDiv" id="myTestDiv"></div>
   <div class="circle-styling-settings">
     <div class="settings-content-title">
       <h3>Style Circle</h3>
@@ -273,7 +322,9 @@ function getClassifications(featuresProperty) {
                 :key="colorHEX"
                 :style="{ 'background-color': colorHEX }"
                 @click="setCircleColor(colorHEX)"
-              ></button>
+              >
+                <!-- TODO: When single color is selected, make data driven colorization options disappear -->
+              </button>
             </div>
           </fieldset>
         </div>
@@ -292,9 +343,7 @@ function getClassifications(featuresProperty) {
                   toggleIsSelected()
               "
             >
-              <option value="default" selected disabled hidden>
-                Select attribute
-              </option>
+              <option selected disabled hidden>Select attribute</option>
               <option
                 :value="{ key }"
                 v-for="(value, key) in testData.features[0].properties"

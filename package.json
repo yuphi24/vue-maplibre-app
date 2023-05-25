@@ -19,7 +19,9 @@
     "json-loader": "^0.5.7",
     "maplibre-gl": "^2.4.0",
     "mutationobserver-shim": "^0.3.7",
+    "plotly.js-dist": "^2.23.2",
     "popper.js": "^1.16.1",
+    "turf-jenks": "^1.0.1",
     "vue": "^3.2.47",
     "vue-router": "^4.0.3"
   },
