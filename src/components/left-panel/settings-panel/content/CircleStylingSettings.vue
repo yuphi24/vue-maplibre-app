@@ -2,6 +2,13 @@
 import { defineProps, ref, watch } from "vue";
 import testData from "@/assets/data/small_sites.geojson";
 
+import chroma from "chroma-js";
+
+/*
+TODO: implement API request for data model (schemas) to know which data type or data structure an attribute is.
+Shall help to differentiate between generateClassificationPaintProperty(featuresProperty) and generateInterpolatePaintProperty(featuresProperty).
+*/
+// Variables
 const props = defineProps(["map", "selectedProperty"]);
 const circleRadius = ref(5);
 const circleColors = ref([
@@ -35,6 +42,12 @@ const interpolationTypes = ref({
     expression: "cubic-bezier",
   },
 });
+const colorSteps = ref(8);
+const colorPalettes = ref([]);
+const colorPaletteOrRd = ref(chroma.scale("OrRd").colors(colorSteps.value));
+const colorPaletteYlGnBu = ref(chroma.scale("YlGnBu").colors(colorSteps.value));
+colorPalettes.value.push(colorPaletteOrRd.value, colorPaletteYlGnBu.value);
+const selectedColorPalette = ref(colorPalettes.value[0]);
 
 const selectedProperty = ref("Select attribute");
 const isPropertySelected = ref(false);
@@ -42,10 +55,33 @@ const selectedInterpolationType = ref(interpolationTypes.value.linear);
 
 watch(circleRadius, (currentValue) => {
   // change circle radius whene user changes value at input element
+
   props.map.setPaintProperty("sites", "circle-radius", parseInt(currentValue));
 });
 
+watch(colorSteps, (currentValue) => {
+  console.log("hier");
+  console.log(currentValue);
+  console.log(colorSteps.value);
+  console.log(selectedColorPalette.value);
+  console.log(colorPalettes.value[0].colors(currentValue));
+});
+
+/**--------------------------------------------------------------------- */
+// Methods
+/**
+ * @description
+ * @param {Array} newColorPalette
+ */
+function setSelectedColorPalette(newColorPalette) {
+  selectedColorPalette.value = newColorPalette;
+}
+
+/**
+ * @description
+ */
 function toggleIsSelected() {
+  //
   if (isPropertySelected.value) {
     return;
   } else {
@@ -53,8 +89,11 @@ function toggleIsSelected() {
   }
 }
 
+/**
+ * @description set Circle color
+ * @param {String} colorHEX
+ */
 function setCircleColor(colorHEX) {
-  // set Circle color
   if (props.map.getPaintProperty("sites", "circle-color") == colorHEX) {
     return;
   } else {
@@ -62,18 +101,16 @@ function setCircleColor(colorHEX) {
   }
 }
 
-// function consoleLog() {
-//   console.log(generateClassificationPaintProperty("env"));
-// }
-
-// consoleLog();
-
+/**
+ * @description
+ * @param {String} featuresProperty
+ */
 function setDataDrivenPaintProperties(featuresProperty) {
-  // TODO: Include case attribute with prefedined classes
+  // TODO: Include case attribute with predefined classes
   let paintProperties = [];
 
   console.log(featuresProperty == "env");
-  // TODO: Include schema file for differenciation between continouse numeric values or enumerate classes
+  // TODO: Include schema file for differenciation between continouse numeric values or enumerate
   if (featuresProperty == "env") {
     paintProperties = generateClassificationPaintProperty(featuresProperty);
   } else {
@@ -84,11 +121,18 @@ function setDataDrivenPaintProperties(featuresProperty) {
   props.map.setPaintProperty("sites", "circle-color", paintProperties);
 }
 
+/**
+ * @description only for continuous number value, later on it should be working for any kind of property
+ * @param {String} featuresProperty
+ * @returns {Array} Array of MapLibre expression for paint properties for number values
+ */
 function generateInterpolatePaintProperty(featuresProperty) {
-  // only for continuous number value, later on it should be working for any kind of property
   let paintProperties = new Array();
   const min = getMin(featuresProperty);
   const max = getMax(featuresProperty);
+  const range = max - min;
+  const section = range / (colorSteps.value - 1);
+  let currentValue = min;
   let expression = [];
 
   if (selectedInterpolationType.value.name == "Linear") {
@@ -113,17 +157,21 @@ function generateInterpolatePaintProperty(featuresProperty) {
   paintProperties.push("interpolate");
   paintProperties.push(expression);
   paintProperties.push(["get", featuresProperty]); // TODO: adjust interpolation type or get rid of outlier
-  paintProperties.push(min, "rgb(33,102,172)"); // TODO: include https://www.vis4.net/chromajs/ for color selection
-  paintProperties.push(10, "green");
-  paintProperties.push(100, "blue");
-  paintProperties.push(1000, "orange");
-  paintProperties.push(max, "yellow");
+
+  for (let i = 0; i < colorSteps.value; i++) {
+    paintProperties.push(currentValue, selectedColorPalette.value[i]);
+    currentValue += section;
+  }
 
   return paintProperties;
 }
 
+/**
+ * @description get minimum value of features property
+ * @param {String} featuresProperty
+ * @returns {Number}
+ */
 function getMin(featuresProperty) {
-  // get minimum value of number propery of all containing features
   let min =
     props.map.getSource("sites")._data.features[0].properties[featuresProperty];
   props.map.getSource("sites")._data.features.forEach((feature) => {
@@ -135,38 +183,41 @@ function getMin(featuresProperty) {
 }
 
 /**
- *
+ * @description get maximum value of features property
  * @param {String} featuresProperty
+ * @returns {Number}
  */
 function getMax(featuresProperty) {
-  // get maximum value of number propery of all containing features
   let max =
     props.map.getSource("sites")._data.features[0].properties[featuresProperty];
+
   props.map.getSource("sites")._data.features.forEach((feature) => {
     if (feature.properties[featuresProperty] > max) {
       max = feature.properties[featuresProperty];
     }
   });
+
   return max;
 }
 
 /**
- *
- * @param {Set} classifications
+ * @description
+ * @param {String} featuresProperty
+ * @returns {Array} Array of MapLibre expression for paint properties for enum values
  */
 function generateClassificationPaintProperty(featuresProperty) {
-  // only for continuous number value, later on it should be working for any kind of property
   const classifications = getClassifications(featuresProperty);
   let paintProperties = new Array();
-  let red = 0;
+  colorSteps.value = classifications.size;
 
   paintProperties.push("match");
   paintProperties.push(["get", featuresProperty]);
 
   // TODO: include chromajs lib for color ramps
+  let ix = 0;
   classifications.forEach((entry) => {
-    paintProperties.push(entry, "rgb(" + red + ",102,172)");
-    red += 30;
+    paintProperties.push(entry, selectedColorPalette.value[ix]);
+    ix += 1;
   });
   paintProperties.push(/* other */ "#ccc");
 
@@ -175,11 +226,11 @@ function generateClassificationPaintProperty(featuresProperty) {
 }
 
 /**
- *
+ * @description
  * @param {String} featuresProperty
+ * @returns {Set} Set containg all possible values of a property
  */
 function getClassifications(featuresProperty) {
-  //
   let classes = new Set();
 
   props.map.getSource("sites")._data.features.forEach((feature) => {
@@ -188,25 +239,6 @@ function getClassifications(featuresProperty) {
 
   return classes;
 }
-
-/**
- * Pseudo Code data driven coloring
- * https://www.vis4.net/chromajs/#chroma-valid
- *
- * 1. get property
- * 2. If continuous
- * 3. Get min max to set scale for color
- * 4. Set circle color array containig maplibre expressions
- * 5. Set paint property
- *
- * 1. get property
- * 2. If classes
- * 3. Get classes as Set()
- * 4. Set circle color array containig maplibre expressions
- * 5. Set paint property
- */
-
-// consoleLog(props.selectedProperty);
 </script>
 
 <template>
@@ -244,31 +276,34 @@ function getClassifications(featuresProperty) {
               ></button>
             </div>
           </fieldset>
+        </div>
+      </div>
 
-          <fieldset>
-            <div class="data-driven-coloring">
-              <label>Coloring based on</label>
-              <select
-                name="data-driven-coloring"
-                id="data-driven-coloring"
-                v-model="selectedProperty"
-                @change="
-                  setDataDrivenPaintProperties(selectedProperty.key),
-                    toggleIsSelected()
-                "
+      <div class="circle-settings">
+        <fieldset>
+          <div class="data-driven-coloring">
+            <label>Coloring based on</label>
+            <select
+              name="data-driven-coloring"
+              id="data-driven-coloring"
+              v-model="selectedProperty"
+              @change="
+                setDataDrivenPaintProperties(selectedProperty.key),
+                  toggleIsSelected()
+              "
+            >
+              <option value="default" selected disabled hidden>
+                Select attribute
+              </option>
+              <option
+                :value="{ key }"
+                v-for="(value, key) in testData.features[0].properties"
+                :key="key"
+                :selectedProperty="{ value }"
               >
-                <option selected disabled hidden>Select attribute</option>
-                <option
-                  :value="{ key }"
-                  v-for="(value, key) in testData.features[0].properties"
-                  :key="key"
-                  :selectedProperty="{ value }"
-                >
-                  {{ key }}
-                </option>
-              </select>
-            </div>
-
+                {{ key }}
+              </option>
+            </select>
             <div
               class="data-driven-coloring-interpolation"
               v-if="isPropertySelected"
@@ -291,8 +326,46 @@ function getClassifications(featuresProperty) {
                 </option>
               </select>
             </div>
-          </fieldset>
-        </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <div class="color-palettes" v-if="isPropertySelected">
+            <label>Color Palette</label>
+            <!-- <div class="color-steps">
+              <label>Steps</label>
+              <select name="color-steps-options" id="color-steps-options">
+                <option selected disabled hidden>{{ colorSteps }}</option>
+                <option
+                  :value="{ key }"
+                  v-for="(value, key) in testData.features[0].properties"
+                  :key="key"
+                  :selectedProperty="{ value }"
+                >
+                  {{ key }}
+                </option>
+              </select>
+            </div> -->
+            <div
+              class="color-palette-outer"
+              v-for="colorPalette in colorPalettes"
+              :key="colorPalette"
+              @click="
+                setSelectedColorPalette(colorPalette),
+                  setDataDrivenPaintProperties(selectedProperty.key)
+              "
+            >
+              <div class="color-palette-inner">
+                <div
+                  class="color"
+                  v-for="color in colorPalette"
+                  :key="color"
+                  :style="{ 'background-color': color }"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </fieldset>
       </div>
     </div>
   </div>
@@ -347,5 +420,17 @@ label {
 
 .circle-color button:hover {
   box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.color {
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.color-palette-inner:hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 </style>
