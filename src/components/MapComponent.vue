@@ -9,6 +9,7 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { shallowRef, onMounted, onUnmounted, markRaw, ref } from "vue";
 import maps from "./left-panel/settings-panel/content/maps.json";
 import sitesURL from "@/assets/data/small_sites.geojson";
+// import sitesURL from "http://localhost:3000/sites";
 
 // import clickOutSide from "@mahdikhashan/vue3-click-outside";
 
@@ -23,6 +24,18 @@ const basemaps = ref(maps);
 const activeBaseLayer = ref("");
 const sites = ref(sitesURL);
 const defaultCircleColor = ref("#41b6c4");
+
+// const listItems = ref([]);
+
+// async function getData() {
+//   const res = await fetch("http://localhost:3000/sites");
+//   const finalRes = await res.json();
+//   listItems.value = finalRes;
+// }
+
+// getData();
+// console.log("test fetch: ");
+// console.log(listItems.value);
 
 // Source code for sidebar https://docs.mapbox.com/mapbox-gl-js/example/offset-vanishing-point-with-padding/
 function toggleSidebar() {
@@ -157,52 +170,50 @@ onMounted(() => {
   <div class="map-wrap">
     <div class="map" ref="mapContainer" @mousemove="updateLatLng">
       <!-- Navigation buttons -->
-      <div class="test"></div>
-      <div class="navButtons">
-        <div class="fixed-bottom">
-          <button
-            @click="
-              toggleSidebar();
-              setPanelTitle($event);
-            "
-            type="button"
-            class="btn btn-primary"
-          >
-            Settings
-          </button>
-          <button
-            @click="
-              toggleSidebar();
-              setPanelTitle($event);
-            "
-            type="button"
-            class="btn btn-primary"
-          >
-            Filter
-          </button>
-          <button
-            @click="
-              toggleSidebar();
-              setPanelTitle($event);
-            "
-            type="button"
-            class="btn btn-primary"
-          >
-            Statistics
-          </button>
-          <button
-            @click="
-              toggleSidebar();
-              setPanelTitle($event);
-            "
-            type="button"
-            class="btn btn-primary"
-          >
-            Analysis
-          </button>
-          <div class="cursor-position">
-            Lat: {{ latCoord }}, Lng: {{ lngCoord }}
-          </div>
+
+      <div class="fixed-bottom">
+        <button
+          @click="
+            toggleSidebar();
+            setPanelTitle($event);
+          "
+          type="button"
+          class="btn btn-primary"
+        >
+          Settings
+        </button>
+        <button
+          @click="
+            toggleSidebar();
+            setPanelTitle($event);
+          "
+          type="button"
+          class="btn btn-primary"
+        >
+          Filter
+        </button>
+        <button
+          @click="
+            toggleSidebar();
+            setPanelTitle($event);
+          "
+          type="button"
+          class="btn btn-primary"
+        >
+          Statistics
+        </button>
+        <button
+          @click="
+            toggleSidebar();
+            setPanelTitle($event);
+          "
+          type="button"
+          class="btn btn-primary"
+        >
+          Analysis
+        </button>
+        <div class="cursor-position">
+          Lat: {{ latCoord }}, Lng: {{ lngCoord }}
         </div>
       </div>
 
@@ -236,12 +247,12 @@ onMounted(() => {
   height: 100%;
 }
 
-.navButtons {
-  z-index: 1;
-}
-
 .fixed-bottom {
   position: absolute;
+  width: fit-content;
+  height: fit-content;
+  margin: 0 auto;
+  z-index: 1;
 }
 
 .cursor-position {
@@ -275,10 +286,11 @@ onMounted(() => {
   z-index: 1;
 }
 
-.rounded-rect {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 0 50px -25px black;
+.sidebar {
+  transition: transform 1s;
+  z-index: 1;
+  width: 400px;
+  height: 100%;
 }
 
 .flex-center {
@@ -292,22 +304,24 @@ onMounted(() => {
   left: 0px;
 }
 
+.left.collapsed {
+  transform: translateX(-395px);
+}
+
 .sidebar-content {
-  position: absolute;
+  /* position: absolute; */
   width: 95%;
   height: 95%;
   font-family: Arial, Helvetica, sans-serif;
-  color: gray;
+  color: grey;
+  overflow-y: hidden;
+  /* display: flex; */
+  /* justify-content: center; */
 }
 
-.sidebar {
-  transition: transform 1s;
-  z-index: 1;
-  width: 400px;
-  height: 100%;
-}
-
-.left.collapsed {
-  transform: translateX(-395px);
+.rounded-rect {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 0 50px -25px black;
 }
 </style>

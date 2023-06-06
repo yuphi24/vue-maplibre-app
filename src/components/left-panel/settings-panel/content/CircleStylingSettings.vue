@@ -100,7 +100,7 @@ onMounted(() => {
 
     let x = [];
     props.map.getSource("sites")._data.features.forEach((feature) => {
-      x.push(feature.properties["elevation"]);
+      x.push(feature.properties["q"]);
     });
 
     let trace = {
