@@ -20,6 +20,7 @@ const props = defineProps(["title", "map", "activeBaseLayer"]);
       data-bs-dismiss="sidebar"
       aria-label="Close"
     ></button>
+    <div style="clear: both"></div>
   </div>
 
   <SimpleBar style="height: 95%; padding-bottom: 10px; overflow-y: auto">
@@ -37,14 +38,18 @@ const props = defineProps(["title", "map", "activeBaseLayer"]);
 </template>
 
 <style scoped>
-.sidebar-title {
-  text-align: left;
+.sidebar-header {
 }
 
-.sidebar-body {
+.sidebar-title {
+  float: left;
+  padding-top: 15px;
+  padding-left: 15px;
 }
 
 .btn-close {
-  text-align: right;
+  float: right;
+  margin-top: 15px;
+  margin-right: 15px;
 }
 </style>

@@ -309,14 +309,11 @@ onMounted(() => {
 }
 
 .sidebar-content {
-  /* position: absolute; */
   width: 95%;
   height: 95%;
   font-family: Arial, Helvetica, sans-serif;
   color: grey;
   overflow-y: hidden;
-  /* display: flex; */
-  /* justify-content: center; */
 }
 
 .rounded-rect {
