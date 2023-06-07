@@ -16,7 +16,7 @@ const props = defineProps(["title", "map", "activeBaseLayer"]);
     <h3 class="sidebar-title" id="sidebarTitle">{{ this.title }}</h3>
     <button
       type="button"
-      class="btn-close"
+      class="btn-close btn-close-white"
       data-bs-dismiss="sidebar"
       aria-label="Close"
     ></button>
@@ -39,16 +39,21 @@ const props = defineProps(["title", "map", "activeBaseLayer"]);
 
 <style scoped>
 .sidebar-header {
+  background-color: #304b9b;
+  border-bottom: 0.2rem solid #8eb7e2;
 }
 
 .sidebar-title {
   float: left;
+  color: #8eb7e2;
+  font-weight: bold;
   padding-top: 15px;
   padding-left: 15px;
 }
 
 .btn-close {
   float: right;
+  /* color: #8eb7e2; */
   margin-top: 15px;
   margin-right: 15px;
 }

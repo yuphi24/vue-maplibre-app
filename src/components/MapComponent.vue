@@ -270,7 +270,17 @@ onMounted(() => {
 }
 
 .btn {
+  background-color: #304b9b;
+  color: #8eb7e2;
+  font-weight: bold;
+  border: solid transparent;
   z-index: 1;
+}
+
+.btn:hover {
+  background-color: #8eb7e2;
+  color: #304b9b;
+  border: solid transparent;
 }
 
 .control-icon {
@@ -291,6 +301,8 @@ onMounted(() => {
   z-index: 1;
   width: 400px;
   height: 100%;
+  padding-top: 2.5%;
+  padding-bottom: 2.5%;
 }
 
 .flex-center {
@@ -310,7 +322,8 @@ onMounted(() => {
 
 .sidebar-content {
   width: 95%;
-  height: 95%;
+  height: 100%;
+  border-bottom: ;
   font-family: Arial, Helvetica, sans-serif;
   color: grey;
   overflow-y: hidden;
