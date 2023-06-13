@@ -1,4 +1,8 @@
 <script setup>
+// vue
+import { shallowRef, onMounted, onUnmounted, markRaw, ref } from "vue";
+
+// map viewer
 import {
   FullscreenControl,
   Map,
@@ -6,17 +10,17 @@ import {
   ScaleControl,
 } from "maplibre-gl";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
-import { shallowRef, onMounted, onUnmounted, markRaw, ref } from "vue";
+
+// data
 import maps from "./left-panel/settings-panel/content/maps.json";
 import sitesURL from "@/assets/data/small_sites.geojson";
-// import sitesURL from "http://localhost:3000/sites";
 
-// import clickOutSide from "@mahdikhashan/vue3-click-outside";
-
+// components
 import LeftPanel from "./left-panel/LeftPanel.vue";
 
 const mapContainer = shallowRef(null);
 const map = shallowRef(null);
+const navbarTitles = ref(["Settings", "Filter", "Statistics", "Analysis"]); // can be extend with custom buttons
 const latCoord = ref();
 const lngCoord = ref();
 const panelTitle = ref("");
@@ -24,18 +28,12 @@ const basemaps = ref(maps);
 const activeBaseLayer = ref("");
 const sites = ref(sitesURL);
 const defaultCircleColor = ref("#41b6c4");
+const isCollapsed = ref(true);
+const setIsCollapsedTrue = () => (isCollapsed.value = true);
 
-// const listItems = ref([]);
-
-// async function getData() {
-//   const res = await fetch("http://localhost:3000/sites");
-//   const finalRes = await res.json();
-//   listItems.value = finalRes;
+// function consoleLog() {
+//   console.log("hallö");
 // }
-
-// getData();
-// console.log("test fetch: ");
-// console.log(listItems.value);
 
 // Source code for sidebar https://docs.mapbox.com/mapbox-gl-js/example/offset-vanishing-point-with-padding/
 function toggleSidebar() {
@@ -43,6 +41,8 @@ function toggleSidebar() {
   // Add or remove the 'collapsed' CSS class from the sidebar element.
   // Returns boolean "true" or "false" whether 'collapsed' is in the class list.
   const collapsed = elem.classList.toggle("collapsed");
+  console.log(collapsed);
+  isCollapsed.value = collapsed;
   const padding = {};
   // 'id' is 'right' or 'left'. When run at start, this object looks like: '{left: 300}';
   padding["left-panel"] = collapsed ? 0 : 300; // 0 if collapsed, 300 px if not. This matches the width of the sidebars in the .sidebar CSS class.
@@ -173,45 +173,15 @@ onMounted(() => {
 
       <div class="fixed-bottom">
         <button
-          @click="
-            toggleSidebar();
-            setPanelTitle($event);
-          "
+          v-for="title in navbarTitles"
+          :key="title"
+          @click="isCollapsed ? setPanelTitle($event) : 0, toggleSidebar()"
           type="button"
           class="btn btn-primary"
         >
-          Settings
+          {{ title }}
         </button>
-        <button
-          @click="
-            toggleSidebar();
-            setPanelTitle($event);
-          "
-          type="button"
-          class="btn btn-primary"
-        >
-          Filter
-        </button>
-        <button
-          @click="
-            toggleSidebar();
-            setPanelTitle($event);
-          "
-          type="button"
-          class="btn btn-primary"
-        >
-          Statistics
-        </button>
-        <button
-          @click="
-            toggleSidebar();
-            setPanelTitle($event);
-          "
-          type="button"
-          class="btn btn-primary"
-        >
-          Analysis
-        </button>
+
         <div class="cursor-position">
           Lat: {{ latCoord }}, Lng: {{ lngCoord }}
         </div>
@@ -223,6 +193,8 @@ onMounted(() => {
             :title="panelTitle"
             :map="map"
             :activeBaseLayer="activeBaseLayer"
+            :isCollapsed="isCollapsed"
+            @collapse-event="setIsCollapsedTrue"
           />
         </div>
       </div>
@@ -230,7 +202,6 @@ onMounted(() => {
   </div>
 </template>
 
-<!-- avoid global effects -->
 <style scoped>
 @import "~maplibre-gl/dist/maplibre-gl.css";
 @import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
@@ -283,14 +254,6 @@ onMounted(() => {
   border: solid transparent;
 }
 
-.control-icon {
-  z-index: 1;
-}
-
-.cursor-coord-collapse {
-  z-index: 1;
-}
-
 .cursor-position {
   background: rgba(255, 255, 255, 0.5);
   z-index: 1;
@@ -323,7 +286,6 @@ onMounted(() => {
 .sidebar-content {
   width: 95%;
   height: 100%;
-  border-bottom: ;
   font-family: Arial, Helvetica, sans-serif;
   color: grey;
   overflow-y: hidden;

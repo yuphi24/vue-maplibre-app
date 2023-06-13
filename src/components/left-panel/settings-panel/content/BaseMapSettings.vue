@@ -2,8 +2,9 @@
 import { ref, defineProps } from "vue";
 
 import baseMapsObject from "./maps.json";
+import { Map } from "maplibre-gl";
 
-const props = defineProps(["title", "map", "activeBaseLayer"]);
+const props = defineProps({ title: String, map: Map, activeBaseLayer: String });
 
 const baseMaps = ref(baseMapsObject);
 const activeBaseLayer = ref(props.activeBaseLayer);

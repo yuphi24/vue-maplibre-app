@@ -4,13 +4,14 @@ import testData from "@/assets/data/small_sites.geojson";
 
 import chroma from "chroma-js";
 import Plotly from "plotly.js-dist";
+import { Map } from "maplibre-gl";
 
 /*
 TODO: implement API request for data model (schemas) to know which data type or data structure an attribute is.
 Shall help to differentiate between generateClassificationPaintProperty(featuresProperty) and generateInterpolatePaintProperty(featuresProperty).
 */
 // Variables
-const props = defineProps(["map", "selectedProperty"]);
+const props = defineProps({ map: Map });
 const circleRadius = ref(5);
 const circleColors = ref([
   "#ffffcc",

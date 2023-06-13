@@ -27,7 +27,7 @@ const props = defineProps(["map", "activeBaseLayer"]);
   </div> -->
 </template>
 
-<style>
+<style scoped>
 .settings-content {
   display: block;
   padding: 2px;
