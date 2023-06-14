@@ -1,7 +1,7 @@
 <script setup>
 import { SimpleBar } from "simplebar-vue3";
 
-import { defineEmits, defineProps } from "vue";
+import { defineProps } from "vue";
 
 import SettingsPanel from "./settings-panel/SettingsPanel.vue";
 import FilterPanal from "./filter-panel/FilterPanal.vue";
@@ -13,24 +13,7 @@ const props = defineProps({
   title: String,
   map: Map,
   activeBaseLayer: String,
-  isCollapsed: Boolean,
 });
-
-const emit = defineEmits(["collapse-event"]);
-const sendCollapseEvent = () => emit("collapse-event");
-
-function toggleSidebar() {
-  const elem = document.getElementById("left-panel");
-  // Add or remove the 'collapsed' CSS class from the sidebar element.
-  // Returns boolean "true" or "false" whether 'collapsed' is in the class list.
-  const collapsed = elem.classList.toggle("collapsed");
-  // this.$emit("");
-  console.log(collapsed);
-  const padding = {};
-  // 'id' is 'right' or 'left'. When run at start, this object looks like: '{left: 300}';
-  padding["left-panel"] = collapsed ? 0 : 300; // 0 if collapsed, 300 px if not. This matches the width of the sidebars in the .sidebar CSS class.
-  // Use `map.easeTo()` with a padding option to adjust the map's center accounting for the position of sidebars.
-}
 </script>
 
 <template>
@@ -41,8 +24,7 @@ function toggleSidebar() {
       class="btn-close btn-close-white pull-right"
       data-bs-dismiss="sidebar"
       aria-label="Close"
-      @click="toggleSidebar"
-      @click.prevent="sendCollapseEvent"
+      @click="$emit('collapse-event'), $emit('toggle-event')"
     ></button>
     <div style="clear: both"></div>
   </div>

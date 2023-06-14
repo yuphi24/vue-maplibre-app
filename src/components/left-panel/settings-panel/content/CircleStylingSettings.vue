@@ -1,9 +1,9 @@
 <script setup>
-import { onMounted, defineProps, ref, watch } from "vue";
+import { defineProps, ref, watch } from "vue";
 import testData from "@/assets/data/small_sites.geojson";
 
 import chroma from "chroma-js";
-import Plotly from "plotly.js-dist";
+// import Plotly from "plotly.js-dist";
 import { Map } from "maplibre-gl";
 
 /*
@@ -71,52 +71,52 @@ watch(circleRadius, (currentValue) => {
 
 /**--------------------------------------------------------------------- */
 // Methods
-onMounted(() => {
-  function testMethods() {
-    // let values = turfJenks(props.map.getSource("sites")._data, "elevation", 6);
-    // console.log("natrual breaks at: " + values);
-    // console.log(selectedColorPalette.value);
-    // props.map.setPaintProperty("sites", "circle-color", [
-    //   "case",
-    //   ["==", ["get", "elevation"], null],
-    //   "white",
-    //   [
-    //     "step",
-    //     ["get", "elevation"],
-    //     "#fff7ec",
-    //     -7490,
-    //     "#fddcaf",
-    //     -4489.9,
-    //     "#fdb27b",
-    //     -3290,
-    //     "#f26d4b",
-    //     -2090,
-    //     "#c91d13",
-    //     -640,
-    //     "#7f0000",
-    //     1050,
-    //     "#253494",
-    //   ],
-    // ]);
+// onMounted(() => {
+//   function testMethods() {
+//     // let values = turfJenks(props.map.getSource("sites")._data, "elevation", 6);
+//     // console.log("natrual breaks at: " + values);
+//     // console.log(selectedColorPalette.value);
+//     // props.map.setPaintProperty("sites", "circle-color", [
+//     //   "case",
+//     //   ["==", ["get", "elevation"], null],
+//     //   "white",
+//     //   [
+//     //     "step",
+//     //     ["get", "elevation"],
+//     //     "#fff7ec",
+//     //     -7490,
+//     //     "#fddcaf",
+//     //     -4489.9,
+//     //     "#fdb27b",
+//     //     -3290,
+//     //     "#f26d4b",
+//     //     -2090,
+//     //     "#c91d13",
+//     //     -640,
+//     //     "#7f0000",
+//     //     1050,
+//     //     "#253494",
+//     //   ],
+//     // ]);
 
-    let x = [];
-    props.map.getSource("sites")._data.features.forEach((feature) => {
-      x.push(feature.properties["q"]);
-    });
+//     let x = [];
+//     props.map.getSource("sites")._data.features.forEach((feature) => {
+//       x.push(feature.properties["q"]);
+//     });
 
-    let trace = {
-      x: x,
-      type: "histogram",
-      showlegend: true,
-    };
+//     let trace = {
+//       x: x,
+//       type: "histogram",
+//       showlegend: true,
+//     };
 
-    let data = [trace];
-    let plot = Plotly.newPlot("myTestDiv", data);
-    console.log(plot);
-  }
+//     let data = [trace];
+//     let plot = Plotly.newPlot("myTestDiv", data);
+//     console.log(plot);
+//   }
 
-  testMethods();
-});
+//   testMethods();
+// });
 
 /**
  * @description

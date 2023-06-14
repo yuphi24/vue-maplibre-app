@@ -29,25 +29,18 @@ const activeBaseLayer = ref("");
 const sites = ref(sitesURL);
 const defaultCircleColor = ref("#41b6c4");
 const isCollapsed = ref(true);
-const setIsCollapsedTrue = () => (isCollapsed.value = true);
-
-// function consoleLog() {
-//   console.log("hallö");
-// }
-
-// Source code for sidebar https://docs.mapbox.com/mapbox-gl-js/example/offset-vanishing-point-with-padding/
-function toggleSidebar() {
+const setIsCollapsed = () => (isCollapsed.value = !isCollapsed.value);
+const toggleSidebar = () => {
+  // Source code for sidebar https://docs.mapbox.com/mapbox-gl-js/example/offset-vanishing-point-with-padding/
   const elem = document.getElementById("left-panel");
   // Add or remove the 'collapsed' CSS class from the sidebar element.
   // Returns boolean "true" or "false" whether 'collapsed' is in the class list.
   const collapsed = elem.classList.toggle("collapsed");
-  console.log(collapsed);
-  isCollapsed.value = collapsed;
   const padding = {};
   // 'id' is 'right' or 'left'. When run at start, this object looks like: '{left: 300}';
   padding["left-panel"] = collapsed ? 0 : 300; // 0 if collapsed, 300 px if not. This matches the width of the sidebars in the .sidebar CSS class.
   // Use `map.easeTo()` with a padding option to adjust the map's center accounting for the position of sidebars.
-}
+};
 
 // get title of corresponding button and set it as title of sidepanel
 function setPanelTitle(event) {
@@ -175,7 +168,11 @@ onMounted(() => {
         <button
           v-for="title in navbarTitles"
           :key="title"
-          @click="isCollapsed ? setPanelTitle($event) : 0, toggleSidebar()"
+          @click="
+            isCollapsed ? setPanelTitle($event) : 0,
+              toggleSidebar(),
+              setIsCollapsed()
+          "
           type="button"
           class="btn btn-primary"
         >
@@ -193,8 +190,8 @@ onMounted(() => {
             :title="panelTitle"
             :map="map"
             :activeBaseLayer="activeBaseLayer"
-            :isCollapsed="isCollapsed"
-            @collapse-event="setIsCollapsedTrue"
+            @collapse-event="setIsCollapsed()"
+            @toggle-event="toggleSidebar()"
           />
         </div>
       </div>
