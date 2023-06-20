@@ -12,5 +12,3 @@ import "simplebar/dist/simplebar.min.css";
 const app = createApp(App);
 
 app.mount("#app");
-
-console.log("hello");

@@ -17,6 +17,7 @@ import sitesURL from "@/assets/data/small_sites.geojson";
 
 // components
 import LeftPanel from "./left-panel/LeftPanel.vue";
+import AttributeTable from "./AttributeTable.vue";
 
 const mapContainer = shallowRef(null);
 const map = shallowRef(null);
@@ -29,6 +30,7 @@ const activeBaseLayer = ref("");
 const sites = ref(sitesURL);
 const defaultCircleColor = ref("#41b6c4");
 const isCollapsed = ref(true);
+
 const setIsCollapsed = () => (isCollapsed.value = !isCollapsed.value);
 const toggleSidebar = () => {
   // Source code for sidebar https://docs.mapbox.com/mapbox-gl-js/example/offset-vanishing-point-with-padding/
@@ -40,6 +42,11 @@ const toggleSidebar = () => {
   // 'id' is 'right' or 'left'. When run at start, this object looks like: '{left: 300}';
   padding["left-panel"] = collapsed ? 0 : 300; // 0 if collapsed, 300 px if not. This matches the width of the sidebars in the .sidebar CSS class.
   // Use `map.easeTo()` with a padding option to adjust the map's center accounting for the position of sidebars.
+};
+
+const showsDataTable = ref(false);
+const toggleDataTable = () => {
+  showsDataTable.value = !showsDataTable.value;
 };
 
 // get title of corresponding button and set it as title of sidepanel
@@ -195,8 +202,19 @@ onMounted(() => {
           />
         </div>
       </div>
+
+      <div class="trigger-data-table">
+        <button
+          type="button"
+          class="btn-trigger-data-table btn btn-primary"
+          @click="toggleDataTable()"
+        >
+          Show Data Table
+        </button>
+      </div>
     </div>
   </div>
+  <AttributeTable v-if="showsDataTable" @toggle-dt-event="toggleDataTable()" />
 </template>
 
 <style scoped>
@@ -292,5 +310,13 @@ onMounted(() => {
   background: white;
   border-radius: 10px;
   box-shadow: 0 0 50px -25px black;
+}
+
+.btn-trigger-data-table {
+  position: relative;
+  width: fit-content;
+  height: fit-content;
+  margin: 0 auto;
+  z-index: 1;
 }
 </style>

@@ -355,6 +355,38 @@ function getClassifications(featuresProperty) {
               </option>
             </select>
             <div
+              class="data-driven-coloring-classification"
+              v-if="isPropertySelected"
+            >
+              <!-- TODO: include data schema, show selecion only for continouse numeric values -->
+              <label>Type of Classification</label>
+              <select
+                name="data-driven-coloring"
+                id="data-driven-coloring"
+                @change="console.log('Hallö')"
+              >
+                <option selected>Quantil</option>
+                <option>
+                  Jenks Natrual Breakes
+                  <font-awesome-icon :icon="['fat', 'circle-info']" />
+                </option>
+              </select>
+            </div>
+            <div
+              class="data-driven-coloring-nr-classes"
+              v-if="isPropertySelected"
+            >
+              <!-- TODO: include data schema, show selecion only for continouse numeric values -->
+              <label>Number of Classes</label>
+              <select
+                name="data-driven-coloring"
+                id="data-driven-coloring"
+                @change="console.log('Hallö')"
+              >
+                <option v-for="nr in 10" :key="nr">{{ nr }}</option>
+              </select>
+            </div>
+            <div
               class="data-driven-coloring-interpolation"
               v-if="isPropertySelected"
             >

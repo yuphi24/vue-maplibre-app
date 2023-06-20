@@ -1,7 +1,7 @@
 <script setup>
 import { SimpleBar } from "simplebar-vue3";
 
-import { defineProps } from "vue";
+import { defineEmits, defineProps } from "vue";
 
 import SettingsPanel from "./settings-panel/SettingsPanel.vue";
 import FilterPanal from "./filter-panel/FilterPanal.vue";
@@ -14,6 +14,8 @@ const props = defineProps({
   map: Map,
   activeBaseLayer: String,
 });
+
+defineEmits(["collapse-event", "toggle-event"]);
 </script>
 
 <template>
