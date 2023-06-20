@@ -19,18 +19,20 @@ const columns = [
 </script>
 
 <template>
-  <div class="attribute-table rounded-rect collapsed">
-    <div class="attribute-table-header">
-      <h3 class="attribute-table-title">Attribute Table</h3>
-      <button
-        type="button"
-        class="btn-close btn-close-white pull-right"
-        aria-label="Close"
-        @click="$emit('toggle-dt-event')"
-      ></button>
-    </div>
-    <div class="attribute-table-content">
-      <DataTable :columns="columns" class="display" width="100%" />
+  <div class="data-table-overlay">
+    <div class="attribute-table rounded-rect collapsed">
+      <div class="attribute-table-header">
+        <h3 class="attribute-table-title">Attribute Table</h3>
+        <button
+          type="button"
+          class="btn-close btn-close-white pull-right"
+          aria-label="Close"
+          @click="$emit('toggle-dt-event')"
+        ></button>
+      </div>
+      <div class="attribute-table-content">
+        <DataTable :columns="columns" class="display" width="100%" />
+      </div>
     </div>
   </div>
 </template>
@@ -39,8 +41,16 @@ const columns = [
 @import "bootstrap";
 @import "datatables.net-bs5";
 @import "datatables.net-dt";
-.attribute-table {
+.data-table-overlay {
   position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.attribute-table {
+  position: relative;
   width: 90%;
   height: 85%;
   top: 50%;
@@ -53,7 +63,7 @@ const columns = [
   -moz-transform: translateX(-50%) translateY(-50%);
   -webkit-transform: translateX(-50%) translateY(-50%);
   transform: translateX(-50%) translateY(-50%);
-  z-index: 100;
+  z-index: 1000;
 }
 
 .rounded-rect {
