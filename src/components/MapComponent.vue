@@ -214,7 +214,11 @@ onMounted(() => {
       </div>
     </div>
   </div>
-  <AttributeTable v-if="showsDataTable" @toggle-dt-event="toggleDataTable()" />
+  <AttributeTable
+    v-if="showsDataTable"
+    @toggle-dt-event="toggleDataTable()"
+    :map="map"
+  />
 </template>
 
 <style scoped>

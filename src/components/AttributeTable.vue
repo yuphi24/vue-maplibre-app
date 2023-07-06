@@ -1,10 +1,14 @@
 <script setup>
-import { defineEmits } from "vue";
+import { defineEmits, defineProps } from "vue";
 
 import DataTable from "datatables.net-vue3";
 import DataTablesCore from "datatables.net";
+import { Map } from "maplibre-gl";
 
 defineEmits(["toggle-dt-event"]);
+const props = defineProps({ map: Map });
+console.log(props.map.getSource("sites")._data);
+// const data = props.map.getSource("sites")._data.features;
 
 DataTable.use(DataTablesCore);
 
@@ -16,6 +20,12 @@ const columns = [
   { data: "start_date" },
   { data: "salary" },
 ];
+
+const options = {
+  dom: "Bftip",
+  responsive: true,
+  select: true,
+};
 </script>
 
 <template>
@@ -31,7 +41,13 @@ const columns = [
         ></button>
       </div>
       <div class="attribute-table-content">
-        <DataTable :columns="columns" class="display" width="100%" />
+        <DataTable
+          :columns="columns"
+          :options="options"
+          ajax="@components/small_sites.geojson"
+          class="display nowrap"
+          width="100%"
+        />
       </div>
     </div>
   </div>
