@@ -12,12 +12,12 @@ import {
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 
 // data
-import maps from "./left-panel/settings-panel/content/maps.json";
+import maps from "./left-panel/settings-panel/maps.json";
 import sitesURL from "@/assets/data/small_sites.geojson";
 
 // components
 import LeftPanel from "./left-panel/LeftPanel.vue";
-import AttributeTable from "./AttributeTable.vue";
+import AttributeTable from "./common/AttributeTable.vue";
 
 const mapContainer = shallowRef(null);
 const map = shallowRef(null);
@@ -153,7 +153,7 @@ onMounted(() => {
         "circle-color": defaultCircleColor.value,
         "circle-radius": 4,
         "circle-stroke-width": 0.5,
-        "circle-stroke-color": "#fff",
+        "circle-stroke-color": "#a1dab4",
       },
       layout: {
         visibility: "visible",
