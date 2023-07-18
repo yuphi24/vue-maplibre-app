@@ -1,4 +1,5 @@
-<!-- Map Legend -->
+<!-- Dealing with map controls provided as third-party plugins  -->
+
 <script setup></script>
 
 <template>

@@ -1,3 +1,5 @@
+<!-- Main component -->
+
 <script setup>
 // vue
 import { shallowRef, onMounted, onUnmounted, markRaw, ref } from "vue";
