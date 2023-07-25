@@ -25,16 +25,12 @@ import AttributeTable from "./common/AttributeTable.vue";
 const mapContainer = ref();
 const map = ref();
 const navbarTitles = ref(["Settings", "Filter", "Statistics", "Analysis"]); // can be extend with custom buttons
-const latCoord = ref(3);
-const lngCoord = ref();
 const panelTitle = ref("");
 const basemaps = ref(maps);
 const activeBaseLayer = ref("");
 const sites = ref(sitesURL);
 const defaultCircleColor = ref("#41b6c4");
 const isCollapsed = ref(true);
-
-const test1 = ref(3);
 
 const setIsCollapsed = () => (isCollapsed.value = !isCollapsed.value);
 const toggleSidebar = () => {
@@ -119,12 +115,6 @@ onMounted(() => {
     })
   );
 
-  // get lat, lng coord. of cursor and asign it to variables
-  map.value.on("mousemove", function (e) {
-    latCoord.value = e.lngLat.wrap().lat.toFixed(5);
-    lngCoord.value = e.lngLat.wrap().lng.toFixed(5);
-  });
-
   // add controls included in maplibre
   map.value.addControl(new ScaleControl(), "bottom-right");
   map.value.addControl(new FullscreenControl(), "top-right");
@@ -190,13 +180,9 @@ onMounted(() => {
         >
           {{ title }}
         </button>
-
-        <div class="cursor-position">
-          Lat: {{ latCoord }}, Lng: {{ lngCoord }}
+        <div class="cursor-div">
+          <CursorCoordinates :map="map" />
         </div>
-      </div>
-      <div class="cursor-div">
-        <CursorCoordinates :test1="test1" :map="map" />
       </div>
 
       <div id="left-panel" class="sidebar flex-center left collapsed">
@@ -251,20 +237,6 @@ onMounted(() => {
   height: fit-content;
   margin: 0 auto;
   z-index: 1;
-}
-
-.cursor-position {
-  display: block;
-  position: relative;
-  margin: 0px auto;
-  width: fit-content;
-  padding: 10px;
-  border: none;
-  border-radius: 3px;
-  font-size: 10px;
-  text-align: left;
-  color: black;
-  background: rgba(255, 255, 255, 0.5);
 }
 
 .btn {

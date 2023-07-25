@@ -5,7 +5,7 @@ import { defineProps } from "vue";
 import { watch } from "vue";
 import { Map } from "maplibre-gl";
 
-const props = defineProps({ test1: Number, map: Map });
+const props = defineProps({ map: Map });
 const map = ref(props.map);
 
 const lat = ref();
