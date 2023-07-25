@@ -5,13 +5,7 @@
 import { onMounted, onUnmounted, markRaw, ref } from "vue";
 
 // map viewer
-import {
-  FullscreenControl,
-  Map,
-  NavigationControl,
-  ScaleControl,
-} from "maplibre-gl";
-import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import { Map } from "maplibre-gl";
 
 // data
 import maps from "./left-panel/settings-panel/maps.json";
@@ -21,6 +15,7 @@ import sitesURL from "@/assets/data/small_sites.geojson";
 import CursorCoordinates from "./map/CursorCoordinates.vue";
 import LeftPanel from "./left-panel/LeftPanel.vue";
 import AttributeTable from "./common/AttributeTable.vue";
+import MapControls from "./map/MapControls.vue";
 
 const mapContainer = ref();
 const map = ref();
@@ -115,23 +110,6 @@ onMounted(() => {
     })
   );
 
-  // add controls included in maplibre
-  map.value.addControl(new ScaleControl(), "bottom-right");
-  map.value.addControl(new FullscreenControl(), "top-right");
-  map.value.addControl(new NavigationControl(), "top-right");
-
-  // add thrid-party controls
-  map.value.addControl(
-    new MapboxDraw({
-      displayControlsDefault: false,
-      controls: {
-        polygon: true,
-        line_string: true,
-        trash: true,
-      },
-    })
-  );
-
   map.value.once("load", () => {
     // add data source
     map.value.addSource("sites", {
@@ -164,8 +142,9 @@ onMounted(() => {
 <template>
   <div class="map-wrap">
     <div class="map" ref="mapContainer" @mousemove="updateLatLng">
-      <!-- Navigation buttons -->
+      <MapControls :map="map" />
 
+      <!-- Navigation buttons -->
       <div class="fixed-bottom">
         <button
           v-for="title in navbarTitles"
