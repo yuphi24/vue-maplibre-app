@@ -7,7 +7,7 @@ import { Map } from "maplibre-gl";
 
 defineEmits(["toggle-dt-event"]);
 const props = defineProps({ map: Map });
-console.log(props.map.getSource("sites")._data);
+console.log(props.map.getSource("sites")._data.features);
 // const data = props.map.getSource("sites")._data.features;
 
 DataTable.use(DataTablesCore);
@@ -44,7 +44,6 @@ const options = {
         <DataTable
           :columns="columns"
           :options="options"
-          ajax="@components/small_sites.geojson"
           class="display nowrap"
           width="100%"
         />

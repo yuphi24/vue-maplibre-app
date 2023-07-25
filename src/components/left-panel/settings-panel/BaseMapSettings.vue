@@ -61,7 +61,6 @@ function changeBaseLayer(oldBaseLayer, newBaseLayer) {
 }
 
 .card {
-  /* display: inline-block; */
   height: auto;
   width: 10rem;
   padding: 2px;

@@ -2,7 +2,7 @@
 
 <script setup>
 // vue
-import { shallowRef, onMounted, onUnmounted, markRaw, ref } from "vue";
+import { onMounted, onUnmounted, markRaw, ref } from "vue";
 
 // map viewer
 import {
@@ -18,13 +18,14 @@ import maps from "./left-panel/settings-panel/maps.json";
 import sitesURL from "@/assets/data/small_sites.geojson";
 
 // components
+import CursorCoordinates from "./map/CursorCoordinates.vue";
 import LeftPanel from "./left-panel/LeftPanel.vue";
 import AttributeTable from "./common/AttributeTable.vue";
 
-const mapContainer = shallowRef(null);
-const map = shallowRef(null);
+const mapContainer = ref();
+const map = ref();
 const navbarTitles = ref(["Settings", "Filter", "Statistics", "Analysis"]); // can be extend with custom buttons
-const latCoord = ref();
+const latCoord = ref(3);
 const lngCoord = ref();
 const panelTitle = ref("");
 const basemaps = ref(maps);
@@ -32,6 +33,8 @@ const activeBaseLayer = ref("");
 const sites = ref(sitesURL);
 const defaultCircleColor = ref("#41b6c4");
 const isCollapsed = ref(true);
+
+const test1 = ref(3);
 
 const setIsCollapsed = () => (isCollapsed.value = !isCollapsed.value);
 const toggleSidebar = () => {
@@ -191,6 +194,9 @@ onMounted(() => {
         <div class="cursor-position">
           Lat: {{ latCoord }}, Lng: {{ lngCoord }}
         </div>
+      </div>
+      <div class="cursor-div">
+        <CursorCoordinates :test1="test1" :map="map" />
       </div>
 
       <div id="left-panel" class="sidebar flex-center left collapsed">
