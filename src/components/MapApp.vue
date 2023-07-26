@@ -17,6 +17,7 @@ import CursorCoordinates from "./map/CursorCoordinates.vue";
 import DataSources from "./map/DataSources.vue";
 import LeftPanel from "./left-panel/LeftPanel.vue";
 import MapControls from "./map/MapControls.vue";
+import InfoPopup from "./map/InfoPopup.vue";
 
 const mapContainer = ref();
 const map = ref();
@@ -144,6 +145,7 @@ onMounted(() => {
   <div class="map-wrap">
     <div class="map" ref="mapContainer" @mousemove="updateLatLng">
       <DataSources :map="map" />
+      <InfoPopup :map="map" />
       <MapControls :map="map" />
 
       <!-- Navigation buttons -->
