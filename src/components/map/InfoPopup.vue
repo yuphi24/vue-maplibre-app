@@ -10,6 +10,7 @@ const map = ref(props.map);
 watch(props, (newProps) => {
   map.value = newProps.map;
 
+  // source: https://maplibre.org/maplibre-gl-js/docs/examples/popup-on-click/
   map.value.on("click", "sites", (e) => {
     const coordinates = e.features[0].geometry.coordinates.slice();
     // const description = e.features[0].properties;
