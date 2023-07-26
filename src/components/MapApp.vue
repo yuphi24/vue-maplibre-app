@@ -29,6 +29,7 @@ const activeBaseLayer = ref("");
 const sites = ref(sitesURL);
 const defaultCircleColor = ref("#41b6c4");
 const isCollapsed = ref(true);
+const dataSchema = ref();
 
 const setIsCollapsed = () => (isCollapsed.value = !isCollapsed.value);
 const toggleSidebar = () => {

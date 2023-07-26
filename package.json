@@ -19,6 +19,7 @@
     "datatables.net-bs5": "^1.13.4",
     "datatables.net-select": "^1.6.2",
     "datatables.net-vue3": "^2.1.1",
+    "js-yaml": "^4.1.0",
     "json-loader": "^0.5.7",
     "maplibre-gl": "^2.4.0",
     "mutationobserver-shim": "^0.3.7",
