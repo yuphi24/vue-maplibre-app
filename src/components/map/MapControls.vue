@@ -36,7 +36,7 @@ watch(props, (newProps) => {
 </script>
 
 <template>
-  <div class="no-vis"></div>
+  <div class=""></div>
 </template>
 
 <style scoped></style>

@@ -12,9 +12,10 @@ import maps from "./left-panel/settings-panel/maps.json";
 import sitesURL from "@/assets/data/small_sites.geojson";
 
 // components
-import CursorCoordinates from "./map/CursorCoordinates.vue";
-import LeftPanel from "./left-panel/LeftPanel.vue";
 import AttributeTable from "./common/AttributeTable.vue";
+import CursorCoordinates from "./map/CursorCoordinates.vue";
+import DataSources from "./map/DataSources.vue";
+import LeftPanel from "./left-panel/LeftPanel.vue";
 import MapControls from "./map/MapControls.vue";
 
 const mapContainer = ref();
@@ -52,10 +53,10 @@ function setPanelTitle(event) {
 
 // create object for base map sources
 function setBaseMapsSource(basemaps) {
-  let sourceObjects = {};
+  let bmSourceObject = {};
 
   basemaps.forEach((baseMapSource) => {
-    sourceObjects[baseMapSource.id] = {
+    bmSourceObject[baseMapSource.id] = {
       type: "raster",
       tiles: [baseMapSource.tiles],
       tileSize: 256,
@@ -64,7 +65,7 @@ function setBaseMapsSource(basemaps) {
       maxzoom: 22,
     };
   });
-  return sourceObjects;
+  return bmSourceObject;
 }
 
 // create object for base map layers
@@ -142,6 +143,7 @@ onMounted(() => {
 <template>
   <div class="map-wrap">
     <div class="map" ref="mapContainer" @mousemove="updateLatLng">
+      <DataSources :map="map" />
       <MapControls :map="map" />
 
       <!-- Navigation buttons -->
@@ -205,7 +207,7 @@ onMounted(() => {
 }
 
 .map {
-  position: relative;
+  /* position: relative; */
   width: 100%;
   height: 100%;
 }
