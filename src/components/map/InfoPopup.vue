@@ -26,6 +26,13 @@ watch(props, (newProps) => {
     new Popup().setLngLat(coordinates).setHTML(description).addTo(map.value);
   });
 
+  // use selected point coord as center
+  map.value.on("click", "sites", (e) => {
+    map.value.flyTo({
+      center: e.features[0].geometry.coordinates,
+    });
+  });
+
   // Change the cursor to a pointer when the mouse is over the places layer.
   map.value.on("mouseenter", "sites", () => {
     map.value.getCanvas().style.cursor = "pointer";

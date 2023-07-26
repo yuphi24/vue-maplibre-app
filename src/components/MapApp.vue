@@ -18,6 +18,7 @@ import DataSources from "./map/DataSources.vue";
 import LeftPanel from "./left-panel/LeftPanel.vue";
 import MapControls from "./map/MapControls.vue";
 import InfoPopup from "./map/InfoPopup.vue";
+import DataLayer from "./map/DataLayer.vue";
 
 const mapContainer = ref();
 const map = ref();
@@ -145,6 +146,7 @@ onMounted(() => {
   <div class="map-wrap">
     <div class="map" ref="mapContainer" @mousemove="updateLatLng">
       <DataSources :map="map" />
+      <DataLayer :map="map" />
       <InfoPopup :map="map" />
       <MapControls :map="map" />
 
@@ -180,7 +182,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="trigger-data-table">
+      <!-- <div class="trigger-data-table">
         <button
           type="button"
           class="btn-trigger-data-table btn btn-primary"
@@ -188,7 +190,7 @@ onMounted(() => {
         >
           Show Data Table
         </button>
-      </div>
+      </div> -->
     </div>
   </div>
   <AttributeTable
