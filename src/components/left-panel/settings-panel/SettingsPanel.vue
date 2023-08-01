@@ -1,12 +1,25 @@
 <script setup>
-import { defineProps } from "vue";
+import { defineProps, ref, watch } from "vue";
 
 import BaseMapSettings from "./BaseMapSettings.vue";
 // import ClusterSettings from "./content/ClusterSettings.vue";
 import CircleStylingSettings from "./CircleStylingSettings.vue";
+import { Map } from "maplibre-gl";
 // import GraticuleSettings from "./content/GraticuleSettings.vue";
 
-const props = defineProps(["map", "activeBaseLayer"]);
+const props = defineProps({
+  map: Map,
+  activeBaseLayer: String,
+  heatFlowSchema: Object,
+});
+const heatFlowSchema = ref(props.heatFlowSchema);
+
+watch(props, (newProps) => {
+  heatFlowSchema.value = newProps.heatFlowSchema;
+
+  console.log("--------Settings");
+  console.log(heatFlowSchema.value);
+});
 </script>
 
 <template>
@@ -20,7 +33,7 @@ const props = defineProps(["map", "activeBaseLayer"]);
     <ClusterSettings />
   </div> -->
   <div class="settings-content">
-    <CircleStylingSettings :map="props.map" />
+    <CircleStylingSettings :map="props.map" :heatFlowSchema="heatFlowSchema" />
   </div>
   <!-- <div class="settings-content">
     <GraticuleSettings />

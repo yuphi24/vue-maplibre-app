@@ -6,6 +6,7 @@ import { onMounted, onUnmounted, markRaw, ref } from "vue";
 
 // map viewer
 import { Map } from "maplibre-gl";
+import yaml from "js-yaml";
 
 // data
 import maps from "./left-panel/settings-panel/maps.json";
@@ -30,6 +31,7 @@ const sites = ref(sitesURL);
 const defaultCircleColor = ref("#41b6c4");
 const isCollapsed = ref(true);
 const dataSchema = ref();
+const heatFlowSchema = ref();
 
 const setIsCollapsed = () => (isCollapsed.value = !isCollapsed.value);
 const toggleSidebar = () => {
@@ -48,6 +50,26 @@ const showsDataTable = ref(false);
 const toggleDataTable = () => {
   showsDataTable.value = !showsDataTable.value;
 };
+
+fetch("/ghfdb_API.yaml")
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error("HTTP error " + response.status);
+    }
+    return response.text();
+  })
+  .then((yamlText) => {
+    dataSchema.value = yaml.load(yamlText);
+    heatFlowSchema.value = Object.keys(
+      dataSchema.value.components.schemas.HeatFlow
+    );
+    // console.log("--------Send dohanna--------");
+    // console.log(Object.keys(dataSchema.value.components.schemas.HeatFlow));
+  })
+  .catch(function (error) {
+    console.log("Failed to fetch the YAML file.");
+    console.error(error);
+  });
 
 // get title of corresponding button and set it as title of sidepanel
 function setPanelTitle(event) {
@@ -136,6 +158,8 @@ onMounted(() => {
         visibility: "visible",
       },
     });
+
+    map.value.setRenderWorldCopies(false);
   });
 }),
   onUnmounted(() => {
@@ -177,6 +201,7 @@ onMounted(() => {
             :title="panelTitle"
             :map="map"
             :activeBaseLayer="activeBaseLayer"
+            :heatFlowSchema="heatFlowSchema"
             @collapse-event="setIsCollapsed()"
             @toggle-event="toggleSidebar()"
           />

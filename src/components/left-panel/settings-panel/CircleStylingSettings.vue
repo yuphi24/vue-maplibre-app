@@ -11,7 +11,7 @@ TODO: implement API request for data model (schemas) to know which data type or 
 Shall help to differentiate between generateClassificationPaintProperty(featuresProperty) and generateInterpolatePaintProperty(featuresProperty).
 */
 // Variables
-const props = defineProps({ map: Map });
+const props = defineProps({ map: Map, heatFlowSchema: Object });
 const circleRadius = ref(5);
 const circleColors = ref([
   "#ffffcc",
@@ -60,6 +60,28 @@ watch(circleRadius, (currentValue) => {
 
   props.map.setPaintProperty("sites", "circle-radius", parseInt(currentValue));
 });
+
+/** Pseudo code data driven colring algorithm
+ * - getProperties from data schema
+ * - make property selectable through <select> and <option> elements
+ * - set default properties or get selected propertie of user
+ * - get datatype of selected property (number or string)
+ * - IF
+ *      - number
+ *          - get nr. of classes (either default or user input)
+ *          - get type of classification (quantil equal amount of points in class or yenks natural breaks)
+ *          - calculate breaks and return list
+ *          - get selected color palette
+ *              - adjust amount of steps according to nr of classes
+ *          - write circle-color object for maplibrefunction setPaintProperties()
+ * - ELSE IF
+ *      - string
+ *          - get enum classes
+ *
+ * - get selected color palette
+ * - adjust amount of steps according to nr of classes
+ * - write circle-color object for maplibrefunction setPaintProperties()
+ */
 
 // watch(colorSteps, (currentValue) => {
 //   console.log("hier");

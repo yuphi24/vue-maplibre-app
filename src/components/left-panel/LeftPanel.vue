@@ -1,7 +1,7 @@
 <script setup>
 import { SimpleBar } from "simplebar-vue3";
 
-import { defineEmits, defineProps } from "vue";
+import { defineEmits, defineProps, ref, watch } from "vue";
 
 import SettingsPanel from "./settings-panel/SettingsPanel.vue";
 import FilterPanal from "./filter-panel/FilterPanal.vue";
@@ -13,6 +13,14 @@ const props = defineProps({
   title: String,
   map: Map,
   activeBaseLayer: String,
+  heatFlowSchema: Object,
+});
+const heatFlowSchema = ref(props.heatFlowSchema);
+
+watch(props, (newProps) => {
+  heatFlowSchema.value = newProps.heatFlowSchema;
+  // console.log("--------Yes Leftpanel-------");
+  // console.log(heatFlowSchema.value);
 });
 
 defineEmits(["collapse-event", "toggle-event"]);
@@ -37,6 +45,7 @@ defineEmits(["collapse-event", "toggle-event"]);
         v-if="props.title === 'Settings'"
         :map="props.map"
         :activeBaseLayer="props.activeBaseLayer"
+        :heatFlowSchema="heatFlowSchema"
       />
       <FilterPanal v-if="props.title === 'Filter'" />
       <StatisticsPanal v-if="props.title === 'Statistics'" />
