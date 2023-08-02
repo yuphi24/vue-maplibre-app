@@ -51,7 +51,7 @@ const colorPaletteYlGnBu = ref(chroma.scale("YlGnBu").colors(colorSteps.value));
 colorPalettes.value.push(colorPaletteOrRd.value, colorPaletteYlGnBu.value);
 // const selectedColorPalette = ref(colorPalettes.value[0]);
 
-const propertyOptions = getPropertiesFromSchema(props.heatFlowSchema);
+const propertyOptions = getSelectableProperties(props.heatFlowSchema);
 const selectedProperty = ref("Select attribute");
 console.log();
 // const isPropertySelected = ref(false);
@@ -69,7 +69,7 @@ watch(selectedProperty, (newProperty) => {
 
 // throw out all properties options which are not suitable for the data driven coloring e.g. name,
 // data points either be already classified (enum) or should be able to classify (continouse numerbs)
-function getPropertiesFromSchema(schema) {
+function getSelectableProperties(schema) {
   const propertiesKey = Object.keys(schema.properties);
   let selectableOptions = [];
 
