@@ -51,25 +51,26 @@ const toggleDataTable = () => {
   showsDataTable.value = !showsDataTable.value;
 };
 
-fetch("/ghfdb_API.yaml")
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error("HTTP error " + response.status);
-    }
-    return response.text();
-  })
-  .then((yamlText) => {
-    dataSchema.value = yaml.load(yamlText);
-    heatFlowSchema.value = Object.keys(
-      dataSchema.value.components.schemas.HeatFlow
-    );
-    // console.log("--------Send dohanna--------");
-    // console.log(Object.keys(dataSchema.value.components.schemas.HeatFlow));
-  })
-  .catch(function (error) {
-    console.log("Failed to fetch the YAML file.");
-    console.error(error);
-  });
+//
+function fetchSchema() {
+  fetch("/ghfdb_API_copy.yaml")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("HTTP error " + response.status);
+      }
+      return response.text();
+    })
+    .then((yamlText) => {
+      dataSchema.value = yaml.load(yamlText);
+      heatFlowSchema.value = dataSchema.value.components.schemas.HeatFlow;
+      // console.log("--------Send dohanna--------");
+      // console.log(Object.keys(dataSchema.value.components.schemas.HeatFlow));
+    })
+    .catch(function (error) {
+      console.log("Failed to fetch the YAML file.");
+      console.error(error);
+    });
+}
 
 // get title of corresponding button and set it as title of sidepanel
 function setPanelTitle(event) {
@@ -158,6 +159,8 @@ onMounted(() => {
         visibility: "visible",
       },
     });
+
+    fetchSchema();
 
     map.value.setRenderWorldCopies(false);
   });

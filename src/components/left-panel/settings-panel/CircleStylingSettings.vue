@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps, ref, watch } from "vue";
-import testData from "@/assets/data/small_sites.geojson";
+// import testData from "@/assets/data/small_sites.geojson";
 
 import chroma from "chroma-js";
 // import Plotly from "plotly.js-dist";
@@ -25,35 +25,37 @@ const circleColors = ref([
   "#f03b20",
   "#bd0026",
 ]);
-const interpolationTypes = ref({
-  linear: {
-    name: "Linear",
-    expression: "linear",
-  },
-  exponential: {
-    name: "Exponential",
-    base: 0,
-    expression: "exponential",
-  },
-  cubicBezier: {
-    name: "Cubic Bezier",
-    x1: 1,
-    y1: 1,
-    x2: 1,
-    y2: 1,
-    expression: "cubic-bezier",
-  },
-});
+// const interpolationTypes = ref({
+//   linear: {
+//     name: "Linear",
+//     expression: "linear",
+//   },
+//   exponential: {
+//     name: "Exponential",
+//     base: 0,
+//     expression: "exponential",
+//   },
+//   cubicBezier: {
+//     name: "Cubic Bezier",
+//     x1: 1,
+//     y1: 1,
+//     x2: 1,
+//     y2: 1,
+//     expression: "cubic-bezier",
+//   },
+// });
 const colorSteps = ref(6);
 const colorPalettes = ref([]);
 const colorPaletteOrRd = ref(chroma.scale("OrRd").colors(colorSteps.value));
 const colorPaletteYlGnBu = ref(chroma.scale("YlGnBu").colors(colorSteps.value));
 colorPalettes.value.push(colorPaletteOrRd.value, colorPaletteYlGnBu.value);
-const selectedColorPalette = ref(colorPalettes.value[0]);
+// const selectedColorPalette = ref(colorPalettes.value[0]);
 
+const propertyOptions = getPropertiesFromSchema(props.heatFlowSchema);
 const selectedProperty = ref("Select attribute");
-const isPropertySelected = ref(false);
-const selectedInterpolationType = ref(interpolationTypes.value.linear);
+console.log();
+// const isPropertySelected = ref(false);
+// const selectedInterpolationType = ref(interpolationTypes.value.linear);
 
 watch(circleRadius, (currentValue) => {
   // change circle radius whene user changes value at input element
@@ -61,9 +63,33 @@ watch(circleRadius, (currentValue) => {
   props.map.setPaintProperty("sites", "circle-radius", parseInt(currentValue));
 });
 
+watch(selectedProperty, (newProperty) => {
+  console.log(newProperty);
+});
+
+// throw out all properties options which are not suitable for the data driven coloring e.g. name,
+// data points either be already classified (enum) or should be able to classify (continouse numerbs)
+function getPropertiesFromSchema(schema) {
+  const propertiesKey = Object.keys(schema.properties);
+  let selectableOptions = [];
+
+  propertiesKey.forEach((property) => {
+    if (
+      props.heatFlowSchema.properties[property].type == "string" &&
+      !props.heatFlowSchema.properties[property].enum
+    ) {
+      console.log(property + " is not suitable for data driven coloring");
+    } else {
+      selectableOptions.push(property);
+    }
+  });
+
+  return selectableOptions;
+}
+
 /** Pseudo code data driven colring algorithm
- * - getProperties from data schema
- * - make property selectable through <select> and <option> elements
+ * - [X] getProperties from data schema
+ * - [X] make property selectable through <select> and <option> elements
  * - set default properties or get selected propertie of user
  * - get datatype of selected property (number or string)
  * - IF
@@ -144,21 +170,21 @@ watch(circleRadius, (currentValue) => {
  * @description
  * @param {Array} newColorPalette
  */
-function setSelectedColorPalette(newColorPalette) {
-  selectedColorPalette.value = newColorPalette;
-}
+// function setSelectedColorPalette(newColorPalette) {
+//   selectedColorPalette.value = newColorPalette;
+// }
 
 /**
  * @description
  */
-function toggleIsSelected() {
-  //
-  if (isPropertySelected.value) {
-    return;
-  } else {
-    isPropertySelected.value = !isPropertySelected.value;
-  }
-}
+// function toggleIsSelected() {
+//   //
+//   if (isPropertySelected.value) {
+//     return;
+//   } else {
+//     isPropertySelected.value = !isPropertySelected.value;
+//   }
+// }
 
 /**
  * @description set Circle color
@@ -176,140 +202,140 @@ function setCircleColor(colorHEX) {
  * @description
  * @param {String} featuresProperty
  */
-function setDataDrivenPaintProperties(featuresProperty) {
-  // TODO: Include case attribute with predefined classes
-  let paintProperties = [];
+// function setDataDrivenPaintProperties(featuresProperty) {
+//   // TODO: Include case attribute with predefined classes
+//   let paintProperties = [];
 
-  console.log(featuresProperty == "env");
-  // TODO: Include schema file for differenciation between continouse numeric values or enumerate
-  if (featuresProperty == "env") {
-    paintProperties = generateClassificationPaintProperty(featuresProperty);
-  } else {
-    paintProperties = generateInterpolatePaintProperty(featuresProperty);
-  }
-  console.log(paintProperties);
+//   console.log(featuresProperty == "env");
+//   // TODO: Include schema file for differenciation between continouse numeric values or enumerate
+//   if (featuresProperty == "env") {
+//     paintProperties = generateClassificationPaintProperty(featuresProperty);
+//   } else {
+//     paintProperties = generateInterpolatePaintProperty(featuresProperty);
+//   }
+//   console.log(paintProperties);
 
-  props.map.setPaintProperty("sites", "circle-color", paintProperties);
-}
+//   props.map.setPaintProperty("sites", "circle-color", paintProperties);
+// }
 
 /**
  * @description only for continuous number value, later on it should be working for any kind of property
  * @param {String} featuresProperty
  * @returns {Array} Array of MapLibre expression for paint properties for number values
  */
-function generateInterpolatePaintProperty(featuresProperty) {
-  let paintProperties = new Array();
-  const min = getMin(featuresProperty);
-  const max = getMax(featuresProperty);
-  const range = max - min;
-  const section = range / (colorSteps.value - 1);
-  let currentValue = min;
-  let expression = [];
+// function generateInterpolatePaintProperty(featuresProperty) {
+//   let paintProperties = new Array();
+//   const min = getMin(featuresProperty);
+//   const max = getMax(featuresProperty);
+//   const range = max - min;
+//   const section = range / (colorSteps.value - 1);
+//   let currentValue = min;
+//   let expression = [];
 
-  if (selectedInterpolationType.value.name == "Linear") {
-    expression.push(selectedInterpolationType.value.expression);
-  } else if (selectedInterpolationType.value.name == "Exponential") {
-    expression.push(
-      selectedInterpolationType.value.expression,
-      selectedInterpolationType.value.base
-    );
-  } else if (selectedInterpolationType.value.name == "Cubic Bezier") {
-    expression.push(
-      selectedInterpolationType.value.expression,
-      selectedInterpolationType.value.x1,
-      selectedInterpolationType.value.y1,
-      selectedInterpolationType.value.x2,
-      selectedInterpolationType.value.y2
-    );
-  } else {
-    console.log("Type of interpolation not found");
-  }
+//   if (selectedInterpolationType.value.name == "Linear") {
+//     expression.push(selectedInterpolationType.value.expression);
+//   } else if (selectedInterpolationType.value.name == "Exponential") {
+//     expression.push(
+//       selectedInterpolationType.value.expression,
+//       selectedInterpolationType.value.base
+//     );
+//   } else if (selectedInterpolationType.value.name == "Cubic Bezier") {
+//     expression.push(
+//       selectedInterpolationType.value.expression,
+//       selectedInterpolationType.value.x1,
+//       selectedInterpolationType.value.y1,
+//       selectedInterpolationType.value.x2,
+//       selectedInterpolationType.value.y2
+//     );
+//   } else {
+//     console.log("Type of interpolation not found");
+//   }
 
-  paintProperties.push("interpolate");
-  paintProperties.push(expression);
-  paintProperties.push(["get", featuresProperty]); // TODO: adjust interpolation type or get rid of outlier
+//   paintProperties.push("interpolate");
+//   paintProperties.push(expression);
+//   paintProperties.push(["get", featuresProperty]); // TODO: adjust interpolation type or get rid of outlier
 
-  for (let i = 0; i < colorSteps.value; i++) {
-    paintProperties.push(currentValue, selectedColorPalette.value[i]);
-    currentValue += section;
-  }
+//   for (let i = 0; i < colorSteps.value; i++) {
+//     paintProperties.push(currentValue, selectedColorPalette.value[i]);
+//     currentValue += section;
+//   }
 
-  return paintProperties;
-}
+//   return paintProperties;
+// }
 
 /**
  * @description get minimum value of features property
  * @param {String} featuresProperty
  * @returns {Number}
  */
-function getMin(featuresProperty) {
-  let min =
-    props.map.getSource("sites")._data.features[0].properties[featuresProperty];
-  props.map.getSource("sites")._data.features.forEach((feature) => {
-    if (feature.properties[featuresProperty] < min) {
-      min = feature.properties[featuresProperty];
-    }
-  });
-  return min;
-}
+// function getMin(featuresProperty) {
+//   let min =
+//     props.map.getSource("sites")._data.features[0].properties[featuresProperty];
+//   props.map.getSource("sites")._data.features.forEach((feature) => {
+//     if (feature.properties[featuresProperty] < min) {
+//       min = feature.properties[featuresProperty];
+//     }
+//   });
+//   return min;
+// }
 
 /**
  * @description get maximum value of features property
  * @param {String} featuresProperty
  * @returns {Number}
  */
-function getMax(featuresProperty) {
-  let max =
-    props.map.getSource("sites")._data.features[0].properties[featuresProperty];
+// function getMax(featuresProperty) {
+//   let max =
+//     props.map.getSource("sites")._data.features[0].properties[featuresProperty];
 
-  props.map.getSource("sites")._data.features.forEach((feature) => {
-    if (feature.properties[featuresProperty] > max) {
-      max = feature.properties[featuresProperty];
-    }
-  });
+//   props.map.getSource("sites")._data.features.forEach((feature) => {
+//     if (feature.properties[featuresProperty] > max) {
+//       max = feature.properties[featuresProperty];
+//     }
+//   });
 
-  return max;
-}
+//   return max;
+// }
 
 /**
  * @description
  * @param {String} featuresProperty
  * @returns {Array} Array of MapLibre expression for paint properties for enum values
  */
-function generateClassificationPaintProperty(featuresProperty) {
-  const classifications = getClassifications(featuresProperty);
-  let paintProperties = new Array();
-  colorSteps.value = classifications.size;
+// function generateClassificationPaintProperty(featuresProperty) {
+//   const classifications = getClassifications(featuresProperty);
+//   let paintProperties = new Array();
+//   colorSteps.value = classifications.size;
 
-  paintProperties.push("match");
-  paintProperties.push(["get", featuresProperty]);
+//   paintProperties.push("match");
+//   paintProperties.push(["get", featuresProperty]);
 
-  // TODO: include chromajs lib for color ramps
-  let ix = 0;
-  classifications.forEach((entry) => {
-    paintProperties.push(entry, selectedColorPalette.value[ix]);
-    ix += 1;
-  });
-  paintProperties.push(/* other */ "#ccc");
+//   // TODO: include chromajs lib for color ramps
+//   let ix = 0;
+//   classifications.forEach((entry) => {
+//     paintProperties.push(entry, selectedColorPalette.value[ix]);
+//     ix += 1;
+//   });
+//   paintProperties.push(/* other */ "#ccc");
 
-  console.log("Generate Class: " + paintProperties);
-  return paintProperties;
-}
+//   console.log("Generate Class: " + paintProperties);
+//   return paintProperties;
+// }
 
 /**
  * @description
  * @param {String} featuresProperty
  * @returns {Set} Set containg all possible values of a property
  */
-function getClassifications(featuresProperty) {
-  let classes = new Set();
+// function getClassifications(featuresProperty) {
+//   let classes = new Set();
 
-  props.map.getSource("sites")._data.features.forEach((feature) => {
-    classes.add(feature.properties[featuresProperty]);
-  });
+//   props.map.getSource("sites")._data.features.forEach((feature) => {
+//     classes.add(feature.properties[featuresProperty]);
+//   });
 
-  return classes;
-}
+//   return classes;
+// }
 </script>
 
 <template>
@@ -368,12 +394,11 @@ function getClassifications(featuresProperty) {
             >
               <option selected disabled hidden>Select attribute</option>
               <option
-                :value="{ key }"
-                v-for="(value, key) in testData.features[0].properties"
+                v-for="(value, key) in propertyOptions"
                 :key="key"
                 :selectedProperty="{ value }"
               >
-                {{ key }}
+                {{ value }}
               </option>
             </select>
             <div
@@ -436,7 +461,7 @@ function getClassifications(featuresProperty) {
         <fieldset>
           <div class="color-palettes" v-if="isPropertySelected">
             <label>Color Palette</label>
-            <!-- <div class="color-steps">
+            <div class="color-steps">
               <label>Steps</label>
               <select name="color-steps-options" id="color-steps-options">
                 <option selected disabled hidden>{{ colorSteps }}</option>
@@ -449,7 +474,7 @@ function getClassifications(featuresProperty) {
                   {{ key }}
                 </option>
               </select>
-            </div> -->
+            </div>
             <div
               class="color-palette-outer"
               v-for="colorPalette in colorPalettes"
