@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps, ref, watch } from "vue";
-// import testData from "@/assets/data/small_sites.geojson";
+import testData from "@/assets/data/small_sites.geojson";
 
 import chroma from "chroma-js";
 // import Plotly from "plotly.js-dist";
@@ -53,7 +53,7 @@ colorPalettes.value.push(colorPaletteOrRd.value, colorPaletteYlGnBu.value);
 
 const propertyOptions = getSelectableProperties(props.heatFlowSchema);
 const selectedProperty = ref("Select attribute");
-console.log();
+const selectedPropertyDataType = ref();
 // const isPropertySelected = ref(false);
 // const selectedInterpolationType = ref(interpolationTypes.value.linear);
 
@@ -64,7 +64,9 @@ watch(circleRadius, (currentValue) => {
 });
 
 watch(selectedProperty, (newProperty) => {
-  console.log(newProperty);
+  selectedPropertyDataType.value =
+    props.heatFlowSchema.properties[newProperty].type;
+  console.log(selectedPropertyDataType.value);
 });
 
 // throw out all properties options which are not suitable for the data driven coloring e.g. name,
@@ -87,22 +89,40 @@ function getSelectableProperties(schema) {
   return selectableOptions;
 }
 
+function getEnumClasses(enumProperty) {
+  return props.heatFlowSchema.properties[enumProperty].enum;
+}
+
+function dataDrivenColorisation() {
+  if (!selectedProperty.value) {
+    console.error("no property selected");
+  } else if (selectedPropertyDataType.value == "string") {
+    console.log("here for string/enum");
+    let enumClasses = getEnumClasses(selectedProperty.value);
+    console.log(enumClasses);
+  } else if (selectedPropertyDataType.value == "number") {
+    console.log("here for number");
+  }
+}
+
 /** Pseudo code data driven colring algorithm
  * - [X] getProperties from data schema
  * - [X] make property selectable through <select> and <option> elements
- * - set default properties or get selected propertie of user
- * - get datatype of selected property (number or string)
- * - IF
- *      - number
+ * - [X] set default properties or get selected propertie of user
+ * - [X] get datatype of selected property (number or string)
+ * - [X] IF (number)
  *          - get nr. of classes (either default or user input)
- *          - get type of classification (quantil equal amount of points in class or yenks natural breaks)
+ *          - get type of classification
+ *                - quantil https://mathjs.org/docs/reference/functions/quantileSeq.html
+ *                - jenks natural breaks turfjs
  *          - calculate breaks and return list
  *          - get selected color palette
  *              - adjust amount of steps according to nr of classes
  *          - write circle-color object for maplibrefunction setPaintProperties()
- * - ELSE IF
- *      - string
- *          - get enum classes
+ * - [X] ELSE IF (string)
+ *          - [X] get enum classes
+ * - [X] ELSE
+ *      - [X] throw ERROR
  *
  * - get selected color palette
  * - adjust amount of steps according to nr of classes
@@ -202,21 +222,21 @@ function setCircleColor(colorHEX) {
  * @description
  * @param {String} featuresProperty
  */
-// function setDataDrivenPaintProperties(featuresProperty) {
-//   // TODO: Include case attribute with predefined classes
-//   let paintProperties = [];
+function setDataDrivenPaintProperties(featuresProperty) {
+  // TODO: Include case attribute with predefined classes
+  // let paintProperties = [];
 
-//   console.log(featuresProperty == "env");
-//   // TODO: Include schema file for differenciation between continouse numeric values or enumerate
-//   if (featuresProperty == "env") {
-//     paintProperties = generateClassificationPaintProperty(featuresProperty);
-//   } else {
-//     paintProperties = generateInterpolatePaintProperty(featuresProperty);
-//   }
-//   console.log(paintProperties);
+  console.log(featuresProperty == "env");
+  // // TODO: Include schema file for differenciation between continouse numeric values or enumerate
+  // if (featuresProperty == "env") {
+  //   paintProperties = generateClassificationPaintProperty(featuresProperty);
+  // } else {
+  //   paintProperties = generateInterpolatePaintProperty(featuresProperty);
+  // }
+  // console.log(paintProperties);
 
-//   props.map.setPaintProperty("sites", "circle-color", paintProperties);
-// }
+  // props.map.setPaintProperty("sites", "circle-color", paintProperties);
+}
 
 /**
  * @description only for continuous number value, later on it should be working for any kind of property
@@ -387,10 +407,7 @@ function setCircleColor(colorHEX) {
               name="data-driven-coloring"
               id="data-driven-coloring"
               v-model="selectedProperty"
-              @change="
-                setDataDrivenPaintProperties(selectedProperty.key),
-                  toggleIsSelected()
-              "
+              @change="dataDrivenColorisation()"
             >
               <option selected disabled hidden>Select attribute</option>
               <option
@@ -401,12 +418,12 @@ function setCircleColor(colorHEX) {
                 {{ value }}
               </option>
             </select>
-            <div
+            <!-- <div
               class="data-driven-coloring-classification"
               v-if="isPropertySelected"
-            >
-              <!-- TODO: include data schema, show selecion only for continouse numeric values -->
-              <label>Type of Classification</label>
+            > -->
+            <!-- TODO: include data schema, show selecion only for continouse numeric values -->
+            <!--<label>Type of Classification</label>
               <select
                 name="data-driven-coloring"
                 id="data-driven-coloring"
@@ -418,19 +435,22 @@ function setCircleColor(colorHEX) {
                   <font-awesome-icon :icon="['fat', 'circle-info']" />
                 </option>
               </select>
-            </div>
+            </div> -->
             <div
-              class="data-driven-coloring-nr-classes"
-              v-if="isPropertySelected"
+              class="data-driven-coloring-steps"
+              v-if="selectedPropertyDataType == 'number'"
             >
               <!-- TODO: include data schema, show selecion only for continouse numeric values -->
               <label>Number of Classes</label>
               <select
                 name="data-driven-coloring"
                 id="data-driven-coloring"
+                v-model="colorSteps"
                 @change="console.log('Hallö')"
               >
-                <option v-for="nr in 10" :key="nr">{{ nr }}</option>
+                <option v-for="n in 20" :key="n">
+                  {{ n }}
+                </option>
               </select>
             </div>
             <div

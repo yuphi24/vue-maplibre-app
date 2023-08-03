@@ -13,7 +13,7 @@ import maps from "./left-panel/settings-panel/maps.json";
 import sitesURL from "@/assets/data/small_sites.geojson";
 
 // components
-import AttributeTable from "./common/AttributeTable.vue";
+// import AttributeTable from "./common/AttributeTable.vue";
 import CursorCoordinates from "./map/CursorCoordinates.vue";
 import DataSources from "./map/DataSources.vue";
 import LeftPanel from "./left-panel/LeftPanel.vue";
@@ -46,10 +46,10 @@ const toggleSidebar = () => {
   // Use `map.easeTo()` with a padding option to adjust the map's center accounting for the position of sidebars.
 };
 
-const showsDataTable = ref(false);
-const toggleDataTable = () => {
-  showsDataTable.value = !showsDataTable.value;
-};
+// const showsDataTable = ref(false);
+// const toggleDataTable = () => {
+//   showsDataTable.value = !showsDataTable.value;
+// };
 
 //
 function fetchSchema() {
@@ -222,11 +222,11 @@ onMounted(() => {
       </div> -->
     </div>
   </div>
-  <AttributeTable
+  <!-- <AttributeTable
     v-if="showsDataTable"
     @toggle-dt-event="toggleDataTable()"
     :map="map"
-  />
+  /> -->
 </template>
 
 <style scoped>
