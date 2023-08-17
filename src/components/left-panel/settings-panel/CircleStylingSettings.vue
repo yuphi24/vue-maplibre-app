@@ -405,82 +405,14 @@ function setCircleColor(colorHEX) {
                 </option>
               </select>
             </div>
-            <!-- <div
-              class="data-driven-coloring-interpolation"
-              v-if="isPropertySelected"
-            >
-              TODO: include data schema, show selecion only for continouse numeric values
-              <label>Type of interpolation</label>
-              <select
-                name="data-driven-coloring"
-                id="data-driven-coloring"
-                v-model="selectedInterpolationType"
-                @change="setDataDrivenPaintProperties(selectedProperty.key)"
-              >
-                <option selected disabled hidden>Linear</option>
-                <option
-                  v-for="(value, key) in interpolationTypes"
-                  :value="value"
-                  :key="key"
-                >
-                  {{ value.name }}
-                </option>
-              </select>
-            </div> -->
           </div>
         </fieldset>
-
-        <!-- <fieldset>
-          <div class="color-palettes" v-if="isPropertySelected">
-            <label>Color Palette</label>
-            <div class="color-steps">
-              <label>Steps</label>
-              <select name="color-steps-options" id="color-steps-options">
-                <option selected disabled hidden>{{ colorSteps }}</option>
-                <option
-                  :value="{ key }"
-                  v-for="(value, key) in testData.features[0].properties"
-                  :key="key"
-                  :selectedProperty="{ value }"
-                >
-                  {{ key }}
-                </option>
-              </select>
-            </div>
-            <div
-              class="color-palette-outer"
-              v-for="colorPalette in colorPalettes"
-              :key="colorPalette"
-              @click="
-                setSelectedColorPalette(colorPalette),
-                  setDataDrivenPaintProperties(selectedProperty.key)
-              "
-            >
-              <div class="color-palette-inner">
-                <div
-                  class="color"
-                  v-for="color in colorPalette"
-                  :key="color"
-                  :style="{ 'background-color': color }"
-                ></div>
-              </div>
-            </div>
-          </div>
-        </fieldset> -->
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* .btn-primary {
-  width: 100%;
-  background-color: white;
-  color: black;
-  text-align: left;
-  text-size-adjust: 10px;
-} */
-
 .btn-color-palette {
   /* Basic styling to resemble a select box */
   display: inline-block;
