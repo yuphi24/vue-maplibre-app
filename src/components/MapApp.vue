@@ -163,7 +163,7 @@ onMounted(() => {
 
     fetchSchema();
 
-    map.value.setRenderWorldCopies(false);
+    // map.value.setRenderWorldCopies(false);
   });
 }),
   onUnmounted(() => {

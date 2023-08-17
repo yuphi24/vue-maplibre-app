@@ -391,7 +391,6 @@ function setCircleColor(colorHEX) {
               class="data-driven-coloring-steps"
               v-if="selectedPropertyDataType == 'number'"
             >
-              <!-- TODO: include data schema, show selecion only for continouse numeric values -->
               <label>Number of Classes</label>
               <select
                 class="form-select form-select-sm"
@@ -414,23 +413,26 @@ function setCircleColor(colorHEX) {
 
 <style scoped>
 .btn-color-palette {
-  /* Basic styling to resemble a select box */
-  display: inline-block;
+  display: block;
   width: 100%;
-  padding: 0.5em 1.5em 0.5em 0.5em;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  user-select: none; /* Prevent text selection */
-  position: relative;
+  padding: 0.375rem 2.25rem 0.375rem 0.75rem; /* Similar padding to form-select */
+  font-size: 0.875rem;
   text-align: left;
-  font-family: Segoe UI;
-  font-size: small;
-
+  line-height: 1.5;
+  color: #212529; /* Bootstrap default text color */
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%23343a40%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px 12px;
+  border: 1px solid #ced4da; /* Border color */
+  border-radius: 0.25rem; /* Border radius */
+  appearance: none; /* This is to remove the default arrow of a real select element. Might not be needed for a div but added for completeness. */
+  cursor: pointer; /* To give the feeling that it's clickable */
   /* Adding a faux dropdown arrow using a pseudo-element */
   &:after {
-    content: "\25BC"; /* Unicode down arrow */
+    /* content: "\0002c5"; */
+    /* content: "\25BC"; Unicode down arrow */
     position: absolute;
     right: 0.5em;
     pointer-events: none; /* Make it non-interactive */
@@ -438,13 +440,14 @@ function setCircleColor(colorHEX) {
 
   /* Styling for interaction states */
   &:hover {
-    border-color: #888;
+    border-color: #b5b5b5;
   }
 
   &:active,
   &:focus {
     outline: none;
-    border-color: #007bff;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); /* Bootstrap-style focus shadow */
+    border-color: #0d6efd; /* Bootstrap primary blue */
   }
 }
 
