@@ -1,76 +1,80 @@
 <script setup>
 import { defineProps, ref, watch } from "vue";
-import testData from "@/assets/data/small_sites.geojson";
 
-import chroma from "chroma-js";
-// import Plotly from "plotly.js-dist";
+// Extern Libraries
+import turfJenks from "turf-jenks";
+import { quantileSeq } from "mathjs";
 import { Map } from "maplibre-gl";
+import colorbrewer from "colorbrewer";
 
-/*
-TODO: implement API request for data model (schemas) to know which data type or data structure an attribute is.
-Shall help to differentiate between generateClassificationPaintProperty(featuresProperty) and generateInterpolatePaintProperty(featuresProperty).
-*/
 // Variables
 const props = defineProps({ map: Map, heatFlowSchema: Object });
+
 const circleRadius = ref(5);
-const circleColors = ref([
-  "#ffffcc",
-  "#a1dab4",
-  "#41b6c4",
-  "#2c7fb8",
-  "#253494",
-  "#fed976",
-  "#feb24c",
-  "#fd8d3c",
-  "#f03b20",
-  "#bd0026",
-]);
-// const interpolationTypes = ref({
-//   linear: {
-//     name: "Linear",
-//     expression: "linear",
-//   },
-//   exponential: {
-//     name: "Exponential",
-//     base: 0,
-//     expression: "exponential",
-//   },
-//   cubicBezier: {
-//     name: "Cubic Bezier",
-//     x1: 1,
-//     y1: 1,
-//     x2: 1,
-//     y2: 1,
-//     expression: "cubic-bezier",
-//   },
-// });
-const colorSteps = ref(6);
-const colorPalettes = ref([]);
-const colorPaletteOrRd = ref(chroma.scale("OrRd").colors(colorSteps.value));
-const colorPaletteYlGnBu = ref(chroma.scale("YlGnBu").colors(colorSteps.value));
-colorPalettes.value.push(colorPaletteOrRd.value, colorPaletteYlGnBu.value);
-// const selectedColorPalette = ref(colorPalettes.value[0]);
 
 const propertyOptions = getSelectableProperties(props.heatFlowSchema);
 const selectedProperty = ref("Select attribute");
 const selectedPropertyDataType = ref();
-// const isPropertySelected = ref(false);
-// const selectedInterpolationType = ref(interpolationTypes.value.linear);
 
+const colorSteps = ref(4);
+const selectedColorPalette = ref("BuGn");
+
+const classificationTypes = ref({
+  jenks: "Jenks (natural breakes)",
+  quantil: "Quantil",
+});
+const selectedClassificationType = ref(classificationTypes.value.quantil);
+
+/**
+ * If user changes size of circles, the watch method keeps track of it and adjust it synchron
+ */
 watch(circleRadius, (currentValue) => {
   // change circle radius whene user changes value at input element
-
   props.map.setPaintProperty("sites", "circle-radius", parseInt(currentValue));
 });
 
+/**
+ * Updates selected property data type
+ */
 watch(selectedProperty, (newProperty) => {
   selectedPropertyDataType.value =
     props.heatFlowSchema.properties[newProperty].type;
-  console.log(selectedPropertyDataType.value);
 });
 
-// throw out all properties options which are not suitable for the data driven coloring e.g. name,
-// data points either be already classified (enum) or should be able to classify (continouse numerbs)
+/** Pseudo code data driven colring algorithm
+ * - [X] getProperties from data schema
+ * - [X] make property selectable through <select> and <option> elements
+ * - [X] set default properties or get selected propertie of user
+ * - [X] get datatype of selected property (number or string)
+ * - [X] IF (number)
+ *          - [X] get nr. of classes (either default or user input)
+ *          - [X] get type of classification
+ *                - [X] quantil https://mathjs.org/docs/reference/functions/quantileSeq.html
+ *                - [X] jenks natural breaks turfjs
+ *          - [X] calculate breaks and return list
+ * - [X] ELSE IF (string)
+ *          - [X] get enum classes
+ * - [X] ELSE
+ *      - [X] throw ERROR
+ * - [X] get selected color palette
+ * - [X] adjust amount of steps according to nr of classes
+ * - [X] write circle-color object for maplibre function setPaintProperties()
+ */
+
+/**
+ * @description Setter for current selected color palette
+ * @param {String} colorPalette
+ */
+function setSelectedColorPalette(colorPalette) {
+  selectedColorPalette.value = colorPalette;
+  console.log(selectedColorPalette.value);
+}
+
+/**
+ * @description Throw out all properties options which are not suitable for the data driven coloring e.g. name, data points either be already classified (enum) or should be able to classify (continouse numerbs)
+ * @param {*} schema
+ * @returns {Array}
+ */
 function getSelectableProperties(schema) {
   const propertiesKey = Object.keys(schema.properties);
   let selectableOptions = [];
@@ -89,126 +93,164 @@ function getSelectableProperties(schema) {
   return selectableOptions;
 }
 
+/**
+ * @description Collects all leagle enum classes from the data schema
+ * @param {String} enumProperty
+ * @returns {Array}
+ */
 function getEnumClasses(enumProperty) {
   return props.heatFlowSchema.properties[enumProperty].enum;
 }
 
+/**
+ * @description Calculate breaks for jenks classification
+ * @param {String} property
+ * @param {Number} steps
+ * @returns {Array} [minValue, break1, ..., breakN, maxValue]
+ */
+function getJenksNaturalBreaks(property, steps) {
+  // TODO: jenks change jenks algo for performance https://github.com/simogeo/geostats
+  // Returns Array.<number>, the break number for each class plus the minimum and maximum values
+  const breaks = turfJenks(props.map.getSource("sites")._data, property, steps);
+
+  return breaks;
+}
+
+/**
+ * @description Helper function for Math.quantileSeq() to collect only the values of a single property within one array
+ * @param {*} geoJson
+ * @param {String} property
+ * @returns {Array}
+ */
+function propertyValuesToArray(geoJson, property) {
+  let values = [];
+
+  geoJson.features.forEach((feature) => {
+    values.push(feature.properties[property]);
+  });
+
+  return values;
+}
+
+/**
+ * @description Calculate breaks for quantil classification (each class has the same amount of data points)
+ * @param {*} geoJson
+ * @param {String} property
+ * @param {Number} steps
+ * @returns {Array}
+ */
+function getQuantilBreaks(geoJson, property, steps) {
+  const values = propertyValuesToArray(geoJson, property).filter(Boolean);
+  const breaks = quantileSeq(values, steps - 1);
+
+  // add min value to beginning of array
+  breaks.unshift(Math.min.apply(null, values));
+
+  // add max value to end of array
+  breaks.push(Math.max.apply(null, values));
+
+  return breaks;
+}
+
+/**
+ * @description Case differentiation if quantil or jenks is selected as classification method. According to the method, calculates the braks and returns them as array. Check the
+ * following link for a explanation to qunatil and jenks data classification.
+ * @link https://gisgeography.com/choropleth-maps-data-classification/
+ * @returns {Array} [minValue, break1, ..., breakN, maxValue]
+ */
+function getNumberBreaks() {
+  if (selectedClassificationType.value == classificationTypes.value.jenks) {
+    return getJenksNaturalBreaks(selectedProperty.value, colorSteps.value);
+  } else {
+    return getQuantilBreaks(
+      props.map.getSource("sites")._data,
+      selectedProperty.value,
+      colorSteps.value
+    );
+  }
+}
+
+/**
+ * @description write array containg maplibre conform expressions for properties with enum values. Legal values are according to predefined classes
+ * @param {String} property
+ * @param {Array} classes
+ * @param {Array} colors
+ * @returns {Array} ["match", ["get", "property"], class, #color, ..., #colorOthers] --> https://docs.mapbox.com/mapbox-gl-js/example/data-driven-circle-colors/
+ */
+function generateEnumPaintProperty(property, classes, colors) {
+  let paintProperty = [];
+
+  paintProperty.push("match");
+  paintProperty.push(["get", property]);
+
+  classes.forEach((value, index) => {
+    paintProperty.push(value, colors[index]);
+  });
+
+  // others
+  paintProperty.push("#ccc");
+
+  return paintProperty;
+}
+
+/**
+ * @description write array containg maplibre conform expressions for properties with continous number values. Each class (start value - end value) one color value is assigned.
+ * @param {String} property
+ * @param {Array} classes
+ * @param {Array} colors
+ * @returns {Array} ["step", ["get", "property"], #color, NUMBER, #color, ...]
+ */
+function generateContinuousPaintProperty(property, classes, colors) {
+  let paintProperty = [];
+  let k = 1;
+
+  paintProperty.push("step");
+  paintProperty.push(["get", property]);
+
+  for (var i = 0; i < colors.length; i++) {
+    paintProperty.push(colors[i]);
+    if (i < colors.length - 1) {
+      paintProperty.push(classes[k]);
+      k++;
+    }
+  }
+
+  return paintProperty;
+}
+
+/**
+ * @description programm for providing and reacting to user driven colorisation of data according to properties
+ * @returns {Void}
+ */
 function dataDrivenColorisation() {
   if (!selectedProperty.value) {
     console.error("no property selected");
   } else if (selectedPropertyDataType.value == "string") {
-    console.log("here for string/enum");
-    let enumClasses = getEnumClasses(selectedProperty.value);
-    console.log(enumClasses);
+    // handling properties of data type string + enum
+    let classes = getEnumClasses(selectedProperty.value);
+    colorSteps.value = classes.length;
+    const paintProperty = generateEnumPaintProperty(
+      selectedProperty.value,
+      classes,
+      colorbrewer[selectedColorPalette.value][colorSteps.value]
+    );
+    props.map.setPaintProperty("sites", "circle-color", paintProperty);
   } else if (selectedPropertyDataType.value == "number") {
-    console.log("here for number");
+    // handling properties of data type number
+    let classes = getNumberBreaks();
+    const paintProperty = generateContinuousPaintProperty(
+      selectedProperty.value,
+      classes,
+      colorbrewer[selectedColorPalette.value][colorSteps.value]
+    );
+    props.map.setPaintProperty("sites", "circle-color", paintProperty);
   }
 }
-
-/** Pseudo code data driven colring algorithm
- * - [X] getProperties from data schema
- * - [X] make property selectable through <select> and <option> elements
- * - [X] set default properties or get selected propertie of user
- * - [X] get datatype of selected property (number or string)
- * - [X] IF (number)
- *          - get nr. of classes (either default or user input)
- *          - get type of classification
- *                - quantil https://mathjs.org/docs/reference/functions/quantileSeq.html
- *                - jenks natural breaks turfjs
- *          - calculate breaks and return list
- *          - get selected color palette
- *              - adjust amount of steps according to nr of classes
- *          - write circle-color object for maplibrefunction setPaintProperties()
- * - [X] ELSE IF (string)
- *          - [X] get enum classes
- * - [X] ELSE
- *      - [X] throw ERROR
- *
- * - get selected color palette
- * - adjust amount of steps according to nr of classes
- * - write circle-color object for maplibrefunction setPaintProperties()
- */
-
-// watch(colorSteps, (currentValue) => {
-//   console.log("hier");
-//   console.log(currentValue);
-//   console.log(colorSteps.value);
-//   console.log(selectedColorPalette.value);
-//   console.log(colorPalettes.value[0].colors(currentValue));
-// });
-
-/**--------------------------------------------------------------------- */
-// Methods
-// onMounted(() => {
-//   function testMethods() {
-//     // let values = turfJenks(props.map.getSource("sites")._data, "elevation", 6);
-//     // console.log("natrual breaks at: " + values);
-//     // console.log(selectedColorPalette.value);
-//     // props.map.setPaintProperty("sites", "circle-color", [
-//     //   "case",
-//     //   ["==", ["get", "elevation"], null],
-//     //   "white",
-//     //   [
-//     //     "step",
-//     //     ["get", "elevation"],
-//     //     "#fff7ec",
-//     //     -7490,
-//     //     "#fddcaf",
-//     //     -4489.9,
-//     //     "#fdb27b",
-//     //     -3290,
-//     //     "#f26d4b",
-//     //     -2090,
-//     //     "#c91d13",
-//     //     -640,
-//     //     "#7f0000",
-//     //     1050,
-//     //     "#253494",
-//     //   ],
-//     // ]);
-
-//     let x = [];
-//     props.map.getSource("sites")._data.features.forEach((feature) => {
-//       x.push(feature.properties["q"]);
-//     });
-
-//     let trace = {
-//       x: x,
-//       type: "histogram",
-//       showlegend: true,
-//     };
-
-//     let data = [trace];
-//     let plot = Plotly.newPlot("myTestDiv", data);
-//     console.log(plot);
-//   }
-
-//   testMethods();
-// });
-
-/**
- * @description
- * @param {Array} newColorPalette
- */
-// function setSelectedColorPalette(newColorPalette) {
-//   selectedColorPalette.value = newColorPalette;
-// }
-
-/**
- * @description
- */
-// function toggleIsSelected() {
-//   //
-//   if (isPropertySelected.value) {
-//     return;
-//   } else {
-//     isPropertySelected.value = !isPropertySelected.value;
-//   }
-// }
 
 /**
  * @description set Circle color
  * @param {String} colorHEX
+ * @returns {Void}
  */
 function setCircleColor(colorHEX) {
   if (props.map.getPaintProperty("sites", "circle-color") == colorHEX) {
@@ -217,152 +259,13 @@ function setCircleColor(colorHEX) {
     props.map.setPaintProperty("sites", "circle-color", colorHEX);
   }
 }
-
-/**
- * @description
- * @param {String} featuresProperty
- */
-function setDataDrivenPaintProperties(featuresProperty) {
-  // TODO: Include case attribute with predefined classes
-  // let paintProperties = [];
-
-  console.log(featuresProperty == "env");
-  // // TODO: Include schema file for differenciation between continouse numeric values or enumerate
-  // if (featuresProperty == "env") {
-  //   paintProperties = generateClassificationPaintProperty(featuresProperty);
-  // } else {
-  //   paintProperties = generateInterpolatePaintProperty(featuresProperty);
-  // }
-  // console.log(paintProperties);
-
-  // props.map.setPaintProperty("sites", "circle-color", paintProperties);
-}
-
-/**
- * @description only for continuous number value, later on it should be working for any kind of property
- * @param {String} featuresProperty
- * @returns {Array} Array of MapLibre expression for paint properties for number values
- */
-// function generateInterpolatePaintProperty(featuresProperty) {
-//   let paintProperties = new Array();
-//   const min = getMin(featuresProperty);
-//   const max = getMax(featuresProperty);
-//   const range = max - min;
-//   const section = range / (colorSteps.value - 1);
-//   let currentValue = min;
-//   let expression = [];
-
-//   if (selectedInterpolationType.value.name == "Linear") {
-//     expression.push(selectedInterpolationType.value.expression);
-//   } else if (selectedInterpolationType.value.name == "Exponential") {
-//     expression.push(
-//       selectedInterpolationType.value.expression,
-//       selectedInterpolationType.value.base
-//     );
-//   } else if (selectedInterpolationType.value.name == "Cubic Bezier") {
-//     expression.push(
-//       selectedInterpolationType.value.expression,
-//       selectedInterpolationType.value.x1,
-//       selectedInterpolationType.value.y1,
-//       selectedInterpolationType.value.x2,
-//       selectedInterpolationType.value.y2
-//     );
-//   } else {
-//     console.log("Type of interpolation not found");
-//   }
-
-//   paintProperties.push("interpolate");
-//   paintProperties.push(expression);
-//   paintProperties.push(["get", featuresProperty]); // TODO: adjust interpolation type or get rid of outlier
-
-//   for (let i = 0; i < colorSteps.value; i++) {
-//     paintProperties.push(currentValue, selectedColorPalette.value[i]);
-//     currentValue += section;
-//   }
-
-//   return paintProperties;
-// }
-
-/**
- * @description get minimum value of features property
- * @param {String} featuresProperty
- * @returns {Number}
- */
-// function getMin(featuresProperty) {
-//   let min =
-//     props.map.getSource("sites")._data.features[0].properties[featuresProperty];
-//   props.map.getSource("sites")._data.features.forEach((feature) => {
-//     if (feature.properties[featuresProperty] < min) {
-//       min = feature.properties[featuresProperty];
-//     }
-//   });
-//   return min;
-// }
-
-/**
- * @description get maximum value of features property
- * @param {String} featuresProperty
- * @returns {Number}
- */
-// function getMax(featuresProperty) {
-//   let max =
-//     props.map.getSource("sites")._data.features[0].properties[featuresProperty];
-
-//   props.map.getSource("sites")._data.features.forEach((feature) => {
-//     if (feature.properties[featuresProperty] > max) {
-//       max = feature.properties[featuresProperty];
-//     }
-//   });
-
-//   return max;
-// }
-
-/**
- * @description
- * @param {String} featuresProperty
- * @returns {Array} Array of MapLibre expression for paint properties for enum values
- */
-// function generateClassificationPaintProperty(featuresProperty) {
-//   const classifications = getClassifications(featuresProperty);
-//   let paintProperties = new Array();
-//   colorSteps.value = classifications.size;
-
-//   paintProperties.push("match");
-//   paintProperties.push(["get", featuresProperty]);
-
-//   // TODO: include chromajs lib for color ramps
-//   let ix = 0;
-//   classifications.forEach((entry) => {
-//     paintProperties.push(entry, selectedColorPalette.value[ix]);
-//     ix += 1;
-//   });
-//   paintProperties.push(/* other */ "#ccc");
-
-//   console.log("Generate Class: " + paintProperties);
-//   return paintProperties;
-// }
-
-/**
- * @description
- * @param {String} featuresProperty
- * @returns {Set} Set containg all possible values of a property
- */
-// function getClassifications(featuresProperty) {
-//   let classes = new Set();
-
-//   props.map.getSource("sites")._data.features.forEach((feature) => {
-//     classes.add(feature.properties[featuresProperty]);
-//   });
-
-//   return classes;
-// }
 </script>
 
 <template>
   <div class="myTestDiv" id="myTestDiv"></div>
   <div class="circle-styling-settings">
     <div class="settings-content-title">
-      <h3>Style Circle</h3>
+      <h3>Style Circles</h3>
     </div>
     <div class="settings-content-body">
       <div class="circle-settings">
@@ -387,7 +290,7 @@ function setDataDrivenPaintProperties(featuresProperty) {
             <label>Fill color</label>
             <div id="swatches">
               <button
-                v-for="colorHEX in circleColors"
+                v-for="colorHEX in colorbrewer['Paired'][9]"
                 :key="colorHEX"
                 :style="{ 'background-color': colorHEX }"
                 @click="setCircleColor(colorHEX)"
@@ -399,43 +302,91 @@ function setDataDrivenPaintProperties(featuresProperty) {
         </div>
       </div>
 
+      <div class="settings-content-title">
+        <h3>Data driven coloring</h3>
+      </div>
       <div class="circle-settings">
         <fieldset>
           <div class="data-driven-coloring">
-            <label>Coloring based on</label>
-            <select
-              name="data-driven-coloring"
-              id="data-driven-coloring"
-              v-model="selectedProperty"
-              @change="dataDrivenColorisation()"
-            >
-              <option selected disabled hidden>Select attribute</option>
-              <option
-                v-for="(value, key) in propertyOptions"
-                :key="key"
-                :selectedProperty="{ value }"
-              >
-                {{ value }}
-              </option>
-            </select>
-            <!-- <div
-              class="data-driven-coloring-classification"
-              v-if="isPropertySelected"
-            > -->
-            <!-- TODO: include data schema, show selecion only for continouse numeric values -->
-            <!--<label>Type of Classification</label>
+            <div class="property-selection">
+              <label>Coloring based on</label>
               <select
+                class="form-select form-select-sm"
                 name="data-driven-coloring"
                 id="data-driven-coloring"
-                @change="console.log('Hallö')"
+                v-model="selectedProperty"
+                @change="dataDrivenColorisation()"
               >
-                <option selected>Quantil</option>
-                <option>
-                  Jenks Natrual Breakes
-                  <font-awesome-icon :icon="['fat', 'circle-info']" />
+                <option selected disabled hidden>Select attribute</option>
+                <option
+                  v-for="(value, key) in propertyOptions"
+                  :key="key"
+                  :selectedProperty="{ value }"
+                >
+                  {{ value }}
                 </option>
               </select>
-            </div> -->
+            </div>
+
+            <div class="color-selection">
+              <label for="color-selection">Color Palette</label>
+              <p>
+                <button
+                  class="btn-color-palette"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseExample"
+                  aria-expanded="false"
+                  aria-controls="collapseExample"
+                >
+                  Choose a color palette
+                </button>
+              </p>
+              <div class="collapse" id="collapseExample">
+                <div class="card card-body">
+                  <!-- TODO: show selected color palette via changeing backround on click -->
+                  <div
+                    class="color-palette"
+                    v-for="(value, index) in colorbrewer.schemeGroups
+                      .sequential"
+                    :key="index"
+                    @click="
+                      setSelectedColorPalette(value), dataDrivenColorisation()
+                    "
+                  >
+                    <div
+                      class="color"
+                      v-for="color in colorbrewer[value][colorSteps]"
+                      :key="color"
+                      :style="{ backgroundColor: color }"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="data-classification-type"
+              v-if="selectedPropertyDataType == 'number'"
+            >
+              <label for="data-classification-type">Data Classification</label>
+              <select
+                class="form-select form-select-sm"
+                name="data-classification-type"
+                id="data-classification-type"
+                v-model="selectedClassificationType"
+                @change="dataDrivenColorisation()"
+              >
+                <option
+                  v-for="(value, key) in classificationTypes"
+                  :key="key"
+                  :selectedClassificationType="{ key }"
+                >
+                  {{ value }}
+                </option>
+              </select>
+            </div>
+
             <div
               class="data-driven-coloring-steps"
               v-if="selectedPropertyDataType == 'number'"
@@ -443,21 +394,22 @@ function setDataDrivenPaintProperties(featuresProperty) {
               <!-- TODO: include data schema, show selecion only for continouse numeric values -->
               <label>Number of Classes</label>
               <select
+                class="form-select form-select-sm"
                 name="data-driven-coloring"
                 id="data-driven-coloring"
                 v-model="colorSteps"
-                @change="console.log('Hallö')"
+                @change="dataDrivenColorisation()"
               >
-                <option v-for="n in 20" :key="n">
-                  {{ n }}
+                <option v-for="n in 7" :key="n">
+                  {{ n + 2 }}
                 </option>
               </select>
             </div>
-            <div
+            <!-- <div
               class="data-driven-coloring-interpolation"
               v-if="isPropertySelected"
             >
-              <!-- TODO: include data schema, show selecion only for continouse numeric values -->
+              TODO: include data schema, show selecion only for continouse numeric values
               <label>Type of interpolation</label>
               <select
                 name="data-driven-coloring"
@@ -474,11 +426,11 @@ function setDataDrivenPaintProperties(featuresProperty) {
                   {{ value.name }}
                 </option>
               </select>
-            </div>
+            </div> -->
           </div>
         </fieldset>
 
-        <fieldset>
+        <!-- <fieldset>
           <div class="color-palettes" v-if="isPropertySelected">
             <label>Color Palette</label>
             <div class="color-steps">
@@ -514,13 +466,73 @@ function setDataDrivenPaintProperties(featuresProperty) {
               </div>
             </div>
           </div>
-        </fieldset>
+        </fieldset> -->
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* .btn-primary {
+  width: 100%;
+  background-color: white;
+  color: black;
+  text-align: left;
+  text-size-adjust: 10px;
+} */
+
+.btn-color-palette {
+  /* Basic styling to resemble a select box */
+  display: inline-block;
+  width: 100%;
+  padding: 0.5em 1.5em 0.5em 0.5em;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none; /* Prevent text selection */
+  position: relative;
+  text-align: left;
+  font-family: Segoe UI;
+  font-size: small;
+
+  /* Adding a faux dropdown arrow using a pseudo-element */
+  &:after {
+    content: "\25BC"; /* Unicode down arrow */
+    position: absolute;
+    right: 0.5em;
+    pointer-events: none; /* Make it non-interactive */
+  }
+
+  /* Styling for interaction states */
+  &:hover {
+    border-color: #888;
+  }
+
+  &:active,
+  &:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+}
+
+.card {
+  cursor: default;
+  width: 100%;
+}
+
+.color-palette {
+  width: 100%;
+  display: flex;
+  padding: 1px;
+}
+
+.color {
+  flex: 1;
+  float: left;
+  width: calc(100% / colorSteps);
+  box-sizing: border-box;
+}
 .settings-content-body {
   display: flex;
   justify-content: center;

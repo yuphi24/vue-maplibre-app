@@ -53,6 +53,7 @@ const toggleSidebar = () => {
 
 //
 function fetchSchema() {
+  // /api/v1/schema/
   fetch("/ghfdb_API_copy.yaml")
     .then((response) => {
       if (!response.ok) {
