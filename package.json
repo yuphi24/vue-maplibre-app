@@ -20,6 +20,7 @@
     "datatables.net-bs5": "^1.13.4",
     "datatables.net-select": "^1.6.2",
     "datatables.net-vue3": "^2.1.1",
+    "geostats": "^2.1.0",
     "js-yaml": "^4.1.0",
     "json-loader": "^0.5.7",
     "maplibre-gl": "^2.4.0",

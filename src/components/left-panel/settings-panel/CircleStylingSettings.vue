@@ -2,7 +2,8 @@
 import { defineProps, ref, watch } from "vue";
 
 // Extern Libraries
-import turfJenks from "turf-jenks";
+import geostats from "geostats";
+// import turfJenks from "turf-jenks";
 import { quantileSeq } from "mathjs";
 import { Map } from "maplibre-gl";
 import colorbrewer from "colorbrewer";
@@ -24,6 +25,7 @@ const classificationTypes = ref({
   quantil: "Quantil",
 });
 const selectedClassificationType = ref(classificationTypes.value.quantil);
+const legend = ref({});
 
 /**
  * If user changes size of circles, the watch method keeps track of it and adjust it synchron
@@ -108,10 +110,10 @@ function getEnumClasses(enumProperty) {
  * @param {Number} steps
  * @returns {Array} [minValue, break1, ..., breakN, maxValue]
  */
-function getJenksNaturalBreaks(property, steps) {
-  // TODO: jenks change jenks algo for performance https://github.com/simogeo/geostats
-  // Returns Array.<number>, the break number for each class plus the minimum and maximum values
-  const breaks = turfJenks(props.map.getSource("sites")._data, property, steps);
+function getJenksNaturalBreaks(geoJson, property, steps) {
+  const values = propertyValuesToArray(geoJson, property).filter(Boolean);
+  let classifier = new geostats(values);
+  let breaks = classifier.getJenks(steps);
 
   return breaks;
 }
@@ -160,7 +162,11 @@ function getQuantilBreaks(geoJson, property, steps) {
  */
 function getNumberBreaks() {
   if (selectedClassificationType.value == classificationTypes.value.jenks) {
-    return getJenksNaturalBreaks(selectedProperty.value, colorSteps.value);
+    return getJenksNaturalBreaks(
+      props.map.getSource("sites")._data,
+      selectedProperty.value,
+      colorSteps.value
+    );
   } else {
     return getQuantilBreaks(
       props.map.getSource("sites")._data,
@@ -219,6 +225,29 @@ function generateContinuousPaintProperty(property, classes, colors) {
 }
 
 /**
+ *
+ */
+function setLegendObject(classes, colors) {
+  for (var i = 0; i < colors.length; i++) {
+    if (colors.length == classes.length) {
+      legend.value[i] = {
+        id: i,
+        text: classes[i],
+        colorHEX: colors[i],
+      };
+    } else if (colors.length < classes.length) {
+      legend.value[i] = {
+        id: i,
+        text: classes[i].toFixed(2) + " - " + classes[i + 1].toFixed(2),
+        colorHEX: colors[i],
+      };
+    }
+  }
+
+  return legend;
+}
+
+/**
  * @description programm for providing and reacting to user driven colorisation of data according to properties
  * @returns {Void}
  */
@@ -235,6 +264,11 @@ function dataDrivenColorisation() {
       colorbrewer[selectedColorPalette.value][colorSteps.value]
     );
     props.map.setPaintProperty("sites", "circle-color", paintProperty);
+    setLegendObject(
+      classes,
+      colorbrewer[selectedColorPalette.value][colorSteps.value]
+    );
+    console.log(legend.value);
   } else if (selectedPropertyDataType.value == "number") {
     // handling properties of data type number
     let classes = getNumberBreaks();
@@ -244,6 +278,11 @@ function dataDrivenColorisation() {
       colorbrewer[selectedColorPalette.value][colorSteps.value]
     );
     props.map.setPaintProperty("sites", "circle-color", paintProperty);
+    setLegendObject(
+      classes,
+      colorbrewer[selectedColorPalette.value][colorSteps.value]
+    );
+    console.log(legend.value);
   }
 }
 
@@ -339,7 +378,7 @@ function setCircleColor(colorHEX) {
                   aria-expanded="false"
                   aria-controls="collapseExample"
                 >
-                  Choose a color palette
+                  Select color palette
                 </button>
               </p>
               <div class="collapse" id="collapseExample">
