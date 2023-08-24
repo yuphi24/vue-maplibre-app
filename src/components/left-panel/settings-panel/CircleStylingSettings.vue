@@ -254,6 +254,14 @@ function setLegendObject(classes, colors) {
   return legend;
 }
 
+// function setLegendToNull() {
+//   console.log(legend.value);
+//   if (legend.value) {
+//     legend.value = null;
+//   }
+//   console.log(legend.value);
+// }
+
 /**
  * @description programm for providing and reacting to user driven colorisation of data according to properties
  * @returns {Void}
