@@ -382,18 +382,16 @@ function setCircleColor(colorHEX) {
 
             <div class="color-selection">
               <label for="color-selection">Color Palette</label>
-              <p>
-                <button
-                  class="btn-color-palette"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#collapseExample"
-                  aria-expanded="false"
-                  aria-controls="collapseExample"
-                >
-                  Select color palette
-                </button>
-              </p>
+              <button
+                class="btn-color-palette"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseExample"
+                aria-expanded="false"
+                aria-controls="collapseExample"
+              >
+                Select color palette
+              </button>
               <div class="collapse" id="collapseExample">
                 <div class="card card-body">
                   <!-- TODO: show selected color palette via changeing backround on click -->
