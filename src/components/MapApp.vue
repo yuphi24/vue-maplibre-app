@@ -20,6 +20,7 @@ import LeftPanel from "./left-panel/LeftPanel.vue";
 import MapControls from "./map/MapControls.vue";
 import InfoPopup from "./map/InfoPopup.vue";
 import DataLayer from "./map/DataLayer.vue";
+import MapLegend from "./map/MapLegend.vue";
 
 const mapContainer = ref();
 const map = ref();
@@ -32,6 +33,7 @@ const defaultCircleColor = ref("#41b6c4");
 const isCollapsed = ref(true);
 const dataSchema = ref();
 const heatFlowSchema = ref();
+const legend = ref(null);
 
 const setIsCollapsed = () => (isCollapsed.value = !isCollapsed.value);
 const toggleSidebar = () => {
@@ -44,6 +46,12 @@ const toggleSidebar = () => {
   // 'id' is 'right' or 'left'. When run at start, this object looks like: '{left: 300}';
   padding["left-panel"] = collapsed ? 0 : 300; // 0 if collapsed, 300 px if not. This matches the width of the sidebars in the .sidebar CSS class.
   // Use `map.easeTo()` with a padding option to adjust the map's center accounting for the position of sidebars.
+};
+
+const handleLegend = (l) => {
+  legend.value = l;
+  console.log("parentCompnent");
+  console.log(legend.value);
 };
 
 // const showsDataTable = ref(false);
@@ -178,6 +186,7 @@ onMounted(() => {
       <DataLayer :map="map" />
       <InfoPopup :map="map" />
       <MapControls :map="map" />
+      <MapLegend :legend="legend" />
 
       <!-- Navigation buttons -->
       <div class="fixed-bottom">
@@ -208,9 +217,12 @@ onMounted(() => {
             :heatFlowSchema="heatFlowSchema"
             @collapse-event="setIsCollapsed()"
             @toggle-event="toggleSidebar()"
+            @handle-legend-event="handleLegend"
           />
         </div>
       </div>
+
+      <!-- <div id="legend" class="sidebar flex-center right collapsed"></div> -->
 
       <!-- <div class="trigger-data-table">
         <button

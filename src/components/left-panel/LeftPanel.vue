@@ -23,7 +23,14 @@ watch(props, (newProps) => {
   // console.log(heatFlowSchema.value);
 });
 
-defineEmits(["collapse-event", "toggle-event"]);
+const emit = defineEmits([
+  "collapse-event",
+  "toggle-event",
+  "handle-legend-event",
+]);
+const handleLegendEvent = (legend) => {
+  emit("handle-legend-event", legend);
+};
 </script>
 
 <template>
@@ -46,6 +53,7 @@ defineEmits(["collapse-event", "toggle-event"]);
         :map="props.map"
         :activeBaseLayer="props.activeBaseLayer"
         :heatFlowSchema="heatFlowSchema"
+        @handle-legend-event="handleLegendEvent"
       />
       <FilterPanal v-if="props.title === 'Filter'" />
       <StatisticsPanal v-if="props.title === 'Statistics'" />

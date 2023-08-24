@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, ref, watch } from "vue";
+import { defineEmits, defineProps, ref, watch } from "vue";
 
 // Extern Libraries
 import geostats from "geostats";
@@ -10,6 +10,7 @@ import colorbrewer from "colorbrewer";
 
 // Variables
 const props = defineProps({ map: Map, heatFlowSchema: Object });
+const emit = defineEmits(["send-legend"]);
 
 const circleRadius = ref(5);
 
@@ -25,7 +26,11 @@ const classificationTypes = ref({
   quantil: "Quantil",
 });
 const selectedClassificationType = ref(classificationTypes.value.quantil);
+
 const legend = ref({});
+const sendLegend = () => {
+  emit("send-legend", legend.value);
+};
 
 /**
  * If user changes size of circles, the watch method keeps track of it and adjust it synchron
@@ -225,7 +230,9 @@ function generateContinuousPaintProperty(property, classes, colors) {
 }
 
 /**
- *
+ * @description set up an object with relevant information for creating a legend
+ * @param {Array} classes
+ * @param {Array} colors
  */
 function setLegendObject(classes, colors) {
   for (var i = 0; i < colors.length; i++) {
@@ -268,7 +275,6 @@ function dataDrivenColorisation() {
       classes,
       colorbrewer[selectedColorPalette.value][colorSteps.value]
     );
-    console.log(legend.value);
   } else if (selectedPropertyDataType.value == "number") {
     // handling properties of data type number
     let classes = getNumberBreaks();
@@ -282,7 +288,6 @@ function dataDrivenColorisation() {
       classes,
       colorbrewer[selectedColorPalette.value][colorSteps.value]
     );
-    console.log(legend.value);
   }
 }
 
@@ -354,7 +359,7 @@ function setCircleColor(colorHEX) {
                 name="data-driven-coloring"
                 id="data-driven-coloring"
                 v-model="selectedProperty"
-                @change="dataDrivenColorisation()"
+                @change="dataDrivenColorisation(), sendLegend()"
               >
                 <option selected disabled hidden>Select attribute</option>
                 <option
