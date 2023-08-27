@@ -235,6 +235,7 @@ function generateContinuousPaintProperty(property, classes, colors) {
  * @param {Array} colors
  */
 function setLegendObject(classes, colors) {
+  legend.value = {};
   for (var i = 0; i < colors.length; i++) {
     if (colors.length == classes.length) {
       legend.value[i] = {
@@ -251,6 +252,8 @@ function setLegendObject(classes, colors) {
     }
   }
 
+  console.log("legend");
+  console.log(legend.value);
   return legend;
 }
 
@@ -278,6 +281,8 @@ function dataDrivenColorisation() {
       classes,
       colorbrewer[selectedColorPalette.value][colorSteps.value]
     );
+    // console.log("string");
+    // console.log(paintProperty);
     props.map.setPaintProperty("sites", "circle-color", paintProperty);
     setLegendObject(
       classes,
@@ -291,6 +296,8 @@ function dataDrivenColorisation() {
       classes,
       colorbrewer[selectedColorPalette.value][colorSteps.value]
     );
+    // console.log("number");
+    // console.log(paintProperty);
     props.map.setPaintProperty("sites", "circle-color", paintProperty);
     setLegendObject(
       classes,
@@ -401,7 +408,9 @@ function setCircleColor(colorHEX) {
                       .sequential"
                     :key="index"
                     @click="
-                      setSelectedColorPalette(value), dataDrivenColorisation()
+                      setSelectedColorPalette(value),
+                        dataDrivenColorisation(),
+                        sendLegend()
                     "
                   >
                     <div
@@ -425,7 +434,7 @@ function setCircleColor(colorHEX) {
                 name="data-classification-type"
                 id="data-classification-type"
                 v-model="selectedClassificationType"
-                @change="dataDrivenColorisation()"
+                @change="dataDrivenColorisation(), sendLegend()"
               >
                 <option
                   v-for="(value, key) in classificationTypes"
@@ -447,7 +456,7 @@ function setCircleColor(colorHEX) {
                 name="data-driven-coloring"
                 id="data-driven-coloring"
                 v-model="colorSteps"
-                @change="dataDrivenColorisation()"
+                @change="dataDrivenColorisation(), sendLegend()"
               >
                 <option v-for="n in 7" :key="n">
                   {{ n + 2 }}
