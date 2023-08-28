@@ -88,7 +88,7 @@ watch(props, (newProps) => {
 .legend-container {
   position: absolute;
   bottom: 4rem;
-  right: 0;
+  right: 0.5rem;
   z-index: 1;
 }
 

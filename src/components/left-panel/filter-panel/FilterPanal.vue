@@ -1,4 +1,23 @@
-<script setup></script>
+<script setup>
+import { defineProps, ref } from "vue";
+
+const props = defineProps({ heatFlowSchema: Object });
+/**
+ * Pseudo Code:
+ * 1. btn apply filter
+ * 2. set property
+ * 3. differentiation of data type:
+ *    - if string && enum
+ *        - make enum values selectable
+ *        - write filter expression: match property == value
+ *    - else if number
+ *        - provide range of values from min to max
+ *        - make min and max be shiftable for user
+ *        - v-bind min and max if user makes changes
+ *        - write filter expression: between min and max
+ * 4. setFilter() --> https://maplibre.org/maplibre-gl-js/docs/API/classes/maplibregl.Map/#setfilter
+ */
+</script>
 
 <template>
   <button class="addFilter">Add Filter</button>

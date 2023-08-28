@@ -3,7 +3,6 @@ import { defineEmits, defineProps, ref, watch } from "vue";
 
 // Extern Libraries
 import geostats from "geostats";
-// import turfJenks from "turf-jenks";
 import { quantileSeq } from "mathjs";
 import { Map } from "maplibre-gl";
 import colorbrewer from "colorbrewer";
@@ -257,14 +256,6 @@ function setLegendObject(classes, colors) {
   return legend;
 }
 
-// function setLegendToNull() {
-//   console.log(legend.value);
-//   if (legend.value) {
-//     legend.value = null;
-//   }
-//   console.log(legend.value);
-// }
-
 /**
  * @description programm for providing and reacting to user driven colorisation of data according to properties
  * @returns {Void}
@@ -281,8 +272,6 @@ function dataDrivenColorisation() {
       classes,
       colorbrewer[selectedColorPalette.value][colorSteps.value]
     );
-    // console.log("string");
-    // console.log(paintProperty);
     props.map.setPaintProperty("sites", "circle-color", paintProperty);
     setLegendObject(
       classes,
@@ -296,8 +285,6 @@ function dataDrivenColorisation() {
       classes,
       colorbrewer[selectedColorPalette.value][colorSteps.value]
     );
-    // console.log("number");
-    // console.log(paintProperty);
     props.map.setPaintProperty("sites", "circle-color", paintProperty);
     setLegendObject(
       classes,
