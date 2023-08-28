@@ -55,7 +55,10 @@ const handleLegendEvent = (legend) => {
         :heatFlowSchema="heatFlowSchema"
         @handle-legend-event="handleLegendEvent"
       />
-      <FilterPanal v-if="props.title === 'Filter'" />
+      <FilterPanal
+        v-if="props.title === 'Filter'"
+        :heatFlowSchema="heatFlowSchema"
+      />
       <StatisticsPanal v-if="props.title === 'Statistics'" />
       <AnalysisPanal v-if="props.title === 'Analysis'" />
     </div>

@@ -1,7 +1,9 @@
 <script setup>
-import { defineProps, ref } from "vue";
+import { defineProps } from "vue";
 
 const props = defineProps({ heatFlowSchema: Object });
+
+console.log(props.heatFlowSchema);
 /**
  * Pseudo Code:
  * 1. btn apply filter
