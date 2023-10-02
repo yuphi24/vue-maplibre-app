@@ -1,44 +1,50 @@
 <script setup>
+import { Map } from "maplibre-gl";
 import { defineProps } from "vue";
 
-const props = defineProps({ heatFlowSchema: Object });
+import FilterElement from "./FilterElement.vue";
 
-console.log(props.heatFlowSchema);
+const props = defineProps({ map: Map, heatFlowSchema: Object });
+
+// console.log(props.heatFlowSchema);
+console.log("here befor");
+console.log(props.map.queryRenderedFeatures({ layers: ["sites"] }));
 /**
+ * Desc.:
+ * - Container for the filter.
+ * - Inside here, users can set up filter.
+ * - They are in a hirarchical order and are connected by a "logic and".
+ * - New filter component through button "add filter"
+ *
  * Pseudo Code:
- * 1. btn apply filter
- * 2. set property
- * 3. differentiation of data type:
- *    - if string && enum
- *        - make enum values selectable
- *        - write filter expression: match property == value
- *    - else if number
- *        - provide range of values from min to max
- *        - make min and max be shiftable for user
- *        - v-bind min and max if user makes changes
- *        - write filter expression: between min and max
- * 4. setFilter() --> https://maplibre.org/maplibre-gl-js/docs/API/classes/maplibregl.Map/#setfilter
+ * Manage Filter:
+ *  - Add new filter
+ *  - Delete existing filter
+ *  - Clear all filters
+ *  - Store set filters
  */
+
+// props.map.setFilter("sites", [
+//   "all",
+//   [">", ["get", "q"], 0],
+//   ["<", ["get", "q"], 200],
+// ]);
+
+// function onCLickDelete() {
+//   props.map.setFilter("sites", ["all", ["==", ["get", "method"], "drilling"]]);
+//   console.log(props.map.queryRenderedFeatures({ layers: ["sites"] }));
+// }
 </script>
 
 <template>
-  <button class="addFilter">Add Filter</button>
-  <div class="filter">Here filter options</div>
-  <div class="dropdown mt-3">
-    <button
-      class="btn btn-secondary dropdown-toggle"
-      type="button"
-      data-bs-toggle="dropdown"
-    >
-      Select Attribute
-    </button>
-    <ul class="dropdown-menu">
-      <li><a class="dropdown-item" href="#">Here</a></li>
-      <li><a class="dropdown-item" href="#">Selection</a></li>
-      <li><a class="dropdown-item" href="#">Of</a></li>
-      <li><a class="dropdown-item" href="#">Attributes</a></li>
-    </ul>
+  <div class="filters-container">
+    <FilterElement :heatFlowSchema="heatFlowSchema" :map="map" />
+    <!-- <div class="filter-managing-tools">
+      <button class="btn btn-primary" @click="onCLickDelete">
+        + Add Filter
+      </button>
+    </div> -->
   </div>
 </template>
 
-<style></style>
+<style scoped></style>

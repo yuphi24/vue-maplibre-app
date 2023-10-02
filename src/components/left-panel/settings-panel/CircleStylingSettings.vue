@@ -264,6 +264,7 @@ function dataDrivenColorisation() {
   if (!selectedProperty.value) {
     console.error("no property selected");
   } else if (selectedPropertyDataType.value == "string") {
+    // TODO: Qualitativ Farpalette
     // handling properties of data type string + enum
     let classes = getEnumClasses(selectedProperty.value);
     colorSteps.value = classes.length;
@@ -278,6 +279,7 @@ function dataDrivenColorisation() {
       colorbrewer[selectedColorPalette.value][colorSteps.value]
     );
   } else if (selectedPropertyDataType.value == "number") {
+    // TODO: Fallunterscheidung Sequential/Diverging
     // handling properties of data type number
     let classes = getNumberBreaks();
     const paintProperty = generateContinuousPaintProperty(

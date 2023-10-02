@@ -31,7 +31,9 @@
     "simplebar-vue": "^2.3.3",
     "simplebar-vue3": "^0.2.0",
     "vue": "^3.2.47",
-    "vue-router": "^4.0.3"
+    "vue-multiselect": "^3.0.0-beta.2",
+    "vue-router": "^4.0.3",
+    "vue-slider-component": "^4.1.0-beta.7"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

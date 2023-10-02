@@ -1,31 +1,63 @@
 <script setup>
-import { defineEmits, defineProps } from "vue";
+import { computed, defineEmits, defineProps, onMounted, ref } from "vue";
 
 import DataTable from "datatables.net-vue3";
+import DataTablesLib from "datatables.net";
 import DataTablesCore from "datatables.net";
+
 import { Map } from "maplibre-gl";
+
+onMounted(() => {});
 
 defineEmits(["toggle-dt-event"]);
 const props = defineProps({ map: Map });
-console.log(props.map.getSource("sites")._data.features);
-// const data = props.map.getSource("sites")._data.features;
+const geojsonData = ref(props.map.getSource("sites")._data.features);
+const tableData = ref([]);
+const columns = ref([
+  { title: "Id", data: "id" },
+  { title: "Name", data: "name" },
+  { title: "Environment", data: "env" },
+  { title: "Method", data: "method" },
+]);
+const options = ref({
+  dom: "Bftip",
+  select: true,
+  lengthChange: true,
+  lengthMenu: [
+    [10, 25, 50, -1],
+    [10, 25, 50, "All"],
+  ],
+  pageLength: 10,
+});
 
+DataTable.use(DataTablesLib);
 DataTable.use(DataTablesCore);
 
-const columns = [
-  { data: "name" },
-  { data: "position" },
-  { data: "office" },
-  { data: "extn" },
-  { data: "start_date" },
-  { data: "salary" },
-];
+/**
+ * Pseudo Code:
+ * 1. select data source (whole data set or selection)
+ * 2. get geojson data
+ * 3. select colums shown in the table
+ * 4. If (selection) {
+ *  show btn "Show selection on map"
+ *  get filtered data
+ *  set filter on map object
+ * }
+ */
 
-const options = {
-  dom: "Bftip",
-  responsive: true,
-  select: true,
-};
+tableData.value = computed(() => {
+  if (!geojsonData.value) {
+    return [];
+  } else {
+    return geojsonData.value.map((feature) => ({
+      // Assuming each feature has properties 'name' and 'type' as an example
+      id: feature.id,
+      name: feature.properties.name,
+      env: feature.properties.env,
+      method: feature.properties.method,
+    }));
+  }
+});
 </script>
 
 <template>
@@ -40,11 +72,12 @@ const options = {
           @click="$emit('toggle-dt-event')"
         ></button>
       </div>
-      <div class="attribute-table-content">
+      <div class="attribute-table-content" ref="attributeTableContent">
         <DataTable
+          :data="tableData.value"
           :columns="columns"
           :options="options"
-          class="display nowrap"
+          class="display"
           width="100%"
         />
       </div>

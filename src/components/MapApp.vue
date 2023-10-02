@@ -153,6 +153,9 @@ onMounted(() => {
       data: sites.value,
     });
 
+    console.log("MapApp.vue raw sites");
+    console.log(sites.value);
+
     // add data layer
     map.value.addLayer({
       id: "sites",

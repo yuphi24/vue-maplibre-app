@@ -35,7 +35,9 @@ const handleLegendEvent = (legend) => {
 
 <template>
   <div class="sidebar-header">
-    <h3 class="sidebar-title" id="sidebarTitle">{{ this.title }}</h3>
+    <h3 v-if="props.title" class="sidebar-title" id="sidebarTitle">
+      {{ props.title }}
+    </h3>
     <button
       type="button"
       class="btn-close btn-close-white pull-right"
@@ -57,6 +59,7 @@ const handleLegendEvent = (legend) => {
       />
       <FilterPanal
         v-if="props.title === 'Filter'"
+        :map="props.map"
         :heatFlowSchema="heatFlowSchema"
       />
       <StatisticsPanal v-if="props.title === 'Statistics'" />
