@@ -141,7 +141,14 @@ function setValueOptions(selectedProperty) {
  * @description Resets the array with the selected filter values
  */
 function resetSelectedValues() {
-  selectedValues.value = [];
+  if (
+    selectedPropertyType.value == "number" &&
+    valueOptions.value.length != 0
+  ) {
+    selectedValues.value = [valueOptions.value[0], valueOptions.value[1]];
+  } else {
+    selectedValues.value = [];
+  }
 }
 
 /**
@@ -159,28 +166,6 @@ function generateEnumFilter(property, values) {
 
   console.log("enum filter expression");
   console.log(filterExpression);
-
-  //   [[minLongitude, minLatitude], // Southwest corner
-  //   [maxLongitude, maxLatitude]]  // Northeast corner
-  // const bounds = [
-  //   [-180, -90], // Southwest corner
-  //   [180, 90], // Northeast corner
-  // ];
-
-  // const testRenderedFeat = props.map.queryRenderedFeatures({
-  //   layers: ["sites"],
-  // });
-  // const testSourceFeat = props.map.querySourceFeatures("sites", {
-  //   sourceLayer: "sites",
-  // });
-
-  // console.log("query Source features test");
-  // console.log(testSourceFeat);
-
-  // console.log("query Rendered features test");
-  // console.log(testRenderedFeat);
-
-  // props.map.setFilter("sites", filterExpression);
 
   props.map.setFilter("sites", filterExpression);
 
@@ -247,9 +232,9 @@ function printOutSelectedValues() {
         v-model="selectedProperty"
         :options="propertyOptions"
         @select="
-          printOutValues, resetSelectedValues();
-          setSelectedPropertyType(selectedProperty);
+          printOutValues, setSelectedPropertyType(selectedProperty);
           setValueOptions(selectedProperty);
+          resetSelectedValues();
           printOutSelectedValues();
         "
       >

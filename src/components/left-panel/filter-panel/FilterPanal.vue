@@ -16,12 +16,14 @@ console.log(props.map.queryRenderedFeatures({ layers: ["sites"] }));
  * - They are in a hirarchical order and are connected by a "logic and".
  * - New filter component through button "add filter"
  *
- * Pseudo Code:
  * Manage Filter:
  *  - Add new filter
  *  - Delete existing filter
  *  - Clear all filters
  *  - Store set filters
+ *
+ * Pseudo Code:
+ * -
  */
 
 // props.map.setFilter("sites", [
