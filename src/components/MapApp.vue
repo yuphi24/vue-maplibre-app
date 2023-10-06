@@ -59,8 +59,10 @@ const toggleDataTable = () => {
   showsDataTable.value = !showsDataTable.value;
 };
 
-//
-function fetchSchema() {
+/**
+ * @description
+ */
+function fetchLocalSchema() {
   // /api/v1/schema/
   fetch("/ghfdb_API_copy.yaml")
     .then((response) => {
@@ -80,6 +82,31 @@ function fetchSchema() {
       console.error(error);
     });
 }
+
+//TODO: Schema file deviates from local file. Needs to be adjusted. Differences in enum, oneOf, ...
+/**
+ * @description
+ */
+// function fetchAPISchema() {
+//   // /api/v1/schema/
+//   fetch("http://139.17.54.176:8000/api/v1/schema/")
+//     .then((response) => {
+//       if (!response.ok) {
+//         throw new Error("HTTP error " + response.status);
+//       }
+//       return response.text();
+//     })
+//     .then((yamlText) => {
+//       dataSchema.value = yaml.load(yamlText);
+//       heatFlowSchema.value = dataSchema.value.components.schemas.Measurement;
+//       console.log("--------Send dohanna--------");
+//       console.log(heatFlowSchema.value.properties.environment.oneOf[1]);
+//     })
+//     .catch(function (error) {
+//       console.log("Failed to fetch the YAML file.");
+//       console.error(error);
+//     });
+// }
 
 // get title of corresponding button and set it as title of sidepanel
 function setPanelTitle(event) {
@@ -172,14 +199,18 @@ onMounted(() => {
       },
     });
 
-    fetchSchema();
-
-    // map.value.setRenderWorldCopies(false);
+    // fetchAPISchema();
+    fetchLocalSchema();
   });
 }),
   onUnmounted(() => {
     map.value?.remove();
   });
+
+function printHeatFlowSchema() {
+  console.log("heatflow schema mapapp");
+  console.log(dataSchema.value);
+}
 </script>
 
 <template>
@@ -231,7 +262,10 @@ onMounted(() => {
         <button
           type="button"
           class="btn-trigger-data-table btn btn-primary"
-          @click="toggleDataTable()"
+          @click="
+            toggleDataTable();
+            printHeatFlowSchema();
+          "
         >
           Show Data Table
         </button>
