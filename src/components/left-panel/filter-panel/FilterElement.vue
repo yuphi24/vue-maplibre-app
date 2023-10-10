@@ -39,7 +39,7 @@ watch(selectedValues, () => {
   if (selectedValues.value.length > 0) {
     setFilterExpression(selectedProperty.value, selectedValues.value);
   } else if (selectedValues.value.length == 0) {
-    props.map.setFilter("sites", undefined);
+    // props.map.setFilter("sites", undefined);
   }
 });
 
@@ -213,15 +213,15 @@ function printOutSelectedValues() {
 
 <template>
   <div class="filter-element">
-    <!-- 
+    <div class="filter-property">
+      <!-- 
       Multiselect:
       https://vue-multiselect.js.org/
      -->
-    <div class="select-property">
-      <label for="">Property</label>
       <VueMultiselect
         v-model="selectedProperty"
         :options="propertyOptions"
+        placeholder="Select property"
         @select="
           printOutValues, setSelectedPropertyType(selectedProperty);
           setValueOptions(selectedProperty);
@@ -230,71 +230,68 @@ function printOutSelectedValues() {
         "
       >
       </VueMultiselect>
+      <div class="remove-filter-btn">
+        <button class="btn btn-primary" @click="removeFilterElement()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-trash"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"
+            />
+            <path
+              d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"
+            />
+          </svg>
+        </button>
+      </div>
     </div>
 
-    <div class="filter-controller" v-if="selectedProperty">
-      <div v-if="selectedPropertyType === 'string'">
-        <label for="">Value</label>
-        <VueMultiselect
-          v-model="selectedValues"
-          :options="valueOptions"
-          :multiple="true"
-          @select="
-            printOutSelectedValues();
-            setFilterExpression(selectedProperty, selectedValues);
-            sendFilterExpression();
-          "
-          @remove="
-            setFilterExpression(selectedProperty, selectedValues);
-            sendFilterExpression();
-          "
-        >
-        </VueMultiselect>
-      </div>
+    <div class="filter-values" v-if="selectedProperty">
+      <div class="filter-controller">
+        <div v-if="selectedPropertyType === 'string'">
+          <VueMultiselect
+            v-model="selectedValues"
+            :options="valueOptions"
+            :multiple="true"
+            placeholder="Select value(s)"
+            @select="
+              printOutSelectedValues();
+              setFilterExpression(selectedProperty, selectedValues);
+              sendFilterExpression();
+            "
+            @remove="
+              setFilterExpression(selectedProperty, selectedValues);
+              sendFilterExpression();
+            "
+          >
+          </VueMultiselect>
+        </div>
 
-      <!-- 
+        <!-- 
       Slider:
       https://www.npmjs.com/package/vue-slider-component 
       -->
-      <div class="slider" v-if="selectedPropertyType === 'number'">
-        <label for="">Value</label>
-        <vue-slider
-          v-model="selectedValues"
-          :enableCross="false"
-          :min="valueOptions[0]"
-          :max="valueOptions[1]"
-          :interval="0.01"
-          @change="
-            printOutSelectedValues();
-            setFilterExpression(selectedProperty, selectedValues);
-            sendFilterExpression();
-          "
-        ></vue-slider>
+        <div class="slider" v-if="selectedPropertyType === 'number'">
+          <vue-slider
+            v-model="selectedValues"
+            :enableCross="false"
+            :min="valueOptions[0]"
+            :max="valueOptions[1]"
+            :interval="0.01"
+            @change="
+              printOutSelectedValues();
+              setFilterExpression(selectedProperty, selectedValues);
+              sendFilterExpression();
+            "
+          ></vue-slider>
 
-        <!-- TODO: Include null value OR select only null values as filter criteria -->
-        <!-- <div class="form-check">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            value=""
-            id="flexCheckDefault"
-          />
-          <label class="form-check-label" for="flexCheckDefault">
-            Include null values
-          </label>
+          <!-- TODO: Include null value OR select only null values as filter criteria -->
         </div>
-        <div class="form-check">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            value=""
-            id="flexCheckChecked"
-            @change="setOnlyNullValue"
-          />
-          <label class="form-check-label" for="flexCheckChecked">
-            Only null values
-          </label>
-        </div> -->
       </div>
       <div class="reset-filter-btn" v-if="selectedValues.length > 0">
         <button
@@ -305,12 +302,21 @@ function printOutSelectedValues() {
             sendFilterExpression();
           "
         >
-          Reset filter
-        </button>
-      </div>
-      <div class="remove-filter-btn">
-        <button class="btn btn-primary" @click="removeFilterElement()">
-          Remove filter
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-bootstrap-reboot"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M1.161 8a6.84 6.84 0 1 0 6.842-6.84.58.58 0 1 1 0-1.16 8 8 0 1 1-6.556 3.412l-.663-.577a.58.58 0 0 1 .227-.997l2.52-.69a.58.58 0 0 1 .728.633l-.332 2.592a.58.58 0 0 1-.956.364l-.643-.56A6.812 6.812 0 0 0 1.16 8z"
+            />
+            <path
+              d="M6.641 11.671V8.843h1.57l1.498 2.828h1.314L9.377 8.665c.897-.3 1.427-1.106 1.427-2.1 0-1.37-.943-2.246-2.456-2.246H5.5v7.352h1.141zm0-3.75V5.277h1.57c.881 0 1.416.499 1.416 1.32 0 .84-.504 1.324-1.386 1.324h-1.6z"
+            />
+          </svg>
         </button>
       </div>
     </div>
@@ -321,15 +327,32 @@ function printOutSelectedValues() {
 @import "vue-multiselect/dist/vue-multiselect.css";
 @import "vue-slider-component/theme/default.css";
 .filter-element {
-  border-top: 4px inset;
+  border-bottom: 4px inset;
 }
 
-.select-property {
+.filter-property {
+  display: flex;
+  align-items: center; /* This will vertically align items in the middle */
+  gap: 10px; /* This adds space between the children elements. If not supported in your browser, use margins on children */
   padding-bottom: 5px;
 }
 
+/* This will make the VueMultiselect expand to take available space */
+.filter-property > VueMultiselect {
+  flex: 1;
+}
+
+.filter-values {
+  display: flex;
+  align-items: center; /* Vertical alignment (optional, if needed) */
+  justify-content: space-between; /* Maximizes space between the two child divs; optional based on design */
+  gap: 10px; /* Adjust spacing between children, if your browser supports it */
+  padding-bottom: 5px;
+}
+
+/* If you want the filter-controller to take most of the available space */
 .filter-controller {
-  padding-bottom: 5px;
+  flex: 1;
 }
 
 .slider {

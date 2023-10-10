@@ -62,8 +62,13 @@ function writeFilterExpression() {
   let expression = ["all"];
 
   Object.entries(filterExpressions.value).forEach(([key]) => {
-    expression.push(filterExpressions.value[key]);
+    if (filterExpressions.value[key].length != 0) {
+      expression.push(filterExpressions.value[key]);
+    } else {
+      console.log("Empty filterExpression for filter with key: " + key);
+    }
   });
+  console.log(expression);
 
   return expression;
 }
