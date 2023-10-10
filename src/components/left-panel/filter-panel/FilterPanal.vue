@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, ref } from "vue";
+import { defineProps, ref, watch } from "vue";
 import { Map } from "maplibre-gl";
 
 import FilterElement from "./FilterElement.vue";
@@ -8,81 +8,82 @@ const props = defineProps({ map: Map, heatFlowSchema: Object });
 
 const filterIds = ref([]);
 const filterExpressions = ref({});
+
 /**
- * Desc.:
- * - Container for the filter.
- * - Inside here, users can set up filter.
- * - They are in a hirarchical order and are connected by a "logic and".
- * - New filter component through button "add filter"
- *
- * Manage Filter:
- *  - Add new filter
- *  - Delete existing filter
- *  - Clear all filters
- *  - Store set filters
- *
- * Pseudo Code:
- * -
+ * @description Watches changes in filterExpressions object and set the filter to map.
  */
+watch(filterExpressions.value, () => {
+  console.log("jo wird gecheckt wenn sich was ändert");
+  applyFilterToMap();
+});
 
-// props.map.setFilter("sites", [
-//   "all",
-//   [">", ["get", "q"], 0],
-//   ["<", ["get", "q"], 200],
-// ]);
-
-function addFilter() {
+/**
+ * @description Is called when btn gets clicked. New entry added to array with the current date when btn gets clicked (as id for filterElement).
+ */
+function addFilterElement() {
   if (filterIds.value.length <= 3) {
     filterIds.value.push(Date.now());
-    // filtersIndices.value.push(filtersIndices.value.length);
-    console.log(filterIds.value);
   } else {
     console.log("You reached the maximum number of filters");
   }
 }
 
+/**
+ * @description Set id of filter als key and expression as value
+ * @param {Object} event
+ */
 const setSendFilterExpression = (event) => {
   filterExpressions.value[event.id] = event.expression;
   console.log("FilterPanel");
   console.log(filterExpressions.value);
 };
 
+/**
+ * @description remove corresponding id of filter from array and filterExpressions object.
+ * @param {Object} event
+ */
 const removeFilterElement = (event) => {
-  console.log("removeFilterElement");
-  console.log(event.id);
   if (filterIds.value.includes(event.id)) {
+    /*remove id from filterIds */
     const ix = filterIds.value.indexOf(event.id);
     filterIds.value.splice(ix, 1);
+    /*remove filterExpression from object */
+    delete filterExpressions.value[event.id];
   } else {
     console.log("FilterElement ID is not in filterIds array");
   }
 };
 
-function testMultipleFilter() {
-  // let filterExpression1 = [
-  //   "all",
-  //   [">=", ["get", "q"], -126],
-  //   ["<=", ["get", "q"], 2000],
-  // ];
+/**
+ * @description combine multiple filter expressions to one. All filter expressions have to be true.
+ * @returns {Array} containing filter expressions
+ */
+function writeFilterExpression() {
+  let expression = ["all"];
 
-  // let filterExpression2 = [["any"], ["in", ["get", "env"], "unspecified"]];
+  Object.entries(filterExpressions.value).forEach(([key]) => {
+    expression.push(filterExpressions.value[key]);
+  });
 
-  let combinedFilterExpression = [
-    "any",
-    ["all", [">=", ["get", "q"], -126], ["<=", ["get", "q"], 0]],
-    ["in", ["get", "env"], "unspecified"],
-  ];
+  return expression;
+}
 
-  props.map.setFilter("sites", combinedFilterExpression);
+/**
+ * @description set Filter to map via internal maplibre function.
+ */
+function applyFilterToMap() {
+  const expression = writeFilterExpression();
+
+  props.map.setFilter("sites", expression);
 }
 </script>
 
 <template>
   <div class="filters-panel">
     <FilterElement
-      v-for="value in filterIds"
-      :key="value"
-      :id="value"
+      v-for="id in filterIds"
+      :key="id"
+      :id="id"
       :heatFlowSchema="heatFlowSchema"
       :map="map"
       @send-filterExpression="setSendFilterExpression($event)"
@@ -91,11 +92,8 @@ function testMultipleFilter() {
     </FilterElement>
 
     <div class="filter-managing-tools">
-      <button class="btn btn-primary" @click="addFilter()">+ Add Filter</button>
-    </div>
-    <div class="test-btn">
-      <button class="btn btn-primary" @click="testMultipleFilter()">
-        Test combined filters
+      <button class="btn btn-primary" @click="addFilterElement()">
+        + Add Filter
       </button>
     </div>
   </div>

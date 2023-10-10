@@ -148,20 +148,24 @@ function resetSelectedValues() {
   }
 }
 
+function resetFilterExpression() {
+  filterExpression.value = [];
+}
+
 /**
  * @description Generates filter expression for properties of type string with enum
  * @param {String} property
  * @param {Array} values
  * @returns {Array}
  */
-function generateEnumFilter(property, values) {
+function writeEnumFilter(property, values) {
   let filterExpression = ["any"];
 
   values.forEach((value) => {
     filterExpression.push(["in", ["get", property], value]);
   });
 
-  props.map.setFilter("sites", filterExpression);
+  // props.map.setFilter("sites", filterExpression);
 
   return filterExpression;
 }
@@ -172,7 +176,7 @@ function generateEnumFilter(property, values) {
  * @param {Array} values
  * @returns {Array}
  */
-function generateContinuousFilter(property, values) {
+function writeContinuousFilter(property, values) {
   const minValue = values[0];
   const maxValue = values[1];
 
@@ -182,7 +186,7 @@ function generateContinuousFilter(property, values) {
     ["<=", ["get", property], maxValue],
   ];
 
-  props.map.setFilter("sites", filterExpression);
+  // props.map.setFilter("sites", filterExpression);
 
   return filterExpression;
 }
@@ -196,9 +200,9 @@ function setFilterExpression(property, values) {
     console.error("no property selected");
     return;
   } else if (selectedPropertyType.value == "string") {
-    filterExpression.value = generateEnumFilter(property, values);
+    filterExpression.value = writeEnumFilter(property, values);
   } else if (selectedPropertyType.value == "number") {
-    filterExpression.value = generateContinuousFilter(property, values);
+    filterExpression.value = writeContinuousFilter(property, values);
   }
   // props.map.setFilter("sites", filterExpression);
 }
@@ -317,7 +321,14 @@ function printOutSelectedValues() {
         </div> -->
       </div>
       <div class="reset-filter-btn" v-if="selectedValues.length > 0">
-        <button class="btn btn-primary" @click="resetSelectedValues()">
+        <button
+          class="btn btn-primary"
+          @click="
+            resetSelectedValues();
+            resetFilterExpression();
+            sendFilterExpression();
+          "
+        >
           Reset filter
         </button>
       </div>
