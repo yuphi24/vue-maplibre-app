@@ -92,7 +92,7 @@ const handleLegendEvent = (legend) => {
 }
 
 .sidebar-body {
-  background-color: lightgray;
+  background-color: lightgrey;
   padding: 5px;
 }
 </style>

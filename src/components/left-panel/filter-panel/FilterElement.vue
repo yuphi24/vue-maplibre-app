@@ -1,9 +1,10 @@
 <script setup>
-import { defineProps, ref, watch } from "vue";
+import { defineProps, defineEmits, ref, watch } from "vue";
 import VueMultiselect from "vue-multiselect";
 import VueSlider from "vue-slider-component";
 
-const props = defineProps({ map: Map, heatFlowSchema: Object });
+const props = defineProps({ id: Number, map: Map, heatFlowSchema: Object });
+const emit = defineEmits(["send-filterExpression", "remove-filterElement"]);
 
 const propertyOptions = ref(getSelectableProperties(props.heatFlowSchema));
 const selectedProperty = ref(null);
@@ -11,34 +12,36 @@ const selectedPropertyType = ref(null);
 
 const valueOptions = ref(null);
 const selectedValues = ref([]);
-
 // const onlyNullValue = ref(false);
-
-watch(selectedValues, () => {
-  console.log("watch method");
-  console.log(selectedValues.value);
-  if (selectedValues.value.length > 0) {
-    applyFilterToMap(selectedProperty.value, selectedValues.value);
-  } else if (selectedValues.value.length == 0) {
-    props.map.setFilter("sites");
-  }
-});
+const filterExpression = ref([]);
 
 /**
- * Pseudo Code:
- * 1. btn apply filter
- * 2. set property
- * 3. differentiation of data type:
- *    - if string && enum
- *        - make enum values selectable
- *        - write filter expression: match property == value
- *    - else if number
- *        - provide range of values from min to max
- *        - make min and max be shiftable for user
- *        - v-bind min and max if user makes changes
- *        - write filter expression: between min and max
- * 4. setFilter() --> https://maplibre.org/maplibre-gl-js/docs/API/classes/maplibregl.Map/#setfilter
+ * @description Send filter expression to filterPanel
  */
+const sendFilterExpression = () => {
+  emit("send-filterExpression", {
+    expression: filterExpression.value,
+    id: props.id,
+  });
+};
+
+/**
+ * @description remove filterElement and corresponding filterExpression from filterPanel
+ */
+const removeFilterElement = () => {
+  emit("remove-filterElement", { id: props.id });
+};
+
+/**
+ *
+ */
+watch(selectedValues, () => {
+  if (selectedValues.value.length > 0) {
+    setFilterExpression(selectedProperty.value, selectedValues.value);
+  } else if (selectedValues.value.length == 0) {
+    props.map.setFilter("sites", undefined);
+  }
+});
 
 /**
  * @description Throw out all properties options which are not suitable for the data driven coloring e.g. name, data points either be already classified (enum) or should be able to classify (continouse numerbs)
@@ -70,9 +73,6 @@ function getSelectableProperties(schema) {
 function setSelectedPropertyType(selectedProperty) {
   selectedPropertyType.value =
     props.heatFlowSchema.properties[selectedProperty].type;
-
-  console.log("property type");
-  console.log(selectedPropertyType.value);
 }
 
 /**
@@ -127,11 +127,8 @@ function setValueOptions(selectedProperty) {
     valueOptions.value = getEnumClasses(selectedProperty);
   } else if (selectedPropertyType.value == "number") {
     const geoJson = props.map.getSource("sites")._data;
-
     valueOptions.value = getRange(geoJson, selectedProperty);
-
     selectedValues.value = [valueOptions.value[0], valueOptions.value[1]];
-    console.log(valueOptions.value);
   } else {
     console.log("Data type of property is not defined");
   }
@@ -164,9 +161,6 @@ function generateEnumFilter(property, values) {
     filterExpression.push(["in", ["get", property], value]);
   });
 
-  console.log("enum filter expression");
-  console.log(filterExpression);
-
   props.map.setFilter("sites", filterExpression);
 
   return filterExpression;
@@ -197,19 +191,36 @@ function generateContinuousFilter(property, values) {
  * @description
  * @returns {Void}
  */
-function applyFilterToMap(property, values) {
-  let filterExpression = null;
-
+function setFilterExpression(property, values) {
   if (!selectedProperty.value) {
     console.error("no property selected");
     return;
   } else if (selectedPropertyType.value == "string") {
-    filterExpression = generateEnumFilter(property, values);
+    filterExpression.value = generateEnumFilter(property, values);
   } else if (selectedPropertyType.value == "number") {
-    filterExpression = generateContinuousFilter(property, values);
+    filterExpression.value = generateContinuousFilter(property, values);
   }
-  props.map.setFilter("sites", filterExpression);
+  // props.map.setFilter("sites", filterExpression);
 }
+
+// function testMultipleFilter() {
+//   // let filterExpression1 = [
+//   //   "all",
+//   //   [">=", ["get", "q"], -126],
+//   //   ["<=", ["get", "q"], 2000],
+//   // ];
+
+//   // let filterExpression2 = [["any"], ["in", ["get", "env"], "unspecified"]];
+
+//   let combinedFilterExpression = [
+//     "all",
+//     [">=", ["get", "q"], -126],
+//     ["<=", ["get", "q"], 0],
+//     ["in", ["get", "env"], "unspecified"],
+//   ];
+
+//   props.map.setFilter("sites", combinedFilterExpression);
+// }
 
 /**
  * Helper function
@@ -226,7 +237,7 @@ function printOutSelectedValues() {
       Multiselect:
       https://vue-multiselect.js.org/
      -->
-    <div>
+    <div class="select-property">
       <label for="">Property</label>
       <VueMultiselect
         v-model="selectedProperty"
@@ -248,7 +259,15 @@ function printOutSelectedValues() {
           v-model="selectedValues"
           :options="valueOptions"
           :multiple="true"
-          @select="printOutSelectedValues()"
+          @select="
+            printOutSelectedValues();
+            setFilterExpression(selectedProperty, selectedValues);
+            sendFilterExpression();
+          "
+          @remove="
+            setFilterExpression(selectedProperty, selectedValues);
+            sendFilterExpression();
+          "
         >
         </VueMultiselect>
       </div>
@@ -265,7 +284,11 @@ function printOutSelectedValues() {
           :min="valueOptions[0]"
           :max="valueOptions[1]"
           :interval="0.01"
-          @change="printOutSelectedValues()"
+          @change="
+            printOutSelectedValues();
+            setFilterExpression(selectedProperty, selectedValues);
+            sendFilterExpression();
+          "
         ></vue-slider>
 
         <!-- TODO: Include null value OR select only null values as filter criteria -->
@@ -293,8 +316,13 @@ function printOutSelectedValues() {
           </label>
         </div> -->
       </div>
-      <div class="apply-filter-btn" v-if="selectedValues.length > 0">
+      <div class="reset-filter-btn" v-if="selectedValues.length > 0">
         <button class="btn btn-primary" @click="resetSelectedValues()">
+          Reset filter
+        </button>
+      </div>
+      <div class="remove-filter-btn">
+        <button class="btn btn-primary" @click="removeFilterElement()">
           Remove filter
         </button>
       </div>
@@ -305,6 +333,17 @@ function printOutSelectedValues() {
 <style scoped>
 @import "vue-multiselect/dist/vue-multiselect.css";
 @import "vue-slider-component/theme/default.css";
+.filter-element {
+  border-top: 4px inset;
+}
+
+.select-property {
+  padding-bottom: 5px;
+}
+
+.filter-controller {
+  padding-bottom: 5px;
+}
 
 .slider {
   padding: 15px;
