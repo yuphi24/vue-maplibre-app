@@ -165,8 +165,6 @@ function writeEnumFilter(property, values) {
     filterExpression.push(["in", ["get", property], value]);
   });
 
-  // props.map.setFilter("sites", filterExpression);
-
   return filterExpression;
 }
 
@@ -186,8 +184,6 @@ function writeContinuousFilter(property, values) {
     ["<=", ["get", property], maxValue],
   ];
 
-  // props.map.setFilter("sites", filterExpression);
-
   return filterExpression;
 }
 
@@ -204,27 +200,7 @@ function setFilterExpression(property, values) {
   } else if (selectedPropertyType.value == "number") {
     filterExpression.value = writeContinuousFilter(property, values);
   }
-  // props.map.setFilter("sites", filterExpression);
 }
-
-// function testMultipleFilter() {
-//   // let filterExpression1 = [
-//   //   "all",
-//   //   [">=", ["get", "q"], -126],
-//   //   ["<=", ["get", "q"], 2000],
-//   // ];
-
-//   // let filterExpression2 = [["any"], ["in", ["get", "env"], "unspecified"]];
-
-//   let combinedFilterExpression = [
-//     "all",
-//     [">=", ["get", "q"], -126],
-//     ["<=", ["get", "q"], 0],
-//     ["in", ["get", "env"], "unspecified"],
-//   ];
-
-//   props.map.setFilter("sites", combinedFilterExpression);
-// }
 
 /**
  * Helper function
