@@ -8,6 +8,8 @@ const props = defineProps({ map: Map, heatFlowSchema: Object });
 
 const filterIds = ref([]);
 const filterExpressions = ref({});
+const maxNrOfFilters = ref(4);
+const reachedFilterLimit = ref(false);
 
 /**
  * @description Watches changes in filterExpressions object and set the filter to map.
@@ -21,9 +23,10 @@ watch(filterExpressions.value, () => {
  * @description Is called when btn gets clicked. New entry added to array with the current date when btn gets clicked (as id for filterElement).
  */
 function addFilterElement() {
-  if (filterIds.value.length <= 3) {
+  if (filterIds.value.length <= maxNrOfFilters.value) {
     filterIds.value.push(Date.now());
   } else {
+    reachedFilterLimit.value = true;
     console.log("You reached the maximum number of filters");
   }
 }
@@ -51,6 +54,10 @@ const removeFilterElement = (event) => {
     delete filterExpressions.value[event.id];
   } else {
     console.log("FilterElement ID is not in filterIds array");
+  }
+
+  if (filterIds.value.length === maxNrOfFilters.value) {
+    reachedFilterLimit.value = false;
   }
 };
 
@@ -97,7 +104,15 @@ function applyFilterToMap() {
     </FilterElement>
 
     <div class="filter-managing-tools">
-      <button class="btn btn-primary" @click="addFilterElement()">
+      <label for="add-filter-btn" v-if="reachedFilterLimit"
+        >You reached the max number of filters</label
+      >
+      <button
+        id="add-filter-btn"
+        class="btn btn-primary"
+        v-if="!reachedFilterLimit"
+        @click="addFilterElement()"
+      >
         + Add Filter
       </button>
     </div>

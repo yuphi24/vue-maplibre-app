@@ -33,15 +33,77 @@ const removeFilterElement = () => {
 };
 
 /**
- *
+ * @description
  */
 watch(selectedValues, () => {
+  console.log(selectedValues.value);
   if (selectedValues.value.length > 0) {
     setFilterExpression(selectedProperty.value, selectedValues.value);
   } else if (selectedValues.value.length == 0) {
     // props.map.setFilter("sites", undefined);
   }
 });
+
+// TODO: case, maxValue > selectedValues.value[1] < selectedValues.value[0]
+watch(selectedValues, (newSelectedValues) => {
+  if (selectedPropertyType.value == "number") {
+    /* check if value in range */
+    if (
+      isValueInRange(
+        newSelectedValues[0],
+        valueOptions.value[0],
+        valueOptions.value[1]
+      )
+    ) {
+      if (newSelectedValues[0] < newSelectedValues[1]) {
+        selectedValues.value[0] = newSelectedValues[0];
+      }
+    } else {
+      console.log(
+        "newSelectedValue[0] " +
+          newSelectedValues[0] +
+          "  is  < than min " +
+          valueOptions.value[0]
+      );
+      selectedValues.value[0] = valueOptions.value[0];
+    }
+    /* check if value in range */
+    if (
+      isValueInRange(
+        newSelectedValues[1],
+        valueOptions.value[0],
+        valueOptions.value[1]
+      )
+    ) {
+      if (newSelectedValues[1] > newSelectedValues[0]) {
+        selectedValues.value[1] = newSelectedValues[1];
+      }
+    } else {
+      console.log(
+        "newSelectedValue[1] " +
+          newSelectedValues[1] +
+          "  is  > than max " +
+          valueOptions.value[1]
+      );
+      selectedValues.value[1] = valueOptions.value[1];
+    }
+  }
+});
+
+/**
+ * @description
+ * @param {Number} value
+ * @param {Number} min
+ * @param {Number} max
+ * @returns {Boolean}
+ */
+function isValueInRange(value, min, max) {
+  if (value >= min && value <= max) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 /**
  * @description Throw out all properties options which are not suitable for the data driven coloring e.g. name, data points either be already classified (enum) or should be able to classify (continouse numerbs)
@@ -202,6 +264,10 @@ function setFilterExpression(property, values) {
   }
 }
 
+function updateSlider() {
+  selectedValues.value = [selectedValues.value[0], selectedValues.value[1]];
+}
+
 /**
  * Helper function
  */
@@ -291,6 +357,48 @@ function printOutSelectedValues() {
           ></vue-slider>
 
           <!-- TODO: Include null value OR select only null values as filter criteria -->
+          <form>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <input
+                    v-model.number="selectedValues[0]"
+                    type="number"
+                    class="form-control"
+                    step=".01"
+                    :min="valueOptions[0]"
+                    :max="selectedValues[1]"
+                    id="minNumberInput"
+                    placeholder="Enter a min"
+                    @keyup.enter="
+                      updateSlider(),
+                        setFilterExpression(selectedProperty, selectedValues),
+                        sendFilterExpression()
+                    "
+                  />
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <input
+                    v-model.number="selectedValues[1]"
+                    type="number"
+                    class="form-control"
+                    step=".01"
+                    :min="selectedValues[0]"
+                    :max="valueOptions[1]"
+                    id="maxNumberInput"
+                    placeholder="Enter a max"
+                    @keyup.enter="
+                      updateSlider(),
+                        setFilterExpression(selectedProperty, selectedValues),
+                        sendFilterExpression()
+                    "
+                  />
+                </div>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
       <div class="reset-filter-btn" v-if="selectedValues.length > 0">
