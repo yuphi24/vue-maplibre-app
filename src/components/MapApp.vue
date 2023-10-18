@@ -7,7 +7,6 @@ import { onMounted, onUnmounted, markRaw, ref } from "vue";
 // map viewer
 import { Map } from "maplibre-gl";
 import yaml from "js-yaml";
-// import turf from "@turf/helpers";
 
 // data
 import maps from "./left-panel/settings-panel/maps.json";
@@ -35,8 +34,8 @@ const isCollapsed = ref(true);
 const dataSchema = ref();
 const heatFlowSchema = ref();
 const legend = ref(null);
-const dataAPI = ref(null);
-const geojson = ref(null);
+// const dataAPI = ref(null);
+// const geojson = ref(null);
 
 const setIsCollapsed = () => (isCollapsed.value = !isCollapsed.value);
 const toggleSidebar = () => {
@@ -118,87 +117,87 @@ fetchSchemaLocal("/ghfdb_API_copy.yaml");
  *
  * @param {*} siteObject
  */
-function json2PointFeature(siteObject) {
-  /**
-   * Pseudo Code:
-   * 1. get relevant property keys
-   * 2. iterate over all keys
-   *  if key == sample -> make coord arr
-   *  else write same structure key value to properties obj
-   * 3. write GeoJSON point feature turf.point()
-   * 4. return point feature
-   */
-  const featKeys = Object.keys(siteObject);
+// function json2PointFeature(siteObject) {
+//   /**
+//    * Pseudo Code:
+//    * 1. get relevant property keys
+//    * 2. iterate over all keys
+//    *  if key == sample -> make coord arr
+//    *  else write same structure key value to properties obj
+//    * 3. write GeoJSON point feature turf.point()
+//    * 4. return point feature
+//    */
+//   const featKeys = Object.keys(siteObject);
 
-  let uuidValue = siteObject["uuid"];
-  let coord = [];
-  let property = {};
+//   let uuidValue = siteObject["uuid"];
+//   let coord = [];
+//   let property = {};
 
-  featKeys.forEach((key) => {
-    if (siteObject[key] == "sample") {
-      if (siteObject[key].location != null) {
-        coord.push(siteObject[key].location.coordinates);
-      }
-    } else {
-      // console.log("hat keine location");
-      property[key] = siteObject[key];
-    }
-  });
-  return {
-    uuid: uuidValue,
-    type: "Feature",
-    geometry: { type: "Point", coordinates: coord },
-    properties: { property },
-  };
-}
+//   featKeys.forEach((key) => {
+//     if (siteObject[key] == "sample") {
+//       if (siteObject[key].location != null) {
+//         coord.push(siteObject[key].location.coordinates);
+//       }
+//     } else {
+//       // console.log("hat keine location");
+//       property[key] = siteObject[key];
+//     }
+//   });
+//   return {
+//     uuid: uuidValue,
+//     type: "Feature",
+//     geometry: { type: "Point", coordinates: coord },
+//     properties: { property },
+//   };
+// }
 
 /**
  *
  * @param {*} fetchedData
  */
-function json2GeoJSON(fetchedData) {
-  let objectKeys = Object.keys(fetchedData);
-  let featuresArray = [];
+// function json2GeoJSON(fetchedData) {
+//   let objectKeys = Object.keys(fetchedData);
+//   let featuresArray = [];
 
-  objectKeys.forEach((ix) => {
-    console.log("site: " + ix + "; " + fetchedData[ix]);
-    featuresArray.push(json2PointFeature(fetchedData[ix]));
-  });
+//   objectKeys.forEach((ix) => {
+//     console.log("site: " + ix + "; " + fetchedData[ix]);
+//     featuresArray.push(json2PointFeature(fetchedData[ix]));
+//   });
 
-  let geojson = { type: "FeatureCollection", features: featuresArray };
-  console.log(geojson);
+//   let geojson = { type: "FeatureCollection", features: featuresArray };
+//   console.log(geojson);
 
-  return geojson;
-}
+//   return geojson;
+// }
 
 /**
  *
  * @param {String} dataURL
  */
-function fetchDataAPI(dataURL) {
-  // /api/v1/measurements/heat-flow/?format=json
-  fetch(dataURL)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("HTTP error " + response.status);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      dataAPI.value = data;
-      console.log("fetch data test");
-      console.log("Output: ", dataAPI.value);
-      geojson.value = json2GeoJSON(dataAPI.value.results);
-    })
-    .catch(function (error) {
-      console.log("Failed to fetch the heat flow data file.");
-      console.error(error);
-    });
-}
+// function fetchDataAPI(dataURL) {
+//   // /api/v1/measurements/heat-flow/?format=json
+//   fetch(dataURL)
+//     .then((response) => {
+//       if (!response.ok) {
+//         throw new Error("HTTP error " + response.status);
+//       }
+//       return response.json();
+//     })
+//     .then((data) => {
+//       dataAPI.value = data;
+//       console.log("fetch data test");
+//       console.log("Output: ", dataAPI.value);
+//       geojson.value = json2GeoJSON(dataAPI.value.results);
+//     })
+//     .catch(function (error) {
+//       console.log("Failed to fetch the heat flow data file.");
+//       console.error(error);
+//     });
+// }
 
-fetchDataAPI(
-  "http://139.17.54.176:8000/api/v1/measurements/heat-flow/?format=json"
-);
+// fetchDataAPI(
+//   "http://139.17.54.176:8000/api/v1/measurements/heat-flow/?format=json"
+// );
 
 // get title of corresponding button and set it as title of sidepanel
 function setPanelTitle(event) {

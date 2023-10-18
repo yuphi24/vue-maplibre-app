@@ -33,6 +33,29 @@ const removeFilterElement = () => {
 };
 
 /**
+ * @description Throw out all properties options which are not suitable for the data driven coloring e.g. name, data points either be already classified (enum) or should be able to classify (continouse numerbs)
+ * @param {*} schema
+ * @returns {Array}
+ */
+function getSelectableProperties(schema) {
+  const propertiesKey = Object.keys(schema.properties);
+  let selectableOptions = [];
+
+  propertiesKey.forEach((property) => {
+    if (
+      props.heatFlowSchema.properties[property].type == "string" &&
+      !props.heatFlowSchema.properties[property].enum
+    ) {
+      console.log(property + " is not suitable for filtering");
+    } else {
+      selectableOptions.push(property);
+    }
+  });
+
+  return selectableOptions;
+}
+
+/**
  * @description
  */
 watch(selectedValues, () => {
@@ -43,6 +66,21 @@ watch(selectedValues, () => {
     // props.map.setFilter("sites", undefined);
   }
 });
+
+/**
+ * @description
+ * @param {Number} value
+ * @param {Number} min
+ * @param {Number} max
+ * @returns {Boolean}
+ */
+function isValueInRange(value, min, max) {
+  if (value >= min && value <= max) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 // TODO: case, maxValue > selectedValues.value[1] < selectedValues.value[0]
 watch(selectedValues, (newSelectedValues) => {
@@ -89,44 +127,6 @@ watch(selectedValues, (newSelectedValues) => {
     }
   }
 });
-
-/**
- * @description
- * @param {Number} value
- * @param {Number} min
- * @param {Number} max
- * @returns {Boolean}
- */
-function isValueInRange(value, min, max) {
-  if (value >= min && value <= max) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-/**
- * @description Throw out all properties options which are not suitable for the data driven coloring e.g. name, data points either be already classified (enum) or should be able to classify (continouse numerbs)
- * @param {*} schema
- * @returns {Array}
- */
-function getSelectableProperties(schema) {
-  const propertiesKey = Object.keys(schema.properties);
-  let selectableOptions = [];
-
-  propertiesKey.forEach((property) => {
-    if (
-      props.heatFlowSchema.properties[property].type == "string" &&
-      !props.heatFlowSchema.properties[property].enum
-    ) {
-      console.log(property + " is not suitable for filtering");
-    } else {
-      selectableOptions.push(property);
-    }
-  });
-
-  return selectableOptions;
-}
 
 /**
  * @description Store data type of selected property
