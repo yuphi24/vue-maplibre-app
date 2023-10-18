@@ -1,7 +1,7 @@
 {
   "name": "whfd-mapping",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -55,5 +55,20 @@
     "sass": "^1.26.11",
     "sass-loader": "^10.0.2",
     "vue-cli-plugin-bootstrap-vue": "~0.8.2"
-  }
+  },
+  "description": "## Project setup ``` npm install ```",
+  "main": ".eslintrc.js",
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WorldHeatFlowDatabase/vue-maplibre-app.git"
+  },
+  "author": "Nikolas Ott",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/WorldHeatFlowDatabase/vue-maplibre-app/issues"
+  },
+  "homepage": "https://github.com/WorldHeatFlowDatabase/vue-maplibre-app#readme"
 }
