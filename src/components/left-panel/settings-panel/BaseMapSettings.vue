@@ -62,7 +62,7 @@ function changeBaseLayer(oldBaseLayer, newBaseLayer) {
 
 .card {
   height: auto;
-  width: 10rem;
+  /* width: 10rem; */
   padding: 2px;
   cursor: pointer;
 }

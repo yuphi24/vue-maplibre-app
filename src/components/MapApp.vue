@@ -10,10 +10,10 @@ import yaml from "js-yaml";
 
 // data
 import maps from "./left-panel/settings-panel/maps.json";
-import sitesURL from "@/assets/data/test_local.geojson";
+import sitesURL from "@/assets/data/small_sites.geojson";
 
 // components
-import AttributeTable from "./common/AttributeTable.vue";
+// import AttributeTable from "./common/AttributeTable.vue";
 import CursorCoordinates from "./map/CursorCoordinates.vue";
 import DataSources from "./map/DataSources.vue";
 import LeftPanel from "./left-panel/LeftPanel.vue";
@@ -56,10 +56,10 @@ const handleLegend = (l) => {
   console.log(legend.value);
 };
 
-const showsDataTable = ref(false);
-const toggleDataTable = () => {
-  showsDataTable.value = !showsDataTable.value;
-};
+// const showsDataTable = ref(false);
+// const toggleDataTable = () => {
+//   showsDataTable.value = !showsDataTable.value;
+// };
 
 /**
  * @description
@@ -295,10 +295,10 @@ onMounted(() => {
     map.value?.remove();
   });
 
-function printHeatFlowSchema() {
-  console.log("heatflow schema mapapp");
-  console.log(dataSchema.value);
-}
+// function printHeatFlowSchema() {
+//   console.log("heatflow schema mapapp");
+//   console.log(dataSchema.value);
+// }
 </script>
 
 <template>
@@ -346,7 +346,7 @@ function printHeatFlowSchema() {
 
       <!-- <div id="legend" class="sidebar flex-center right collapsed"></div> -->
 
-      <div class="trigger-data-table">
+      <!-- <div class="trigger-data-table">
         <button
           type="button"
           class="btn-trigger-data-table btn btn-primary"
@@ -357,14 +357,14 @@ function printHeatFlowSchema() {
         >
           Show Data Table
         </button>
-      </div>
+      </div> -->
     </div>
   </div>
-  <AttributeTable
+  <!-- <AttributeTable
     v-if="showsDataTable"
     @toggle-dt-event="toggleDataTable()"
     :map="map"
-  />
+  /> -->
 </template>
 
 <style scoped>
