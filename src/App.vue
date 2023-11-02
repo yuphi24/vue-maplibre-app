@@ -3,9 +3,7 @@ import MapComponent from "./components/MapApp.vue";
 </script>
 
 <template>
-  <div class="app">
-    <MapComponent />
-  </div>
+  <MapComponent />
 </template>
 
 <style>
@@ -23,7 +21,7 @@ code {
     monospace;
 }
 
-.app {
+/* .whfd-mapping {
   text-align: center;
-}
+} */
 </style>

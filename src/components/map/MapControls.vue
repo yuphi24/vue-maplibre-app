@@ -12,6 +12,13 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 
 const props = defineProps({ map: Map });
 const map = ref(props.map);
+const mapBoxDraw = new MapboxDraw({
+  displayControlsDefault: false,
+  controls: {
+    polygon: true,
+    trash: true,
+  },
+});
 
 watch(props, (newProps) => {
   map.value = newProps.map;
@@ -22,16 +29,8 @@ watch(props, (newProps) => {
   map.value.addControl(new NavigationControl(), "top-right");
 
   // add thrid-party controls
-  map.value.addControl(
-    new MapboxDraw({
-      displayControlsDefault: false,
-      controls: {
-        polygon: true,
-        line_string: true,
-        trash: true,
-      },
-    })
-  );
+
+  map.value.addControl(mapBoxDraw);
 });
 </script>
 
