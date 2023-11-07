@@ -1,0 +1,1853 @@
+openapi: 3.0.3
+info:
+  title: Global Heat Flow Database API
+  version: 1.0.0
+  description: Documentation of API endpoints of Global Heat Flow Database
+  termsOfService: /api/v1/tos/
+  contact:
+    name: International Heat Flow Commission
+    url: https://www.ihfc-iugg.org
+    email: ''
+  license:
+    name: CC BY 4.0
+    url: https://creativecommons.org/licenses/by/4.0/
+paths:
+  /api/v1/projects/:
+    get:
+      operationId: projects_list
+      description: "\n\n## project List\n\nA list of publicly available  within the\
+        \ database. \n\n- something\n- something else\n\n"
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - projects
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProjectList'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProjectList'
+          description: ''
+  /api/v1/projects/{uuid}/:
+    get:
+      operationId: projects_retrieve
+      description: |-
+        A project is a collection of datasets and associated metadata. The Project model
+        is the top level model in the Geoluminate schema heirarchy and all datasets, samples,
+        sites and measurements should relate back to a project.
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          description: Universally unique identifier for this record.
+        required: true
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - projects
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+  /api/v1/datasets/:
+    get:
+      operationId: datasets_list
+      description: A viewset mixin that allows both nested and base API routes to
+        be processed by the same viewset. Default lookup is uuid.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - datasets
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDatasetList'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDatasetList'
+          description: ''
+  /api/v1/datasets/{uuid}/:
+    get:
+      operationId: datasets_retrieve
+      description: A viewset mixin that allows both nested and base API routes to
+        be processed by the same viewset. Default lookup is uuid.
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          description: Universally unique identifier for this record.
+        required: true
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - datasets
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dataset'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/Dataset'
+          description: ''
+  /api/v1/samples/:
+    get:
+      operationId: samples_list
+      description: A viewset mixin that allows both nested and base API routes to
+        be processed by the same viewset. Default lookup is uuid.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - samples
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSampleList'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSampleList'
+          description: ''
+  /api/v1/samples/{uuid}/:
+    get:
+      operationId: samples_retrieve
+      description: A viewset mixin that allows both nested and base API routes to
+        be processed by the same viewset. Default lookup is uuid.
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          description: Universally unique identifier for this record.
+        required: true
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - samples
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sample'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/Sample'
+          description: ''
+  /api/v1/locations/:
+    get:
+      operationId: locations_list
+      description: A viewset mixin that allows both nested and base API routes to
+        be processed by the same viewset. Default lookup is uuid.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - locations
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLocationList'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLocationList'
+          description: ''
+  /api/v1/locations/{uuid}/:
+    get:
+      operationId: locations_retrieve
+      description: A viewset mixin that allows both nested and base API routes to
+        be processed by the same viewset. Default lookup is uuid.
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          description: Universally unique identifier for this record.
+        required: true
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - locations
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: ''
+  /api/v1/measurements/heat-flow/:
+    get:
+      operationId: measurements_heat_flow_list
+      description: A viewset mixin that allows both nested and base API routes to
+        be processed by the same viewset. Default lookup is uuid.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - measurements
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMeasurementList'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMeasurementList'
+          description: ''
+  /api/v1/measurements/heat-flow/{uuid}/:
+    get:
+      operationId: measurements_heat_flow_retrieve
+      description: A viewset mixin that allows both nested and base API routes to
+        be processed by the same viewset. Default lookup is uuid.
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          description: Universally unique identifier for this record.
+        required: true
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - measurements
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Measurement'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/Measurement'
+          description: ''
+  /api/v1/measurements/heat-flow-child/:
+    get:
+      operationId: measurements_heat_flow_child_list
+      description: A viewset mixin that allows both nested and base API routes to
+        be processed by the same viewset. Default lookup is uuid.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - measurements
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMeasurementList'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMeasurementList'
+          description: ''
+  /api/v1/measurements/heat-flow-child/{uuid}/:
+    get:
+      operationId: measurements_heat_flow_child_retrieve
+      description: A viewset mixin that allows both nested and base API routes to
+        be processed by the same viewset. Default lookup is uuid.
+      parameters:
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          description: Universally unique identifier for this record.
+        required: true
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - measurements
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Measurement'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/Measurement'
+          description: ''
+  /api/v1/literature/:
+    get:
+      operationId: literature_list
+      description: API endpoint that allows literature to be viewed or edited.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - literature
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLiteratureList'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLiteratureList'
+          description: ''
+  /api/v1/literature/{id}/:
+    get:
+      operationId: literature_retrieve
+      description: API endpoint that allows literature to be viewed or edited.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this literature.
+        required: true
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - literature
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Literature'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/Literature'
+          description: ''
+  /api/v1/projects/{project_uuid}/datasets/:
+    get:
+      operationId: projects_datasets_list
+      description: A viewset mixin that allows both nested and base API routes to
+        be processed by the same viewset. Default lookup is uuid.
+      parameters:
+      - in: path
+        name: project_uuid
+        schema:
+          type: string
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - projects
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDatasetList'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDatasetList'
+          description: ''
+  /api/v1/projects/{project_uuid}/datasets/{uuid}/:
+    get:
+      operationId: projects_datasets_retrieve
+      description: A viewset mixin that allows both nested and base API routes to
+        be processed by the same viewset. Default lookup is uuid.
+      parameters:
+      - in: path
+        name: project_uuid
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          description: Universally unique identifier for this record.
+        required: true
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - projects
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dataset'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/Dataset'
+          description: ''
+  /api/v1/datasets/{dataset_uuid}/samples/:
+    get:
+      operationId: datasets_samples_list
+      description: A viewset mixin that allows both nested and base API routes to
+        be processed by the same viewset. Default lookup is uuid.
+      parameters:
+      - in: path
+        name: dataset_uuid
+        schema:
+          type: string
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - datasets
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSampleList'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSampleList'
+          description: ''
+  /api/v1/datasets/{dataset_uuid}/samples/{uuid}/:
+    get:
+      operationId: datasets_samples_retrieve
+      description: A viewset mixin that allows both nested and base API routes to
+        be processed by the same viewset. Default lookup is uuid.
+      parameters:
+      - in: path
+        name: dataset_uuid
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          description: Universally unique identifier for this record.
+        required: true
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - datasets
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sample'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/Sample'
+          description: ''
+  /api/v1/datasets/{dataset_uuid}/locations/:
+    get:
+      operationId: datasets_locations_list
+      description: A viewset mixin that allows both nested and base API routes to
+        be processed by the same viewset. Default lookup is uuid.
+      parameters:
+      - in: path
+        name: dataset_uuid
+        schema:
+          type: string
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - datasets
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLocationList'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLocationList'
+          description: ''
+  /api/v1/datasets/{dataset_uuid}/locations/{uuid}/:
+    get:
+      operationId: datasets_locations_retrieve
+      description: A viewset mixin that allows both nested and base API routes to
+        be processed by the same viewset. Default lookup is uuid.
+      parameters:
+      - in: path
+        name: dataset_uuid
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: uuid
+        schema:
+          type: string
+          format: uuid
+          description: Universally unique identifier for this record.
+        required: true
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - datasets
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/Location'
+          description: ''
+  /api/v1/contributors/:
+    get:
+      operationId: contributors_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - contributors
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProfileList'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProfileList'
+          description: ''
+  /api/v1/contributors/{id}/:
+    get:
+      operationId: contributors_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this contributor.
+        required: true
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - contributors
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+          description: ''
+  /api/v1/contributors/{contributor_id}/projects/:
+    get:
+      operationId: contributors_projects_list
+      parameters:
+      - in: path
+        name: contributor_id
+        schema:
+          type: string
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - contributors
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProjectList'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProjectList'
+          description: ''
+  /api/v1/contributors/{contributor_id}/projects/{id}/:
+    get:
+      operationId: contributors_projects_retrieve
+      parameters:
+      - in: path
+        name: contributor_id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this project.
+        required: true
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - contributors
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+  /api/v1/contributors/{contributor_id}/datasets/:
+    get:
+      operationId: contributors_datasets_list
+      parameters:
+      - in: path
+        name: contributor_id
+        schema:
+          type: string
+        required: true
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - contributors
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDatasetList'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDatasetList'
+          description: ''
+  /api/v1/contributors/{contributor_id}/datasets/{id}/:
+    get:
+      operationId: contributors_datasets_retrieve
+      parameters:
+      - in: path
+        name: contributor_id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this dataset.
+        required: true
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - geojson
+          - json
+      tags:
+      - contributors
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dataset'
+            application/geo+json:
+              schema:
+                $ref: '#/components/schemas/Dataset'
+          description: ''
+components:
+  schemas:
+    BlankEnum:
+      enum:
+      - ''
+    Contribution:
+      type: object
+      properties:
+        contributor:
+          $ref: '#/components/schemas/Contributor'
+        roles:
+          allOf:
+          - $ref: '#/components/schemas/RolesEnum'
+          description: |-
+            Contribution roles as per the Datacite ContributionType vocabulary.
+
+            * `ContactPerson` - Contact Person
+            * `DataCollector` - Data Collector
+            * `DataCurator` - Data Curator
+            * `DataManager` - Data Manager
+            * `Editor` - Editor
+            * `Producer` - Producer
+            * `RelatedPerson` - Related Person
+            * `Researcher` - Researcher
+            * `ProjectLeader` - Project Leader
+            * `ProjectManager` - Project Manager
+            * `ProjectMember` - Project Member
+            * `Supervisor` - Supervisor
+            * `WorkPackageLeader` - Work Package Leader
+            * `HostingInstitution` - Hosting Institution
+            * `ResearchGroup` - Research Group
+            * `Sponsor` - Sponsor
+            * `RightsHolder` - Rights Holder
+            * `Other` - Other
+            * `Creator` - Creator
+      required:
+      - contributor
+      - roles
+    Contributor:
+      type: object
+      description: |-
+        A type of `ModelSerializer` that uses hyperlinked relationships with compound keys instead
+        of primary key relationships.  Specifically:
+
+        * A 'url' field is included instead of the 'id' field.
+        * Relationships to other instances are hyperlinks, instead of primary keys.
+
+        NOTE: this only works with DRF 3.1.0 and above.
+      properties:
+        name:
+          type: string
+          title: Anzeigename
+          description: This name is displayed publicly within the website.
+          maxLength: 512
+      required:
+      - name
+    Dataset:
+      type: object
+      description: |-
+        A type of `ModelSerializer` that uses hyperlinked relationships with compound keys instead
+        of primary key relationships.  Specifically:
+
+        * A 'url' field is included instead of the 'id' field.
+        * Relationships to other instances are hyperlinks, instead of primary keys.
+
+        NOTE: this only works with DRF 3.1.0 and above.
+      properties:
+        details:
+          type: string
+          format: uri
+          readOnly: true
+        locations:
+          type: string
+          format: uri
+          readOnly: true
+        samples:
+          type: string
+          format: uri
+          readOnly: true
+        contributors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contribution'
+          readOnly: true
+        descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Description'
+          readOnly: true
+        key_dates:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyDate'
+          readOnly: true
+        keywords:
+          type: array
+          items:
+            type: string
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Universally unique identifier for this record.
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When this record was created.
+        modified:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When this record was last modified.
+        image:
+          type: string
+          format: uri
+          nullable: true
+          title: Bild
+          description: Upload an image that represents your project.
+        title:
+          type: string
+          title: Name
+          description: The title of the object.
+          maxLength: 255
+        tags:
+          nullable: true
+          description: |-
+            Tags to help others discover your project.
+
+            * `collaborators_wanted` - Collaborators
+            * `funding_wanted` - Funding
+            * `equipment_wanted` - Equipment
+            * `has_funding` - Funding
+            * `has_open_positions` - Open Positions
+            * `has_equipment` - Equipment
+          oneOf:
+          - $ref: '#/components/schemas/TagsEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        funding:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: Include details of any funding received for this project.
+        is_public:
+          allOf:
+          - $ref: '#/components/schemas/IsPublicEnum'
+          title: Visibility
+          description: |-
+            Choose whether this project is publicly discoverable.
+
+            * `True` - Public
+            * `False` - Private
+        reference:
+          type: string
+          format: uri
+          nullable: true
+          description: The data publication to which this dataset belongs. If the
+            dataset has not been formally published, leave this field blank.
+        project:
+          type: string
+          format: uri
+          nullable: true
+          description: The project that this dataset belongs to.
+        approved_by:
+          type: string
+          format: uri
+          nullable: true
+          description: The user who approved this dataset.
+        related_literature:
+          type: array
+          items:
+            type: string
+            format: uri
+          description: Any literature that is related to this dataset.
+      required:
+      - contributors
+      - created
+      - descriptions
+      - details
+      - key_dates
+      - keywords
+      - locations
+      - modified
+      - samples
+      - title
+      - uuid
+    Description:
+      type: object
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/DescriptionTypeEnum'
+          title: Typ
+        text:
+          type: string
+      required:
+      - text
+    DescriptionTypeEnum:
+      enum:
+      - Abstract
+      - Methods
+      - SeriesInformation
+      - TableOfContents
+      - TechnicalInfo
+      - Other
+      type: string
+      description: |-
+        * `Abstract` - Abstract
+        * `Methods` - Methods
+        * `SeriesInformation` - Series Information
+        * `TableOfContents` - Table of Contents
+        * `TechnicalInfo` - Technical Information
+        * `Other` - Other
+    EnvironmentEnum:
+      enum:
+      - Onshore (continental)
+      - Onshore (lake, river, etc.)
+      - Offshore (continental)
+      - Offshore (marine)
+      - unspecified
+      type: string
+      description: |-
+        * `Onshore (continental)` - Onshore (continental)
+        * `Onshore (lake, river, etc.)` - Onshore (lake, river, etc.)
+        * `Offshore (continental)` - Offshore (continental)
+        * `Offshore (marine)` - Offshore (marine)
+        * `unspecified` - Unspecified
+    ExploMethodEnum:
+      enum:
+      - Drilling
+      - Mining
+      - Tunneling
+      - Probing (onshore/lake, river, etc.)
+      - Probing (offshore/ocean)
+      - Other (specify in comments)
+      - unspecified
+      type: string
+      description: |-
+        * `Drilling` - Drilling
+        * `Mining` - Mining
+        * `Tunneling` - Tunneling
+        * `Probing (onshore/lake, river, etc.)` - Probing (onshore/lake, river, etc.)
+        * `Probing (offshore/ocean)` - Probing (offshore/ocean)
+        * `Other (specify in comments)` - Other (specify in comments)
+        * `unspecified` - Unspecified
+    ExploPurposeEnum:
+      enum:
+      - Hydrocarbon
+      - Underground storage
+      - Geothermal
+      - Groundwater
+      - Mapping
+      - Mining
+      - Research
+      - Tunneling
+      - Other (specify in comments)
+      - unspecified
+      type: string
+      description: |-
+        * `Hydrocarbon` - Hydrocarbon
+        * `Underground storage` - Underground storage
+        * `Geothermal` - Geothermal
+        * `Groundwater` - Groundwater
+        * `Mapping` - Mapping
+        * `Mining` - Mining
+        * `Research` - Research
+        * `Tunneling` - Tunneling
+        * `Other (specify in comments)` - Other (specify in comments)
+        * `unspecified` - Unspecified
+    IsPublicEnum:
+      enum:
+      - true
+      - false
+      type: boolean
+      description: |-
+        * `True` - Public
+        * `False` - Private
+    KeyDate:
+      type: object
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/KeyDateTypeEnum'
+          title: Typ
+          description: |-
+            The type of date.
+
+            * `proposed_start` - Proposed start
+            * `proposed_end` - Proposed end
+            * `start` - Start
+            * `end` - End
+            * `collection_start` - Collection start
+        date:
+          type: string
+          format: date-time
+          title: Datum
+          description: The date.
+      required:
+      - date
+    KeyDateTypeEnum:
+      enum:
+      - proposed_start
+      - proposed_end
+      - start
+      - end
+      - collection_start
+      type: string
+      description: |-
+        * `proposed_start` - Proposed start
+        * `proposed_end` - Proposed end
+        * `start` - Start
+        * `end` - End
+        * `collection_start` - Collection start
+    Literature:
+      type: object
+      properties:
+        CSL:
+          type: object
+          additionalProperties: {}
+          title: Citation Style Language
+    Location:
+      type: object
+      description: |-
+        A type of `ModelSerializer` that uses hyperlinked relationships with compound keys instead
+        of primary key relationships.  Specifically:
+
+        * A 'url' field is included instead of the 'id' field.
+        * Relationships to other instances are hyperlinks, instead of primary keys.
+
+        NOTE: this only works with DRF 3.1.0 and above.
+      properties:
+        point:
+          type: object
+          properties:
+            type:
+              type: string
+              enum:
+              - Point
+            coordinates:
+              type: array
+              items:
+                type: number
+                format: float
+              example:
+              - 12.9721
+              - 77.5933
+              minItems: 2
+              maxItems: 3
+          nullable: true
+    Measurement:
+      type: object
+      properties:
+        details:
+          type: string
+          format: uri
+          readOnly: true
+        sample:
+          $ref: '#/components/schemas/Sample'
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Universally unique identifier for this record.
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When this record was created.
+        modified:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When this record was last modified.
+        q:
+          type: number
+          format: double
+          maximum: 1000000
+          minimum: -1000000
+          title: Heat flow
+          description: Heat-flow density for the location after all corrections for
+            instrumental and environmental effects.
+        q_uncertainty:
+          type: number
+          format: double
+          maximum: 1000000
+          minimum: 0
+          nullable: true
+          title: Heat flow uncertainty
+          description: Uncertainty (one standard deviation) of the heat-flow value
+            [q] estimated by an error propagation from uncertainty in thermal conductivity
+            and temperature gradient, standard deviation from the average of the heat
+            flow intervals or deviation from the linear regression of the Bullard
+            plot.
+        environment:
+          nullable: true
+          title: Basic geographical environment
+          description: |-
+            Describes the general geographical setting of the heat-flow site (not the applied methodology).
+
+            * `Onshore (continental)` - Onshore (continental)
+            * `Onshore (lake, river, etc.)` - Onshore (lake, river, etc.)
+            * `Offshore (continental)` - Offshore (continental)
+            * `Offshore (marine)` - Offshore (marine)
+            * `unspecified` - Unspecified
+          oneOf:
+          - $ref: '#/components/schemas/EnvironmentEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        corr_HP_flag:
+          type: boolean
+          nullable: true
+          title: HP correction flag
+          description: Specifies if corrections to the calculated heat flow considers
+            the contribution of the heat production of the overburden to the terrestrial
+            surface heat flow q.
+        total_depth_MD:
+          type: number
+          format: double
+          maximum: 9000
+          minimum: -12000
+          nullable: true
+          title: Total measured depth
+          description: Total measured depth (MD) of the borehole.
+        total_depth_TVD:
+          type: number
+          format: double
+          maximum: 9000
+          minimum: -12000
+          nullable: true
+          title: Total true vertical depth
+          description: Specification of the total true vertical depth below mean sea
+            level.
+        explo_method:
+          nullable: true
+          title: Exploration method
+          description: |-
+            Specification of the general means by which the rock was accessed by temperature sensors for the respective data entry.
+
+            * `Drilling` - Drilling
+            * `Mining` - Mining
+            * `Tunneling` - Tunneling
+            * `Probing (onshore/lake, river, etc.)` - Probing (onshore/lake, river, etc.)
+            * `Probing (offshore/ocean)` - Probing (offshore/ocean)
+            * `Other (specify in comments)` - Other (specify in comments)
+            * `unspecified` - Unspecified
+          oneOf:
+          - $ref: '#/components/schemas/ExploMethodEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        explo_purpose:
+          nullable: true
+          title: Exploration purpose
+          description: |-
+            Main purpose of the reconnaissance target providing access for the temperature sensors.
+
+            * `Hydrocarbon` - Hydrocarbon
+            * `Underground storage` - Underground storage
+            * `Geothermal` - Geothermal
+            * `Groundwater` - Groundwater
+            * `Mapping` - Mapping
+            * `Mining` - Mining
+            * `Research` - Research
+            * `Tunneling` - Tunneling
+            * `Other (specify in comments)` - Other (specify in comments)
+            * `unspecified` - Unspecified
+          oneOf:
+          - $ref: '#/components/schemas/ExploPurposeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+      required:
+      - created
+      - details
+      - modified
+      - q
+      - sample
+      - uuid
+    NullEnum:
+      enum:
+      - null
+    PaginatedDatasetList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dataset'
+    PaginatedLiteratureList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Literature'
+    PaginatedLocationList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+    PaginatedMeasurementList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Measurement'
+    PaginatedProfileList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Profile'
+    PaginatedProjectList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Project'
+    PaginatedSampleList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Sample'
+    Profile:
+      type: object
+      description: |-
+        A type of `ModelSerializer` that uses hyperlinked relationships with compound keys instead
+        of primary key relationships.  Specifically:
+
+        * A 'url' field is included instead of the 'id' field.
+        * Relationships to other instances are hyperlinks, instead of primary keys.
+
+        NOTE: this only works with DRF 3.1.0 and above.
+      properties:
+        name:
+          type: string
+          title: Anzeigename
+          description: This name is displayed publicly within the website.
+          maxLength: 512
+      required:
+      - name
+    Project:
+      type: object
+      properties:
+        details:
+          type: string
+          format: uri
+          readOnly: true
+        datasets:
+          type: string
+          format: uri
+          readOnly: true
+        contributors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contribution'
+          readOnly: true
+        descriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Description'
+          readOnly: true
+        key_dates:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyDate'
+          readOnly: true
+        tags:
+          type: array
+          items:
+            type: string
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Universally unique identifier for this record.
+        created:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When this record was created.
+        modified:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When this record was last modified.
+        image:
+          type: string
+          format: uri
+          nullable: true
+          title: Bild
+          description: Upload an image that represents your project.
+        title:
+          type: string
+          title: Name
+          description: The title of the object.
+          maxLength: 255
+        funding:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: Include details of any funding received for this project.
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          minimum: -2147483648
+          maximum: 2147483647
+        add_dataset_contributors:
+          type: boolean
+          description: All contributors to datasets associated with this project should
+            be automatically added as a project member.
+      required:
+      - contributors
+      - created
+      - datasets
+      - descriptions
+      - details
+      - key_dates
+      - modified
+      - tags
+      - title
+      - uuid
+    RolesEnum:
+      enum:
+      - ContactPerson
+      - DataCollector
+      - DataCurator
+      - DataManager
+      - Editor
+      - Producer
+      - RelatedPerson
+      - Researcher
+      - ProjectLeader
+      - ProjectManager
+      - ProjectMember
+      - Supervisor
+      - WorkPackageLeader
+      - HostingInstitution
+      - ResearchGroup
+      - Sponsor
+      - RightsHolder
+      - Other
+      - Creator
+      type: string
+      description: |-
+        * `ContactPerson` - Contact Person
+        * `DataCollector` - Data Collector
+        * `DataCurator` - Data Curator
+        * `DataManager` - Data Manager
+        * `Editor` - Editor
+        * `Producer` - Producer
+        * `RelatedPerson` - Related Person
+        * `Researcher` - Researcher
+        * `ProjectLeader` - Project Leader
+        * `ProjectManager` - Project Manager
+        * `ProjectMember` - Project Member
+        * `Supervisor` - Supervisor
+        * `WorkPackageLeader` - Work Package Leader
+        * `HostingInstitution` - Hosting Institution
+        * `ResearchGroup` - Research Group
+        * `Sponsor` - Sponsor
+        * `RightsHolder` - Rights Holder
+        * `Other` - Other
+        * `Creator` - Creator
+    Sample:
+      type: object
+      description: |-
+        A ModelSerializer that takes additional arguments for
+        "fields", "omit" and "expand" in order to
+        control which fields are displayed, and whether to replace simple
+        values with complex, nested serializations
+      properties:
+        details:
+          type: string
+          format: uri
+          readOnly: true
+        location:
+          $ref: '#/components/schemas/Location'
+        uuid:
+          type: string
+          format: uuid
+          readOnly: true
+          description: Universally unique identifier for this record.
+        modified:
+          type: string
+          format: date-time
+          readOnly: true
+          description: When this record was last modified.
+        image:
+          type: string
+          format: uri
+          nullable: true
+          title: Bild
+          description: Upload an image that represents your project.
+        title:
+          type: string
+          title: Name
+          description: The title of the object.
+          maxLength: 255
+        tags:
+          nullable: true
+          description: |-
+            Tags to help others discover your project.
+
+            * `collaborators_wanted` - Collaborators
+            * `funding_wanted` - Funding
+            * `equipment_wanted` - Equipment
+            * `has_funding` - Funding
+            * `has_open_positions` - Open Positions
+            * `has_equipment` - Equipment
+          oneOf:
+          - $ref: '#/components/schemas/TagsEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        funding:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          description: Include details of any funding received for this project.
+        type:
+          allOf:
+          - $ref: '#/components/schemas/SampleTypeEnum'
+          title: Sample type
+          description: |-
+            The type of sample as per the ODM2 controlled vocabulary.
+
+            * `location` - location
+            * `soil` - soil
+            * `water` - water
+            * `plant` - plant
+            * `other` - other
+        description:
+          type: string
+          nullable: true
+          description: A description of the sample.
+        comment:
+          type: string
+          nullable: true
+          description: General comments regarding the site and/or measurement
+        parent:
+          type: string
+          format: uri
+          nullable: true
+          description: Parent sample
+        dataset:
+          type: string
+          format: uri
+          description: The dataset to which this sample belongs.
+      required:
+      - dataset
+      - details
+      - location
+      - modified
+      - title
+      - uuid
+    SampleTypeEnum:
+      enum:
+      - location
+      - soil
+      - water
+      - plant
+      - other
+      type: string
+      description: |-
+        * `location` - location
+        * `soil` - soil
+        * `water` - water
+        * `plant` - plant
+        * `other` - other
+    StatusEnum:
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      type: integer
+      description: |-
+        * `0` - Concept
+        * `1` - Planning
+        * `2` - In progress
+        * `3` - Complete
+    TagsEnum:
+      enum:
+      - collaborators_wanted
+      - funding_wanted
+      - equipment_wanted
+      - has_funding
+      - has_open_positions
+      - has_equipment
+      type: string
+      description: |-
+        * `collaborators_wanted` - Collaborators
+        * `funding_wanted` - Funding
+        * `equipment_wanted` - Equipment
+        * `has_funding` - Funding
+        * `has_open_positions` - Open Positions
+        * `has_equipment` - Equipment
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"
+tags:
+- heat flow
+- geothermal
+- geoenergy

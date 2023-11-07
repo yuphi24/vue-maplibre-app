@@ -34,4 +34,4 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 | vue                  | 3.2.47  | MIT          | [vuejs](https://github.com/vuejs)                                             |
 | vue-multiselect      | 2.1.7   | MIT          | [vue-multiselect](https://github.com/shentao/vue-multiselect)                 |
 | vue-slider-component | 3.2.24  | MIT          | [vue-slider-component](https://github.com/NightCatSama/vue-slider-component)  |
-| @turf/helpers        | 6.5.0   | MIT          | [Turfjs/turf](https://github.com/Turfjs/turf)                                 |
+| swagger-parser       | 10.0.3  | MIT          | [APIDevTools/swagger-parser](https://github.com/APIDevTools/swagger-parser)   |

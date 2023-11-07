@@ -6,6 +6,7 @@ import { onMounted, onUnmounted, markRaw, ref } from "vue";
 
 // map viewer
 import { Map } from "maplibre-gl";
+import * as SwaggerParser from "@apidevtools/swagger-parser";
 import yaml from "js-yaml";
 
 // data
@@ -29,6 +30,7 @@ const panelTitle = ref("");
 const basemaps = ref(maps);
 const activeBaseLayer = ref("");
 const sites = ref(sitesURL);
+
 const defaultCircleColor = ref("#41b6c4");
 const isCollapsed = ref(true);
 const dataSchema = ref();
@@ -88,12 +90,19 @@ function fetchSchemaLocal(path) {
 // fetchAPISchema();
 fetchSchemaLocal("/ghfdb_API_copy.yaml");
 
+function parseSchema() {
+  let parser = new SwaggerParser();
+  console.log(parser);
+}
+
+parseSchema();
+
 //TODO: Schema file deviates from local file. Needs to be adjusted. Differences in enum, oneOf, ...
 /**
  * @description
  */
 // function fetchSchemaAPI() {
-//   // /api/v1/schema/
+// //   /api/v1/schema/
 //   fetch("http://139.17.54.176:8000/api/v1/schema/")
 //     .then((response) => {
 //       if (!response.ok) {
