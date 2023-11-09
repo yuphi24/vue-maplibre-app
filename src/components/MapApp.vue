@@ -6,8 +6,10 @@ import { onMounted, onUnmounted, markRaw, ref } from "vue";
 
 // map viewer
 import { Map } from "maplibre-gl";
-import * as SwaggerParser from "@apidevtools/swagger-parser";
+// import * as SwaggerParser from "@apidevtools/swagger-parser";
+import axios from "axios";
 import yaml from "js-yaml";
+// import gjv from "geojson-validation";
 
 // data
 import maps from "./left-panel/settings-panel/maps.json";
@@ -36,8 +38,7 @@ const isCollapsed = ref(true);
 const dataSchema = ref();
 const heatFlowSchema = ref();
 const legend = ref(null);
-// const dataAPI = ref(null);
-// const geojson = ref(null);
+// const geojson = ref(convertJson2GeoJSON());
 
 const setIsCollapsed = () => (isCollapsed.value = !isCollapsed.value);
 const toggleSidebar = () => {
@@ -87,58 +88,54 @@ function fetchSchemaLocal(path) {
     });
 }
 
-// fetchAPISchema();
 fetchSchemaLocal("/ghfdb_API_copy.yaml");
-
-function parseSchema() {
-  let parser = new SwaggerParser();
-  console.log(parser);
-}
-
-parseSchema();
 
 //TODO: Schema file deviates from local file. Needs to be adjusted. Differences in enum, oneOf, ...
 /**
  * @description
  */
-// function fetchSchemaAPI() {
-// //   /api/v1/schema/
-//   fetch("http://139.17.54.176:8000/api/v1/schema/")
-//     .then((response) => {
-//       if (!response.ok) {
-//         throw new Error("HTTP error " + response.status);
-//       }
-//       return response.text();
-//     })
-//     .then((yamlText) => {
-//       dataSchema.value = yaml.load(yamlText);
-//       heatFlowSchema.value = dataSchema.value.components.schemas.Measurement;
-//       console.log("--------Send dohanna--------");
-//       console.log(heatFlowSchema.value.properties.environment.oneOf[1]);
-//     })
-//     .catch(function (error) {
-//       console.log("Failed to fetch the YAML file.");
-//       console.error(error);
-//     });
+function fetchAPIDataSchema(url) {
+  //   /api/v1/schema/
+  try {
+    axios.get(url).then((data) => {
+      console.log("data schema");
+      console.log(data.data.components.schemas);
+    });
+  } catch (e) {
+    console.log("error in fetching data schema" + e);
+  }
+}
+
+fetchAPIDataSchema("http://139.17.54.176:8000/api/v1/schema/");
+
+/**
+ * @description Write GeoJSON point feature and validate it
+ * @param {String} uuid
+ * @param {Array} coord
+ * @param {Object} property
+ */
+// function writeFeature(uuid, coord, property) {
+//   const feature = {
+//     uuid: uuid,
+//     type: "Feature",
+//     geometry: { type: "Point", coordinates: coord },
+//     properties: { property },
+//   };
+
+//   if (gjv.isFeature(feature, true)) {
+//     return feature;
+//   } else {
+//     console.log(gjv.isFeature(feature, true));
+//   }
 // }
 
 /**
- *
+ * @description Gather information of each site and write it to GeoJSON feature
  * @param {*} siteObject
  */
 // function json2PointFeature(siteObject) {
-//   /**
-//    * Pseudo Code:
-//    * 1. get relevant property keys
-//    * 2. iterate over all keys
-//    *  if key == sample -> make coord arr
-//    *  else write same structure key value to properties obj
-//    * 3. write GeoJSON point feature turf.point()
-//    * 4. return point feature
-//    */
 //   const featKeys = Object.keys(siteObject);
 
-//   let uuidValue = siteObject["uuid"];
 //   let coord = [];
 //   let property = {};
 
@@ -152,68 +149,65 @@ parseSchema();
 //       property[key] = siteObject[key];
 //     }
 //   });
-//   return {
-//     uuid: uuidValue,
-//     type: "Feature",
-//     geometry: { type: "Point", coordinates: coord },
-//     properties: { property },
-//   };
+
+//   return writeFeature(siteObject["uuid"], coord, property);
 // }
 
 /**
- *
- * @param {*} fetchedData
+ * @description
+ * @param {*} url
+ * @param {*} features
  */
-// function json2GeoJSON(fetchedData) {
-//   let objectKeys = Object.keys(fetchedData);
+// function fetchAPIData(url, features) {
+//   if (url != null) {
+//     try {
+//       axios.get(url).then((data) => {
+//         console.log(data);
+//         data.data.results.forEach((entry) => {
+//           features.push(json2PointFeature(entry));
+//         });
+//         fetchAPIData(data.data.next);
+//       });
+//     } catch (e) {
+//       console.log("error in fetching data" + e);
+//     }
+//   } else {
+//     console.log("url is null");
+//   }
+// }
+
+/**
+ * @description fetch JSON from heat flow API and convert it to geojson
+ * @param {*} url
+ */
+// function convertJson2GeoJSON(url) {
 //   let featuresArray = [];
 
-//   objectKeys.forEach((ix) => {
-//     console.log("site: " + ix + "; " + fetchedData[ix]);
-//     featuresArray.push(json2PointFeature(fetchedData[ix]));
-//   });
+//   fetchAPIData(url, featuresArray);
 
 //   let geojson = { type: "FeatureCollection", features: featuresArray };
-//   console.log(geojson);
+
+//   if (gjv.isFeatureCollection(geojson)) {
+//     return geojson;
+//   } else {
+//     console.log(gjv.isFeatureCollection(geojson, true));
+//   }
 
 //   return geojson;
 // }
 
 /**
- *
- * @param {String} dataURL
+ * @description get title of corresponding button and set it as title of sidepanel
+ * @param {*} event
  */
-// function fetchDataAPI(dataURL) {
-//   // /api/v1/measurements/heat-flow/?format=json
-//   fetch(dataURL)
-//     .then((response) => {
-//       if (!response.ok) {
-//         throw new Error("HTTP error " + response.status);
-//       }
-//       return response.json();
-//     })
-//     .then((data) => {
-//       dataAPI.value = data;
-//       console.log("fetch data test");
-//       console.log("Output: ", dataAPI.value);
-//       geojson.value = json2GeoJSON(dataAPI.value.results);
-//     })
-//     .catch(function (error) {
-//       console.log("Failed to fetch the heat flow data file.");
-//       console.error(error);
-//     });
-// }
-
-// fetchDataAPI(
-//   "http://139.17.54.176:8000/api/v1/measurements/heat-flow/?format=json"
-// );
-
-// get title of corresponding button and set it as title of sidepanel
 function setPanelTitle(event) {
   panelTitle.value = event.srcElement.innerHTML;
 }
 
-// create object for base map sources
+/**
+ * @description create object for base map sources
+ * @param {Object} basemaps
+ */
 function setBaseMapsSource(basemaps) {
   let bmSourceObject = {};
 
@@ -230,7 +224,10 @@ function setBaseMapsSource(basemaps) {
   return bmSourceObject;
 }
 
-// create object for base map layers
+/**
+ * @description create object for base map layers
+ * @param {Object} basemaps
+ */
 function setBaseMapsLayer(basemaps) {
   let layerObjects = [];
 
@@ -303,11 +300,6 @@ onMounted(() => {
   onUnmounted(() => {
     map.value?.remove();
   });
-
-// function printHeatFlowSchema() {
-//   console.log("heatflow schema mapapp");
-//   console.log(dataSchema.value);
-// }
 </script>
 
 <template>

@@ -35,3 +35,4 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 | vue-multiselect      | 2.1.7   | MIT          | [vue-multiselect](https://github.com/shentao/vue-multiselect)                 |
 | vue-slider-component | 3.2.24  | MIT          | [vue-slider-component](https://github.com/NightCatSama/vue-slider-component)  |
 | swagger-parser       | 10.0.3  | MIT          | [APIDevTools/swagger-parser](https://github.com/APIDevTools/swagger-parser)   |
+| geojson-validation   | 1.0.2   | LGPL-3       | [GeoJSON-Validation](https://gitlab.com/mjbecze/GeoJSON-Validation)           |
