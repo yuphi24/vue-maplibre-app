@@ -6,14 +6,13 @@ import { onMounted, onUnmounted, markRaw, ref } from "vue";
 
 // map viewer
 import { Map } from "maplibre-gl";
-// import * as SwaggerParser from "@apidevtools/swagger-parser";
+import * as SwaggerParser from "@apidevtools/swagger-parser";
 import axios from "axios";
-import yaml from "js-yaml";
-// import gjv from "geojson-validation";
+import gjv from "geojson-validation";
 
 // data
 import maps from "./left-panel/settings-panel/maps.json";
-import sitesURL from "@/assets/data/small_sites.geojson";
+// import sitesURL from "@/assets/data/small_sites.geojson";
 
 // components
 // import AttributeTable from "./common/AttributeTable.vue";
@@ -27,18 +26,23 @@ import MapLegend from "./map/MapLegend.vue";
 
 const mapContainer = ref();
 const map = ref();
-const navbarTitles = ref(["Settings", "Filter", "Statistics", "Analysis"]); // can be extend with custom buttons
+const navbarTitles = ref(["Settings", "Filter", "Statistics", "Analysis"]); // TODO: change to object and add key with bootstrap related icon class https://icons.getbootstrap.com/
 const panelTitle = ref("");
 const basemaps = ref(maps);
 const activeBaseLayer = ref("");
-const sites = ref(sitesURL);
+// const sites = ref(sitesURL);
 
 const defaultCircleColor = ref("#41b6c4");
 const isCollapsed = ref(true);
-const dataSchema = ref();
 const heatFlowSchema = ref();
 const legend = ref(null);
-// const geojson = ref(convertJson2GeoJSON());
+const geojson = ref(
+  convertJson2GeoJSON(
+    "http://139.17.54.176:8010/api/v1/measurements/heat-flow/?format=json"
+  )
+);
+
+console.log(geojson.value);
 
 const setIsCollapsed = () => (isCollapsed.value = !isCollapsed.value);
 const toggleSidebar = () => {
@@ -67,28 +71,28 @@ const handleLegend = (l) => {
 /**
  * @description
  */
-function fetchSchemaLocal(path) {
-  // /api/v1/schema/
-  fetch(path)
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("HTTP error " + response.status);
-      }
-      return response.text();
-    })
-    .then((yamlText) => {
-      dataSchema.value = yaml.load(yamlText);
-      heatFlowSchema.value = dataSchema.value.components.schemas.HeatFlow;
-      // console.log("--------Send dohanna--------");
-      // console.log(Object.keys(dataSchema.value.components.schemas.HeatFlow));
-    })
-    .catch(function (error) {
-      console.log("Failed to fetch the YAML file.");
-      console.error(error);
-    });
-}
+// function fetchSchemaLocal(path) {
+//   // /api/v1/schema/
+//   fetch(path)
+//     .then((response) => {
+//       if (!response.ok) {
+//         throw new Error("HTTP error " + response.status);
+//       }
+//       return response.text();
+//     })
+//     .then((yamlText) => {
+//       dataSchema.value = yaml.load(yamlText);
+//       heatFlowSchema.value = dataSchema.value.components.schemas.HeatFlow;
+//       // console.log("--------Send dohanna--------");
+//       // console.log(Object.keys(dataSchema.value.components.schemas.HeatFlow));
+//     })
+//     .catch(function (error) {
+//       console.log("Failed to fetch the YAML file.");
+//       console.error(error);
+//     });
+// }
 
-fetchSchemaLocal("/ghfdb_API_copy.yaml");
+// fetchSchemaLocal("/ghfdb_API_copy.yaml");
 
 //TODO: Schema file deviates from local file. Needs to be adjusted. Differences in enum, oneOf, ...
 /**
@@ -97,16 +101,18 @@ fetchSchemaLocal("/ghfdb_API_copy.yaml");
 function fetchAPIDataSchema(url) {
   //   /api/v1/schema/
   try {
-    axios.get(url).then((data) => {
-      console.log("data schema");
-      console.log(data.data.components.schemas);
+    let parser = new SwaggerParser();
+    parser.dereference(url).then((test) => {
+      console.log("api ");
+      console.log(test.components.schemas.Measurement);
+      heatFlowSchema.value = test.components.schemas.Measurement;
     });
   } catch (e) {
     console.log("error in fetching data schema" + e);
   }
 }
 
-fetchAPIDataSchema("http://139.17.54.176:8000/api/v1/schema/");
+fetchAPIDataSchema("http://139.17.54.176:8010/api/v1/schema/");
 
 /**
  * @description Write GeoJSON point feature and validate it
@@ -114,87 +120,91 @@ fetchAPIDataSchema("http://139.17.54.176:8000/api/v1/schema/");
  * @param {Array} coord
  * @param {Object} property
  */
-// function writeFeature(uuid, coord, property) {
-//   const feature = {
-//     uuid: uuid,
-//     type: "Feature",
-//     geometry: { type: "Point", coordinates: coord },
-//     properties: { property },
-//   };
+function writeFeature(uuid, coord, property) {
+  const feature = {
+    uuid: uuid,
+    type: "Feature",
+    geometry: { type: "Point", coordinates: coord },
+    properties: { property },
+  };
 
-//   if (gjv.isFeature(feature, true)) {
-//     return feature;
-//   } else {
-//     console.log(gjv.isFeature(feature, true));
-//   }
-// }
+  if (gjv.isFeature(feature, true)) {
+    return feature;
+  } else {
+    console.log(gjv.isFeature(feature, true));
+  }
+}
 
 /**
  * @description Gather information of each site and write it to GeoJSON feature
  * @param {*} siteObject
  */
-// function json2PointFeature(siteObject) {
-//   const featKeys = Object.keys(siteObject);
+function json2PointFeature(siteObject) {
+  const featKeys = Object.keys(siteObject);
 
-//   let coord = [];
-//   let property = {};
+  let coord = [];
+  let property = {};
 
-//   featKeys.forEach((key) => {
-//     if (siteObject[key] == "sample") {
-//       if (siteObject[key].location != null) {
-//         coord.push(siteObject[key].location.coordinates);
-//       }
-//     } else {
-//       // console.log("hat keine location");
-//       property[key] = siteObject[key];
-//     }
-//   });
+  featKeys.forEach((key) => {
+    if (siteObject[key] == "sample") {
+      if (siteObject[key].location != null) {
+        coord.push(siteObject[key].location.coordinates);
+      }
+    } else {
+      // console.log("hat keine location");
+      property[key] = siteObject[key];
+    }
+  });
 
-//   return writeFeature(siteObject["uuid"], coord, property);
-// }
+  return writeFeature(siteObject["uuid"], coord, property);
+}
 
 /**
  * @description
  * @param {*} url
  * @param {*} features
  */
-// function fetchAPIData(url, features) {
-//   if (url != null) {
-//     try {
-//       axios.get(url).then((data) => {
-//         console.log(data);
-//         data.data.results.forEach((entry) => {
-//           features.push(json2PointFeature(entry));
-//         });
-//         fetchAPIData(data.data.next);
-//       });
-//     } catch (e) {
-//       console.log("error in fetching data" + e);
-//     }
-//   } else {
-//     console.log("url is null");
-//   }
-// }
+function fetchAPIData(url, features) {
+  // let feat = features;
+  if (url != null) {
+    try {
+      axios.get(url).then((data) => {
+        data.data.results.forEach((entry) => {
+          features.push(json2PointFeature(entry));
+        });
+        fetchAPIData(data.data.next, features);
+      });
+    } catch (e) {
+      console.log("error in fetching data" + e);
+    }
+  } else {
+    console.log("url is null");
+  }
+
+  return features;
+}
 
 /**
  * @description fetch JSON from heat flow API and convert it to geojson
  * @param {*} url
  */
-// function convertJson2GeoJSON(url) {
-//   let featuresArray = [];
+function convertJson2GeoJSON(url) {
+  let featuresArray = [];
 
-//   fetchAPIData(url, featuresArray);
+  featuresArray = fetchAPIData(url, featuresArray);
+  console.log("featureArray nach paging");
+  console.log(featuresArray);
 
-//   let geojson = { type: "FeatureCollection", features: featuresArray };
+  let geojson = { type: "FeatureCollection", features: featuresArray };
 
-//   if (gjv.isFeatureCollection(geojson)) {
-//     return geojson;
-//   } else {
-//     console.log(gjv.isFeatureCollection(geojson, true));
-//   }
-
-//   return geojson;
-// }
+  if (gjv.isFeatureCollection(geojson)) {
+    console.log("dohanna isch geojson");
+    console.log(geojson);
+    return geojson;
+  } else {
+    console.log(gjv.isFeatureCollection(geojson, true));
+  }
+}
 
 /**
  * @description get title of corresponding button and set it as title of sidepanel
@@ -274,11 +284,12 @@ onMounted(() => {
     // add data source
     map.value.addSource("sites", {
       type: "geojson",
-      data: sites.value,
+      data: geojson.value,
+      // data: sites.value,
     });
 
-    console.log("MapApp.vue raw sites");
-    console.log(sites.value);
+    // console.log("MapApp.vue raw sites");
+    // console.log(sites.value);
 
     // add data layer
     map.value.addLayer({

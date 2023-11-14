@@ -77,25 +77,52 @@ function setSelectedColorPalette(colorPalette) {
 }
 
 /**
+ * @description
+ * @param {*} property
+ * @returns {Boolean}
+ */
+function isPropertySelectable(property) {
+  let isSelectable = null;
+
+  if (
+    props.heatFlowSchema.properties[property].type == "string" &&
+    !props.heatFlowSchema.properties[property].enum
+  ) {
+    console.log(property + " is not suitable for data driven coloring");
+    isSelectable = false;
+  } else if (
+    props.heatFlowSchema.properties[property].type == "integer" &&
+    (!props.heatFlowSchema.properties[property].minimum ||
+      !props.heatFlowSchema.properties[property].maximum)
+  ) {
+    console.log(property + " is not suitable for data driven coloring");
+    isSelectable = false;
+  } else if (props.heatFlowSchema.properties[property].type == "object") {
+    console.log(property + " is not suitable for data driven coloring");
+    isSelectable = false;
+  } else {
+    isSelectable = true;
+  }
+  return isSelectable;
+}
+
+/**
  * @description Throw out all properties options which are not suitable for the data driven coloring e.g. name, data points either be already classified (enum) or should be able to classify (continouse numerbs)
  * @param {*} schema
  * @returns {Array}
  */
 function getSelectableProperties(schema) {
   const propertiesKey = Object.keys(schema.properties);
-  let selectableOptions = [];
+  let selectableOptions = {};
 
   propertiesKey.forEach((property) => {
-    if (
-      props.heatFlowSchema.properties[property].type == "string" &&
-      !props.heatFlowSchema.properties[property].enum
-    ) {
-      console.log(property + " is not suitable for data driven coloring");
-    } else {
-      selectableOptions.push(property);
+    if (isPropertySelectable(property)) {
+      selectableOptions[property] = props.heatFlowSchema.properties[property];
     }
   });
 
+  console.log("selectable proper");
+  console.log(selectableOptions);
   return selectableOptions;
 }
 
@@ -105,7 +132,17 @@ function getSelectableProperties(schema) {
  * @returns {Array}
  */
 function getEnumClasses(enumProperty) {
-  return props.heatFlowSchema.properties[enumProperty].enum;
+  let classes = [];
+
+  props.heatFlowSchema.properties[enumProperty].oneOf.forEach((enumSchema) => {
+    enumSchema.enum.forEach((enumClass) => {
+      classes.push(enumClass);
+    });
+  });
+  console.log("getEnumClasses");
+  console.log(classes);
+
+  return classes;
 }
 
 /**
@@ -263,10 +300,12 @@ function setLegendObject(classes, colors) {
 function dataDrivenColorisation() {
   if (!selectedProperty.value) {
     console.error("no property selected");
-  } else if (selectedPropertyDataType.value == "string") {
+  } else if (selectedPropertyDataType.value == undefined) {
     // TODO: Qualitativ Farpalette
     // handling properties of data type string + enum
     let classes = getEnumClasses(selectedProperty.value);
+    console.log("classes");
+    console.log(classes);
     colorSteps.value = classes.length;
     const paintProperty = generateEnumPaintProperty(
       selectedProperty.value,
@@ -292,6 +331,8 @@ function dataDrivenColorisation() {
       classes,
       colorbrewer[selectedColorPalette.value][colorSteps.value]
     );
+  } else if (selectedPropertyDataType.value == "boolean") {
+    console.log(selectedProperty.value + " is boolean");
   }
 }
 
@@ -369,9 +410,9 @@ function setCircleColor(colorHEX) {
                 <option
                   v-for="(value, key) in propertyOptions"
                   :key="key"
-                  :selectedProperty="{ value }"
+                  :value="key"
                 >
-                  {{ value }}
+                  {{ value.title }} ({{ key }})
                 </option>
               </select>
             </div>
