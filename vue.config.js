@@ -3,7 +3,7 @@ const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 module.exports = defineConfig({
   transpileDependencies: true,
 
-  // below added to parse local geojson files https://stackoverflow.com/questions/65065631/cant-open-local-geojson-files-inside-vue-project
+  // // below added to parse local geojson files https://stackoverflow.com/questions/65065631/cant-open-local-geojson-files-inside-vue-project
   configureWebpack: {
     module: {
       rules: [

@@ -1,5 +1,5 @@
 <script setup>
-import { SimpleBar } from "simplebar-vue3";
+import simplebar from "simplebar-vue";
 
 import { defineEmits, defineProps, ref, watch } from "vue";
 
@@ -48,7 +48,7 @@ const handleLegendEvent = (legend) => {
     <div style="clear: both"></div>
   </div>
 
-  <SimpleBar style="height: 95%; padding-bottom: 10px; overflow-y: auto">
+  <simplebar data-simplebar-auto-hide="false">
     <div class="sidebar-body">
       <SettingsPanel
         v-if="props.title === 'Settings'"
@@ -65,10 +65,11 @@ const handleLegendEvent = (legend) => {
       <StatisticsPanal v-if="props.title === 'Statistics'" />
       <AnalysisPanal v-if="props.title === 'Analysis'" />
     </div>
-  </SimpleBar>
+  </simplebar>
 </template>
 
 <style scoped>
+@import "simplebar-vue/dist/simplebar.min.css";
 .sidebar-header {
   background-color: #304b9b;
   border-bottom: 0.2rem solid #8eb7e2;

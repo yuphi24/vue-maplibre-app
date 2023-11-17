@@ -12,7 +12,7 @@ import gjv from "geojson-validation";
 
 // data
 import maps from "./left-panel/settings-panel/maps.json";
-// import sitesURL from "@/assets/data/small_sites.geojson";
+import sitesURL from "@/assets/data/small_sites.geojson";
 
 // components
 // import AttributeTable from "./common/AttributeTable.vue";
@@ -24,16 +24,26 @@ import InfoPopup from "./map/InfoPopup.vue";
 import DataLayer from "./map/DataLayer.vue";
 import MapLegend from "./map/MapLegend.vue";
 
+import { useMeasruementsStore } from "@/store/measruements";
+
+const measurements = useMeasruementsStore();
+measurements.fetchAPIData(
+  "http://139.17.54.176:8010/api/v1/measurements/heat-flow/?format=json"
+);
+
+console.log(measurements.geojson);
+
 const mapContainer = ref();
 const map = ref();
 const navbarTitles = ref(["Settings", "Filter", "Statistics", "Analysis"]); // TODO: change to object and add key with bootstrap related icon class https://icons.getbootstrap.com/
 const panelTitle = ref("");
 const basemaps = ref(maps);
 const activeBaseLayer = ref("");
-// const sites = ref(sitesURL);
+const sites = ref(sitesURL);
 
 const defaultCircleColor = ref("#41b6c4");
 const isCollapsed = ref(true);
+// const dataSchema = ref(null);
 const heatFlowSchema = ref();
 const legend = ref(null);
 const geojson = ref(
@@ -94,7 +104,6 @@ const handleLegend = (l) => {
 
 // fetchSchemaLocal("/ghfdb_API_copy.yaml");
 
-//TODO: Schema file deviates from local file. Needs to be adjusted. Differences in enum, oneOf, ...
 /**
  * @description
  */
@@ -120,7 +129,7 @@ fetchAPIDataSchema("http://139.17.54.176:8010/api/v1/schema/");
  * @param {Array} coord
  * @param {Object} property
  */
-function writeFeature(uuid, coord, property) {
+function writePntFeature(uuid, coord, property) {
   const feature = {
     uuid: uuid,
     type: "Feature",
@@ -156,7 +165,7 @@ function json2PointFeature(siteObject) {
     }
   });
 
-  return writeFeature(siteObject["uuid"], coord, property);
+  return writePntFeature(siteObject["uuid"], coord, property);
 }
 
 /**
@@ -284,12 +293,9 @@ onMounted(() => {
     // add data source
     map.value.addSource("sites", {
       type: "geojson",
-      data: geojson.value,
-      // data: sites.value,
+      // data: geojson.value,
+      data: sites.value,
     });
-
-    // console.log("MapApp.vue raw sites");
-    // console.log(sites.value);
 
     // add data layer
     map.value.addLayer({

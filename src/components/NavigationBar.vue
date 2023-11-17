@@ -2,7 +2,6 @@
 import { ref } from "vue";
 
 const isCollapsed = ref(true);
-const selectedPanel = ref("");
 const navigationBarPanel = ref([
   "Settings",
   "Filter",
