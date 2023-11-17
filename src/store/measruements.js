@@ -78,9 +78,7 @@ export const useMeasruementsStore = defineStore("measurements", () => {
       }
     });
 
-    console.log("show property");
-    console.log(property);
-    return [siteObject["uuid"], coord, property];
+    return [coord, property];
   }
 
   /**
@@ -91,10 +89,9 @@ export const useMeasruementsStore = defineStore("measurements", () => {
    */
   function writePntFeature(pntAttributes) {
     const feature = {
-      uuid: pntAttributes[0],
       type: "Feature",
-      geometry: pntAttributes[1],
-      properties: pntAttributes[2],
+      geometry: pntAttributes[0],
+      properties: pntAttributes[1],
     };
 
     if (gjv.isFeature(feature, true)) {
@@ -124,6 +121,8 @@ export const useMeasruementsStore = defineStore("measurements", () => {
     };
 
     if (gjv.isFeatureCollection(featureCollection)) {
+      console.log("inside async func");
+      console.log(featureCollection);
       return featureCollection;
     } else {
       console.log(gjv.isFeatureCollection(featureCollection, true));

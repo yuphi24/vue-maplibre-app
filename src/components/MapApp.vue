@@ -6,13 +6,10 @@ import { onMounted, onUnmounted, markRaw, ref } from "vue";
 
 // map viewer
 import { Map } from "maplibre-gl";
-import * as SwaggerParser from "@apidevtools/swagger-parser";
-import axios from "axios";
-import gjv from "geojson-validation";
 
 // data
 import maps from "./left-panel/settings-panel/maps.json";
-import sitesURL from "@/assets/data/small_sites.geojson";
+// import sitesURL from "@/assets/data/small_sites.geojson";
 
 // components
 // import AttributeTable from "./common/AttributeTable.vue";
@@ -31,7 +28,7 @@ measurements.fetchAPIData(
   "http://139.17.54.176:8010/api/v1/measurements/heat-flow/?format=json"
 );
 
-console.log(measurements.geojson);
+console.log("fetch measurments data");
 
 const mapContainer = ref();
 const map = ref();
@@ -39,20 +36,11 @@ const navbarTitles = ref(["Settings", "Filter", "Statistics", "Analysis"]); // T
 const panelTitle = ref("");
 const basemaps = ref(maps);
 const activeBaseLayer = ref("");
-const sites = ref(sitesURL);
+// const sites = ref(sitesURL);
 
 const defaultCircleColor = ref("#41b6c4");
 const isCollapsed = ref(true);
-// const dataSchema = ref(null);
-const heatFlowSchema = ref();
 const legend = ref(null);
-const geojson = ref(
-  convertJson2GeoJSON(
-    "http://139.17.54.176:8010/api/v1/measurements/heat-flow/?format=json"
-  )
-);
-
-console.log(geojson.value);
 
 const setIsCollapsed = () => (isCollapsed.value = !isCollapsed.value);
 const toggleSidebar = () => {
@@ -103,25 +91,6 @@ const handleLegend = (l) => {
 // }
 
 // fetchSchemaLocal("/ghfdb_API_copy.yaml");
-
-/**
- * @description
- */
-function fetchAPIDataSchema(url) {
-  //   /api/v1/schema/
-  try {
-    let parser = new SwaggerParser();
-    parser.dereference(url).then((test) => {
-      console.log("api ");
-      console.log(test.components.schemas.Measurement);
-      heatFlowSchema.value = test.components.schemas.Measurement;
-    });
-  } catch (e) {
-    console.log("error in fetching data schema" + e);
-  }
-}
-
-fetchAPIDataSchema("http://139.17.54.176:8010/api/v1/schema/");
 
 /**
  * @description get title of corresponding button and set it as title of sidepanel
@@ -199,10 +168,12 @@ onMounted(() => {
 
   map.value.once("load", () => {
     // add data source
+    console.log("direkt vor set source bei map");
+    console.log(measurements.geojson);
     map.value.addSource("sites", {
       type: "geojson",
-      // data: geojson.value,
-      data: sites.value,
+      data: measurements.geojson, // ist Promise mit fulfilled und nicht geojson
+      // data: sites.value,
     });
 
     // add data layer
