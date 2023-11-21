@@ -24,6 +24,7 @@ export const useMeasruementsStore = defineStore("measurements", () => {
       let parser = new SwaggerParser();
       parser.dereference(url).then((apiSchema) => {
         dataSchema.value = apiSchema.components.schemas.Measurement;
+        console.log(apiSchema);
       });
     } catch (e) {
       console.log("error in fetching data schema" + e);
@@ -49,11 +50,13 @@ export const useMeasruementsStore = defineStore("measurements", () => {
         if (response.data.next != null) {
           // return fetchPagedAPIData(response.data.next, data);
         }
+        // return data;
       })
       .catch((err) => {
         console.log("rejected", err);
       });
-
+    console.log("return data");
+    console.log(data);
     return data;
   }
 
@@ -89,6 +92,7 @@ export const useMeasruementsStore = defineStore("measurements", () => {
    */
   function writePntFeature(pntAttributes) {
     const feature = {
+      id: pntAttributes[1].id,
       type: "Feature",
       geometry: pntAttributes[0],
       properties: pntAttributes[1],
@@ -105,36 +109,44 @@ export const useMeasruementsStore = defineStore("measurements", () => {
    * @description fetch JSON from heat flow API and convert it to geojson
    * @param {String} url
    */
-  async function convertAPIData2GeoJSON(url) {
-    let measurements = await fetchPagedAPIData(url);
-    let featuresArray = [];
+  function convertAPIData2GeoJSON(url) {
+    return fetchPagedAPIData(url).then((value) => {
+      console.log("measurments");
+      console.log(value);
 
-    measurements.forEach((siteObject) => {
-      // console.log(siteObject);
-      const pntAttributes = collectPntAttributes(siteObject);
-      featuresArray.push(writePntFeature(pntAttributes));
+      let featuresArray = [];
+
+      value.forEach((siteObject) => {
+        // console.log(siteObject);
+        const pntAttributes = collectPntAttributes(siteObject);
+        featuresArray.push(writePntFeature(pntAttributes));
+      });
+
+      const featureCollection = {
+        type: "FeatureCollection",
+        features: featuresArray,
+      };
+
+      if (gjv.isFeatureCollection(featureCollection)) {
+        console.log("inside async func");
+        console.log(featureCollection);
+        return featureCollection;
+      } else {
+        console.log(gjv.isFeatureCollection(featureCollection, true));
+      }
     });
-
-    const featureCollection = {
-      type: "FeatureCollection",
-      features: featuresArray,
-    };
-
-    if (gjv.isFeatureCollection(featureCollection)) {
-      console.log("inside async func");
-      console.log(featureCollection);
-      return featureCollection;
-    } else {
-      console.log(gjv.isFeatureCollection(featureCollection, true));
-    }
   }
 
   /**
    *
    * @param {String} url
    */
-  function fetchAPIData(url) {
-    geojson.value = convertAPIData2GeoJSON(url);
+  async function fetchAPIData(url) {
+    geojson.value = await convertAPIData2GeoJSON(url);
+    // console.log("data");
+    // console.log(data);
+
+    // return data;
   }
 
   return { geojson, dataSchema, fetchAPIData, fetchAPIDataSchema };

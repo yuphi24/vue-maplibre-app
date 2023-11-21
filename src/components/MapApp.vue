@@ -9,7 +9,7 @@ import { Map } from "maplibre-gl";
 
 // data
 import maps from "./left-panel/settings-panel/maps.json";
-// import sitesURL from "@/assets/data/small_sites.geojson";
+import sitesURL from "@/assets/data/small_sites.geojson";
 
 // components
 // import AttributeTable from "./common/AttributeTable.vue";
@@ -22,13 +22,8 @@ import DataLayer from "./map/DataLayer.vue";
 import MapLegend from "./map/MapLegend.vue";
 
 import { useMeasruementsStore } from "@/store/measruements";
-
 const measurements = useMeasruementsStore();
-measurements.fetchAPIData(
-  "http://139.17.54.176:8010/api/v1/measurements/heat-flow/?format=json"
-);
-
-console.log("fetch measurments data");
+measurements.fetchAPIDataSchema("http://139.17.54.176:8010/api/v1/schema/");
 
 const mapContainer = ref();
 const map = ref();
@@ -36,7 +31,7 @@ const navbarTitles = ref(["Settings", "Filter", "Statistics", "Analysis"]); // T
 const panelTitle = ref("");
 const basemaps = ref(maps);
 const activeBaseLayer = ref("");
-// const sites = ref(sitesURL);
+const sites = ref(sitesURL);
 
 const defaultCircleColor = ref("#41b6c4");
 const isCollapsed = ref(true);
@@ -166,10 +161,17 @@ onMounted(() => {
     })
   );
 
-  map.value.once("load", () => {
+  map.value.once("load", async () => {
     // add data source
-    console.log("direkt vor set source bei map");
-    console.log(measurements.geojson);
+
+    try {
+      await measurements.fetchAPIData(
+        "http://139.17.54.176:8010/api/v1/measurements/heat-flow/?format=json"
+      );
+    } catch (error) {
+      console.log(error);
+    }
+
     map.value.addSource("sites", {
       type: "geojson",
       data: measurements.geojson, // ist Promise mit fulfilled und nicht geojson
