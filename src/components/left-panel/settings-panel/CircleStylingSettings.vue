@@ -6,7 +6,7 @@ import { useMeasurementStore } from "@/store/measurements";
 // import geostats from "geostats";
 // import { quantileSeq } from "mathjs";
 import { Map } from "maplibre-gl";
-// import colorbrewer from "colorbrewer";
+import colorbrewer from "colorbrewer";
 
 // Variables
 const props = defineProps({ map: Map });
@@ -356,13 +356,13 @@ watch(selectedProperty, (newProperty) => {
  * @param {String} colorHEX
  * @returns {Void}
  */
-// function setCircleColor(colorHEX) {
-//   if (props.map.getPaintProperty("sites", "circle-color") == colorHEX) {
-//     return;
-//   } else {
-//     props.map.setPaintProperty("sites", "circle-color", colorHEX);
-//   }
-// }
+function setCircleColor(colorHEX) {
+  if (props.map.getPaintProperty("sites", "circle-color") == colorHEX) {
+    return;
+  } else {
+    props.map.setPaintProperty("sites", "circle-color", colorHEX);
+  }
+}
 </script>
 
 <template>
@@ -415,6 +415,61 @@ watch(selectedProperty, (newProperty) => {
           <span class="text-muted text-center">{{ circleRadius }}</span>
         </div>
       </div>
+
+      <!--  -->
+      <p class="d-inline-flex gap-1">
+        <button
+          class="btn btn-primary"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#circleFillColor"
+          aria-expanded="false"
+          aria-controls="circleFillColor"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-arrows-expand"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M1 8a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 8M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708l2-2M8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10"
+            />
+          </svg>
+          Fill color
+        </button>
+      </p>
+      <div class="collapse" id="circleFillColor">
+        <div class="card card-body">
+          <label class="form-label text-center">Fill color</label>
+          <div class="btn-group" role="group" aria-label="Color Selection">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              v-for="colorHEX in colorbrewer['Paired'][12]"
+              :key="colorHEX"
+              :style="{ 'background-color': colorHEX }"
+              @click="setCircleColor(colorHEX)"
+            ></button>
+          </div>
+          <!-- <fieldset>
+            <div id="swatches">
+              <button
+                v-for="colorHEX in colorbrewer['Paired'][12]"
+                :key="colorHEX"
+                :style="{ 'background-color': colorHEX }"
+                @click="setCircleColor(colorHEX)"
+              > -->
+          <!-- TODO: When single color is selected, make data driven
+                colorization options disappear -->
+          <!-- </button>
+            </div>
+          </fieldset> -->
+        </div>
+      </div>
       <!-- <div class="circle-settings">
         Inspired by: https://maplibre.org/maplibre-gl-js-docs/example/color-switcher/
         <div class="circle-color">
@@ -427,7 +482,8 @@ watch(selectedProperty, (newProperty) => {
                 :style="{ 'background-color': colorHEX }"
                 @click="setCircleColor(colorHEX)"
               >
-                TODO: When single color is selected, make data driven colorization options disappear
+              TODO: When single color is selected, make data driven
+                colorization options disappear
               </button>
             </div>
           </fieldset>
