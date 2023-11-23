@@ -1,16 +1,16 @@
 <script setup>
-import { defineEmits, defineProps, ref, watch } from "vue";
+import { defineProps, ref, watch } from "vue";
 import { useMeasurementStore } from "@/store/measurements";
 
 // Extern Libraries
-import geostats from "geostats";
-import { quantileSeq } from "mathjs";
+// import geostats from "geostats";
+// import { quantileSeq } from "mathjs";
 import { Map } from "maplibre-gl";
-import colorbrewer from "colorbrewer";
+// import colorbrewer from "colorbrewer";
 
 // Variables
 const props = defineProps({ map: Map });
-const emit = defineEmits(["send-legend"]);
+// const emit = defineEmits(["send-legend"]);
 
 const measurements = useMeasurementStore();
 console.log("inside circle style");
@@ -18,23 +18,23 @@ console.log(measurements.dataSchema);
 
 const circleRadius = ref(5);
 
-const propertyOptions = getSelectableProperties(measurements.dataSchema);
+// const propertyOptions = getSelectableProperties(measurements.dataSchema);
 const selectedProperty = ref("Select attribute");
 const selectedPropertyDataType = ref();
 
-const colorSteps = ref(4);
-const selectedColorPalette = ref("BrBG");
+// const colorSteps = ref(4);
+// const selectedColorPalette = ref("BrBG");
 
-const classificationTypes = ref({
-  jenks: "Jenks (natural breakes)",
-  quantil: "Quantil",
-});
-const selectedClassificationType = ref(classificationTypes.value.quantil);
+// const classificationTypes = ref({
+//   jenks: "Jenks (natural breakes)",
+//   quantil: "Quantil",
+// });
+// const selectedClassificationType = ref(classificationTypes.value.quantil);
 
-const legend = ref({});
-const sendLegend = () => {
-  emit("send-legend", legend.value);
-};
+// const legend = ref({});
+// const sendLegend = () => {
+//   emit("send-legend", legend.value);
+// };
 
 /**
  * If user changes size of circles, the watch method keeps track of it and adjust it synchron
@@ -76,86 +76,86 @@ watch(selectedProperty, (newProperty) => {
  * @description Setter for current selected color palette
  * @param {String} colorPalette
  */
-function setSelectedColorPalette(colorPalette) {
-  selectedColorPalette.value = colorPalette;
-  console.log(selectedColorPalette.value);
-}
+// function setSelectedColorPalette(colorPalette) {
+//   selectedColorPalette.value = colorPalette;
+//   console.log(selectedColorPalette.value);
+// }
 
 /**
  * @description
  * @param {*} property
  * @returns {Boolean}
  */
-function isPropertySelectable(property) {
-  let isSelectable = null;
+// function isPropertySelectable(property) {
+//   let isSelectable = null;
 
-  if (
-    measurements.dataSchema.properties[property].type == "string" &&
-    !measurements.dataSchema.properties[property].enum
-  ) {
-    console.log(property + " is not suitable for data driven coloring");
-    isSelectable = false;
-  } else if (
-    measurements.dataSchema.properties[property].type == "integer" &&
-    (!measurements.dataSchema.properties[property].minimum ||
-      !measurements.dataSchema.properties[property].maximum)
-  ) {
-    console.log(property + " is not suitable for data driven coloring");
-    isSelectable = false;
-  } else if (measurements.dataSchema.properties[property].type == "object") {
-    console.log(property + " is not suitable for data driven coloring");
-    isSelectable = false;
-  } else {
-    isSelectable = true;
-  }
-  return isSelectable;
-}
+//   if (
+//     measurements.dataSchema.properties[property].type == "string" &&
+//     !measurements.dataSchema.properties[property].enum
+//   ) {
+//     console.log(property + " is not suitable for data driven coloring");
+//     isSelectable = false;
+//   } else if (
+//     measurements.dataSchema.properties[property].type == "integer" &&
+//     (!measurements.dataSchema.properties[property].minimum ||
+//       !measurements.dataSchema.properties[property].maximum)
+//   ) {
+//     console.log(property + " is not suitable for data driven coloring");
+//     isSelectable = false;
+//   } else if (measurements.dataSchema.properties[property].type == "object") {
+//     console.log(property + " is not suitable for data driven coloring");
+//     isSelectable = false;
+//   } else {
+//     isSelectable = true;
+//   }
+//   return isSelectable;
+// }
 
 /**
  * @description Throw out all properties options which are not suitable for the data driven coloring e.g. name, data points either be already classified (enum) or should be able to classify (continouse numerbs)
  * @param {*} schema
  * @returns {Array}
  */
-function getSelectableProperties(schema) {
-  const propertiesKey = Object.keys(schema.properties);
-  let selectableOptions = {};
+// function getSelectableProperties(schema) {
+//   const propertiesKey = Object.keys(schema.properties);
+//   let selectableOptions = {};
 
-  propertiesKey.forEach((property) => {
-    if (isPropertySelectable(property)) {
-      selectableOptions[property] =
-        measurements.dataSchema.properties[property];
-    }
-  });
+//   propertiesKey.forEach((property) => {
+//     if (isPropertySelectable(property)) {
+//       selectableOptions[property] =
+//         measurements.dataSchema.properties[property];
+//     }
+//   });
 
-  console.log("selectable proper");
-  console.log(selectableOptions);
-  return selectableOptions;
-}
+//   console.log("selectable proper");
+//   console.log(selectableOptions);
+//   return selectableOptions;
+// }
 
 /**
  * @description Collects all leagle enum classes from the data schema
  * @param {String} enumProperty
  * @returns {Array}
  */
-function getEnumClasses(enumProperty) {
-  let classes = [];
+// function getEnumClasses(enumProperty) {
+//   let classes = [];
 
-  measurements.dataSchema.properties[enumProperty].oneOf.forEach(
-    (enumSchema) => {
-      enumSchema.enum.forEach((enumClass) => {
-        if (enumClass) {
-          classes.push(enumClass);
-        } else {
-          // classes.push("null");
-        }
-      });
-    }
-  );
-  console.log("getEnumClasses");
-  console.log(classes);
+//   measurements.dataSchema.properties[enumProperty].oneOf.forEach(
+//     (enumSchema) => {
+//       enumSchema.enum.forEach((enumClass) => {
+//         if (enumClass) {
+//           classes.push(enumClass);
+//         } else {
+//           // classes.push("null");
+//         }
+//       });
+//     }
+//   );
+//   console.log("getEnumClasses");
+//   console.log(classes);
 
-  return classes;
-}
+//   return classes;
+// }
 
 /**
  * @description Calculate breaks for jenks classification
@@ -163,13 +163,13 @@ function getEnumClasses(enumProperty) {
  * @param {Number} steps
  * @returns {Array} [minValue, break1, ..., breakN, maxValue]
  */
-function getJenksNaturalBreaks(geoJson, property, steps) {
-  const values = propertyValuesToArray(geoJson, property).filter(Boolean);
-  let classifier = new geostats(values);
-  let breaks = classifier.getJenks(steps);
+// function getJenksNaturalBreaks(geoJson, property, steps) {
+//   const values = propertyValuesToArray(geoJson, property).filter(Boolean);
+//   let classifier = new geostats(values);
+//   let breaks = classifier.getJenks(steps);
 
-  return breaks;
-}
+//   return breaks;
+// }
 
 /**
  * @description Helper function for Math.quantileSeq() to collect only the values of a single property within one array
@@ -177,15 +177,15 @@ function getJenksNaturalBreaks(geoJson, property, steps) {
  * @param {String} property
  * @returns {Array}
  */
-function propertyValuesToArray(geoJson, property) {
-  let values = [];
+// function propertyValuesToArray(geoJson, property) {
+//   let values = [];
 
-  geoJson.features.forEach((feature) => {
-    values.push(feature.properties[property]);
-  });
+//   geoJson.features.forEach((feature) => {
+//     values.push(feature.properties[property]);
+//   });
 
-  return values;
-}
+//   return values;
+// }
 
 /**
  * @description Calculate breaks for quantil classification (each class has the same amount of data points)
@@ -194,18 +194,18 @@ function propertyValuesToArray(geoJson, property) {
  * @param {Number} steps
  * @returns {Array}
  */
-function getQuantilBreaks(geoJson, property, steps) {
-  const values = propertyValuesToArray(geoJson, property).filter(Boolean);
-  const breaks = quantileSeq(values, steps - 1);
+// function getQuantilBreaks(geoJson, property, steps) {
+//   const values = propertyValuesToArray(geoJson, property).filter(Boolean);
+//   const breaks = quantileSeq(values, steps - 1);
 
-  // add min value to beginning of array
-  breaks.unshift(Math.min.apply(null, values));
+//   // add min value to beginning of array
+//   breaks.unshift(Math.min.apply(null, values));
 
-  // add max value to end of array
-  breaks.push(Math.max.apply(null, values));
+//   // add max value to end of array
+//   breaks.push(Math.max.apply(null, values));
 
-  return breaks;
-}
+//   return breaks;
+// }
 
 /**
  * @description Case differentiation if quantil or jenks is selected as classification method. According to the method, calculates the braks and returns them as array. Check the
@@ -213,21 +213,21 @@ function getQuantilBreaks(geoJson, property, steps) {
  * @link https://gisgeography.com/choropleth-maps-data-classification/
  * @returns {Array} [minValue, break1, ..., breakN, maxValue]
  */
-function getNumberBreaks() {
-  if (selectedClassificationType.value == classificationTypes.value.jenks) {
-    return getJenksNaturalBreaks(
-      props.map.getSource("sites")._data,
-      selectedProperty.value,
-      colorSteps.value
-    );
-  } else {
-    return getQuantilBreaks(
-      props.map.getSource("sites")._data,
-      selectedProperty.value,
-      colorSteps.value
-    );
-  }
-}
+// function getNumberBreaks() {
+//   if (selectedClassificationType.value == classificationTypes.value.jenks) {
+//     return getJenksNaturalBreaks(
+//       props.map.getSource("sites")._data,
+//       selectedProperty.value,
+//       colorSteps.value
+//     );
+//   } else {
+//     return getQuantilBreaks(
+//       props.map.getSource("sites")._data,
+//       selectedProperty.value,
+//       colorSteps.value
+//     );
+//   }
+// }
 
 /**
  * @description write array containg maplibre conform expressions for properties with enum values. Legal values are according to predefined classes
@@ -236,26 +236,26 @@ function getNumberBreaks() {
  * @param {Array} colors
  * @returns {Array} ["match", ["get", "property"], class, #color, ..., #colorOthers] --> https://docs.mapbox.com/mapbox-gl-js/example/data-driven-circle-colors/
  */
-function generateEnumPaintProperty(property, classes, colors) {
-  let paintProperty = [];
+// function generateEnumPaintProperty(property, classes, colors) {
+//   let paintProperty = [];
 
-  console.log("generateEnumPaintProperty classes");
-  console.log(classes);
-  console.log("generateEnumPaintProperty colors");
-  console.log(colors);
+//   console.log("generateEnumPaintProperty classes");
+//   console.log(classes);
+//   console.log("generateEnumPaintProperty colors");
+//   console.log(colors);
 
-  paintProperty.push("match");
-  paintProperty.push(["get", property]);
+//   paintProperty.push("match");
+//   paintProperty.push(["get", property]);
 
-  classes.forEach((value, index) => {
-    paintProperty.push(value, colors[index]);
-  });
+//   classes.forEach((value, index) => {
+//     paintProperty.push(value, colors[index]);
+//   });
 
-  // others
-  paintProperty.push("#ccc");
+//   // others
+//   paintProperty.push("#ccc");
 
-  return paintProperty;
-}
+//   return paintProperty;
+// }
 
 /**
  * @description write array containg maplibre conform expressions for properties with continous number values. Each class (start value - end value) one color value is assigned.
@@ -264,123 +264,145 @@ function generateEnumPaintProperty(property, classes, colors) {
  * @param {Array} colors
  * @returns {Array} ["step", ["get", "property"], #color, NUMBER, #color, ...]
  */
-function generateContinuousPaintProperty(property, classes, colors) {
-  let paintProperty = [];
-  let k = 1;
+// function generateContinuousPaintProperty(property, classes, colors) {
+//   let paintProperty = [];
+//   let k = 1;
 
-  paintProperty.push("step");
-  paintProperty.push(["get", property]);
+//   paintProperty.push("step");
+//   paintProperty.push(["get", property]);
 
-  for (var i = 0; i < colors.length; i++) {
-    paintProperty.push(colors[i]);
-    if (i < colors.length - 1) {
-      paintProperty.push(classes[k]);
-      k++;
-    }
-  }
+//   for (var i = 0; i < colors.length; i++) {
+//     paintProperty.push(colors[i]);
+//     if (i < colors.length - 1) {
+//       paintProperty.push(classes[k]);
+//       k++;
+//     }
+//   }
 
-  return paintProperty;
-}
+//   return paintProperty;
+// }
 
 /**
  * @description set up an object with relevant information for creating a legend
  * @param {Array} classes
  * @param {Array} colors
  */
-function setLegendObject(classes, colors) {
-  legend.value = {};
-  for (var i = 0; i < colors.length; i++) {
-    if (colors.length == classes.length) {
-      legend.value[i] = {
-        id: i,
-        text: classes[i],
-        colorHEX: colors[i],
-      };
-    } else if (colors.length < classes.length) {
-      legend.value[i] = {
-        id: i,
-        text: classes[i].toFixed(2) + " - " + classes[i + 1].toFixed(2),
-        colorHEX: colors[i],
-      };
-    }
-  }
+// function setLegendObject(classes, colors) {
+//   legend.value = {};
+//   for (var i = 0; i < colors.length; i++) {
+//     if (colors.length == classes.length) {
+//       legend.value[i] = {
+//         id: i,
+//         text: classes[i],
+//         colorHEX: colors[i],
+//       };
+//     } else if (colors.length < classes.length) {
+//       legend.value[i] = {
+//         id: i,
+//         text: classes[i].toFixed(2) + " - " + classes[i + 1].toFixed(2),
+//         colorHEX: colors[i],
+//       };
+//     }
+//   }
 
-  console.log("legend");
-  console.log(legend.value);
-  return legend;
-}
+//   console.log("legend");
+//   console.log(legend.value);
+//   return legend;
+// }
 
 /**
  * @description programm for providing and reacting to user driven colorisation of data according to properties
  * @returns {Void}
  */
-function dataDrivenColorisation() {
-  if (!selectedProperty.value) {
-    console.error("no property selected");
-  } else if (selectedPropertyDataType.value == undefined) {
-    // TODO: Qualitativ Farpalette
-    // handling properties of data type string + enum
-    let classes = getEnumClasses(selectedProperty.value);
-    colorSteps.value = classes.length;
-    console.log("selectedProperty");
-    console.log(selectedProperty.value);
-    console.log("classes");
-    console.log(classes);
-    console.log("colorbrewer");
-    console.log(colorbrewer[selectedColorPalette.value][colorSteps.value]);
-    const paintProperty = generateEnumPaintProperty(
-      selectedProperty.value,
-      classes,
-      colorbrewer[selectedColorPalette.value][colorSteps.value]
-    );
-    props.map.setPaintProperty("sites", "circle-color", paintProperty);
-    setLegendObject(
-      classes,
-      colorbrewer[selectedColorPalette.value][colorSteps.value]
-    );
-  } else if (selectedPropertyDataType.value == "number") {
-    // TODO: Fallunterscheidung Sequential/Diverging
-    // handling properties of data type number
-    let classes = getNumberBreaks();
-    const paintProperty = generateContinuousPaintProperty(
-      selectedProperty.value,
-      classes,
-      colorbrewer[selectedColorPalette.value][colorSteps.value]
-    );
-    props.map.setPaintProperty("sites", "circle-color", paintProperty);
-    setLegendObject(
-      classes,
-      colorbrewer[selectedColorPalette.value][colorSteps.value]
-    );
-  } else if (selectedPropertyDataType.value == "boolean") {
-    console.log(selectedProperty.value + " is boolean");
-  }
-}
+// function dataDrivenColorisation() {
+//   if (!selectedProperty.value) {
+//     console.error("no property selected");
+//   } else if (selectedPropertyDataType.value == undefined) {
+//     // TODO: Qualitativ Farpalette
+//     // handling properties of data type string + enum
+//     let classes = getEnumClasses(selectedProperty.value);
+//     colorSteps.value = classes.length;
+//     const paintProperty = generateEnumPaintProperty(
+//       selectedProperty.value,
+//       classes,
+//       colorbrewer[selectedColorPalette.value][colorSteps.value]
+//     );
+//     props.map.setPaintProperty("sites", "circle-color", paintProperty);
+//     setLegendObject(
+//       classes,
+//       colorbrewer[selectedColorPalette.value][colorSteps.value]
+//     );
+//   } else if (selectedPropertyDataType.value == "number") {
+//     // TODO: Fallunterscheidung Sequential/Diverging
+//     // handling properties of data type number
+//     let classes = getNumberBreaks();
+//     const paintProperty = generateContinuousPaintProperty(
+//       selectedProperty.value,
+//       classes,
+//       colorbrewer[selectedColorPalette.value][colorSteps.value]
+//     );
+//     props.map.setPaintProperty("sites", "circle-color", paintProperty);
+//     setLegendObject(
+//       classes,
+//       colorbrewer[selectedColorPalette.value][colorSteps.value]
+//     );
+//   } else if (selectedPropertyDataType.value == "boolean") {
+//     console.log(selectedProperty.value + " is boolean");
+//   }
+// }
 
 /**
  * @description set Circle color
  * @param {String} colorHEX
  * @returns {Void}
  */
-function setCircleColor(colorHEX) {
-  if (props.map.getPaintProperty("sites", "circle-color") == colorHEX) {
-    return;
-  } else {
-    props.map.setPaintProperty("sites", "circle-color", colorHEX);
-  }
-}
+// function setCircleColor(colorHEX) {
+//   if (props.map.getPaintProperty("sites", "circle-color") == colorHEX) {
+//     return;
+//   } else {
+//     props.map.setPaintProperty("sites", "circle-color", colorHEX);
+//   }
+// }
 </script>
 
 <template>
-  <div class="myTestDiv" id="myTestDiv"></div>
   <div class="circle-styling-settings">
-    <div class="settings-content-title">
+    <!-- <div class="settings-content-title">
       <h3>Style Circles</h3>
-    </div>
+    </div> -->
+
     <div class="settings-content-body">
-      <div class="circle-settings">
-        <div class="circle-color">
-          <label for="customRange1" class="form-label">Circle Size</label>
+      <!-- Circle Size  -->
+      <p class="d-inline-flex gap-1">
+        <button
+          class="btn btn-primary"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#circleSize"
+          aria-expanded="false"
+          aria-controls="circleSize"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-arrows-expand"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M1 8a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 8M7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708l2-2M8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10"
+            />
+          </svg>
+          Circle Size
+        </button>
+      </p>
+      <div class="collapse" id="circleSize">
+        <div class="card card-body">
+          <label for="customRange1" class="form-label text-center"
+            >Circle Size</label
+          >
           <input
             type="range"
             class="form-range"
@@ -390,11 +412,11 @@ function setCircleColor(colorHEX) {
             max="10"
             v-model="circleRadius"
           />
-          <span class="text-muted">{{ circleRadius }}</span>
+          <span class="text-muted text-center">{{ circleRadius }}</span>
         </div>
       </div>
-      <div class="circle-settings">
-        <!-- Inspired by: https://maplibre.org/maplibre-gl-js-docs/example/color-switcher/ -->
+      <!-- <div class="circle-settings">
+        Inspired by: https://maplibre.org/maplibre-gl-js-docs/example/color-switcher/
         <div class="circle-color">
           <fieldset>
             <label>Fill color</label>
@@ -405,14 +427,14 @@ function setCircleColor(colorHEX) {
                 :style="{ 'background-color': colorHEX }"
                 @click="setCircleColor(colorHEX)"
               >
-                <!-- TODO: When single color is selected, make data driven colorization options disappear -->
+                TODO: When single color is selected, make data driven colorization options disappear
               </button>
             </div>
           </fieldset>
         </div>
-      </div>
+      </div> -->
 
-      <div class="settings-content-title">
+      <!-- <div class="settings-content-title">
         <h3>Data driven coloring</h3>
       </div>
       <div class="circle-settings">
@@ -452,7 +474,7 @@ function setCircleColor(colorHEX) {
               </button>
               <div class="collapse" id="collapseExample">
                 <div class="card card-body">
-                  <!-- TODO: show selected color palette via changeing backround on click -->
+                  TODO: show selected color palette via changeing backround on click
                   <div
                     class="color-palette"
                     v-for="(value, index) in colorbrewer.schemeGroups.diverging"
@@ -515,39 +537,38 @@ function setCircleColor(colorHEX) {
             </div>
           </div>
         </fieldset>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 
 <style scoped>
-.btn-color-palette {
+/* .btn-color-palette {
   display: block;
   width: 100%;
-  padding: 0.375rem 2.25rem 0.375rem 0.75rem; /* Similar padding to form-select */
+  padding: 0.375rem 2.25rem 0.375rem 0.75rem;
   font-size: 0.875rem;
   text-align: left;
   line-height: 1.5;
-  color: #212529; /* Bootstrap default text color */
+  color: #212529;
   background-color: #fff;
   background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%23343a40%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
   background-size: 16px 12px;
-  border: 1px solid #ced4da; /* Border color */
-  border-radius: 0.25rem; /* Border radius */
-  appearance: none; /* This is to remove the default arrow of a real select element. Might not be needed for a div but added for completeness. */
-  cursor: pointer; /* To give the feeling that it's clickable */
-  /* Adding a faux dropdown arrow using a pseudo-element */
+  border: 1px solid #ced4da; 
+  border-radius: 0.25rem; 
+  appearance: none;
+  cursor: pointer; 
+
   &:after {
-    /* content: "\0002c5"; */
-    /* content: "\25BC"; Unicode down arrow */
+    
     position: absolute;
     right: 0.5em;
-    pointer-events: none; /* Make it non-interactive */
+    pointer-events: none; 
   }
 
-  /* Styling for interaction states */
+  
   &:hover {
     border-color: #b5b5b5;
   }
@@ -555,23 +576,23 @@ function setCircleColor(colorHEX) {
   &:active,
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); /* Bootstrap-style focus shadow */
-    border-color: #0d6efd; /* Bootstrap primary blue */
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    border-color: #0d6efd;
   }
-}
+} */
 
-.card {
+/* .card {
   cursor: default;
   width: 100%;
-}
+} */
 
-.color-palette {
+/* .color-palette {
   width: 100%;
   display: flex;
   padding: 1px;
-}
+} */
 
-.color {
+/* .color {
   flex: 1;
   float: left;
   width: calc(100% / colorSteps);
@@ -637,5 +658,5 @@ label {
 
 .color-palette-inner:hover {
   background-color: rgba(0, 0, 0, 0.1);
-}
+} */
 </style>

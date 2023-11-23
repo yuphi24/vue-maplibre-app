@@ -50,7 +50,6 @@ function changeBaseLayer(oldBaseLayer, newBaseLayer) {
     </p>
     <div class="collapse" id="baseMaps">
       <div class="maps-content d-flex">
-        >
         <div
           class="card"
           style="width: 9rem"
