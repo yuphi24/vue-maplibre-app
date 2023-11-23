@@ -1,5 +1,6 @@
 <script setup>
 import { defineEmits, defineProps, ref, watch } from "vue";
+import { useMeasurementStore } from "@/store/measurements";
 
 // Extern Libraries
 import geostats from "geostats";
@@ -8,17 +9,21 @@ import { Map } from "maplibre-gl";
 import colorbrewer from "colorbrewer";
 
 // Variables
-const props = defineProps({ map: Map, heatFlowSchema: Object });
+const props = defineProps({ map: Map });
 const emit = defineEmits(["send-legend"]);
+
+const measurements = useMeasurementStore();
+console.log("inside circle style");
+console.log(measurements.dataSchema);
 
 const circleRadius = ref(5);
 
-const propertyOptions = getSelectableProperties(props.heatFlowSchema);
+const propertyOptions = getSelectableProperties(measurements.dataSchema);
 const selectedProperty = ref("Select attribute");
 const selectedPropertyDataType = ref();
 
 const colorSteps = ref(4);
-const selectedColorPalette = ref("BuGn");
+const selectedColorPalette = ref("BrBg");
 
 const classificationTypes = ref({
   jenks: "Jenks (natural breakes)",
@@ -44,7 +49,7 @@ watch(circleRadius, (currentValue) => {
  */
 watch(selectedProperty, (newProperty) => {
   selectedPropertyDataType.value =
-    props.heatFlowSchema.properties[newProperty].type;
+    measurements.dataSchema.properties[newProperty].type;
 });
 
 /** Pseudo code data driven colring algorithm
@@ -85,19 +90,19 @@ function isPropertySelectable(property) {
   let isSelectable = null;
 
   if (
-    props.heatFlowSchema.properties[property].type == "string" &&
-    !props.heatFlowSchema.properties[property].enum
+    measurements.dataSchema.properties[property].type == "string" &&
+    !measurements.dataSchema.properties[property].enum
   ) {
     console.log(property + " is not suitable for data driven coloring");
     isSelectable = false;
   } else if (
-    props.heatFlowSchema.properties[property].type == "integer" &&
-    (!props.heatFlowSchema.properties[property].minimum ||
-      !props.heatFlowSchema.properties[property].maximum)
+    measurements.dataSchema.properties[property].type == "integer" &&
+    (!measurements.dataSchema.properties[property].minimum ||
+      !measurements.dataSchema.properties[property].maximum)
   ) {
     console.log(property + " is not suitable for data driven coloring");
     isSelectable = false;
-  } else if (props.heatFlowSchema.properties[property].type == "object") {
+  } else if (measurements.dataSchema.properties[property].type == "object") {
     console.log(property + " is not suitable for data driven coloring");
     isSelectable = false;
   } else {
@@ -117,7 +122,8 @@ function getSelectableProperties(schema) {
 
   propertiesKey.forEach((property) => {
     if (isPropertySelectable(property)) {
-      selectableOptions[property] = props.heatFlowSchema.properties[property];
+      selectableOptions[property] =
+        measurements.dataSchema.properties[property];
     }
   });
 
@@ -134,11 +140,17 @@ function getSelectableProperties(schema) {
 function getEnumClasses(enumProperty) {
   let classes = [];
 
-  props.heatFlowSchema.properties[enumProperty].oneOf.forEach((enumSchema) => {
-    enumSchema.enum.forEach((enumClass) => {
-      classes.push(enumClass);
-    });
-  });
+  measurements.dataSchema.properties[enumProperty].oneOf.forEach(
+    (enumSchema) => {
+      enumSchema.enum.forEach((enumClass) => {
+        if (enumClass) {
+          classes.push(enumClass);
+        } else {
+          // classes.push("null");
+        }
+      });
+    }
+  );
   console.log("getEnumClasses");
   console.log(classes);
 
@@ -226,6 +238,11 @@ function getNumberBreaks() {
  */
 function generateEnumPaintProperty(property, classes, colors) {
   let paintProperty = [];
+
+  console.log("generateEnumPaintProperty classes");
+  console.log(classes);
+  console.log("generateEnumPaintProperty colors");
+  console.log(colors);
 
   paintProperty.push("match");
   paintProperty.push(["get", property]);
@@ -379,7 +396,7 @@ function setCircleColor(colorHEX) {
             <label>Fill color</label>
             <div id="swatches">
               <button
-                v-for="colorHEX in colorbrewer['Paired'][9]"
+                v-for="colorHEX in colorbrewer['Paired'][12]"
                 :key="colorHEX"
                 :style="{ 'background-color': colorHEX }"
                 @click="setCircleColor(colorHEX)"
@@ -434,8 +451,7 @@ function setCircleColor(colorHEX) {
                   <!-- TODO: show selected color palette via changeing backround on click -->
                   <div
                     class="color-palette"
-                    v-for="(value, index) in colorbrewer.schemeGroups
-                      .sequential"
+                    v-for="(value, index) in colorbrewer.schemeGroups.diverging"
                     :key="index"
                     @click="
                       setSelectedColorPalette(value),
@@ -488,7 +504,7 @@ function setCircleColor(colorHEX) {
                 v-model="colorSteps"
                 @change="dataDrivenColorisation(), sendLegend()"
               >
-                <option v-for="n in 7" :key="n">
+                <option v-for="n in 8" :key="n">
                   {{ n + 2 }}
                 </option>
               </select>

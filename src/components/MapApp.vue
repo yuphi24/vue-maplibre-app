@@ -9,7 +9,7 @@ import { Map } from "maplibre-gl";
 
 // data
 import maps from "./left-panel/settings-panel/maps.json";
-import sitesURL from "@/assets/data/small_sites.geojson";
+// import sitesURL from "@/assets/data/small_sites.geojson";
 
 // components
 // import AttributeTable from "./common/AttributeTable.vue";
@@ -21,9 +21,11 @@ import InfoPopup from "./map/InfoPopup.vue";
 import DataLayer from "./map/DataLayer.vue";
 import MapLegend from "./map/MapLegend.vue";
 
-import { useMeasruementsStore } from "@/store/measruements";
-const measurements = useMeasruementsStore();
+import { useMeasurementStore } from "@/store/measurements";
+const measurements = useMeasurementStore();
 measurements.fetchAPIDataSchema("http://139.17.54.176:8010/api/v1/schema/");
+console.log("schema");
+console.log(measurements.dataSchema);
 
 const mapContainer = ref();
 const map = ref();
@@ -31,7 +33,7 @@ const navbarTitles = ref(["Settings", "Filter", "Statistics", "Analysis"]); // T
 const panelTitle = ref("");
 const basemaps = ref(maps);
 const activeBaseLayer = ref("");
-const sites = ref(sitesURL);
+// const sites = ref(sitesURL);
 
 const defaultCircleColor = ref("#41b6c4");
 const isCollapsed = ref(true);
@@ -174,7 +176,7 @@ onMounted(() => {
 
     map.value.addSource("sites", {
       type: "geojson",
-      data: measurements.geojson, // ist Promise mit fulfilled und nicht geojson
+      data: measurements.geojson,
       // data: sites.value,
     });
 

@@ -1,5 +1,5 @@
 <script setup>
-import simplebar from "simplebar-vue";
+// import simplebar from "simplebar-vue";
 
 import { defineEmits, defineProps, ref, watch } from "vue";
 
@@ -48,24 +48,25 @@ const handleLegendEvent = (legend) => {
     <div style="clear: both"></div>
   </div>
 
-  <simplebar data-simplebar-auto-hide="false">
-    <div class="sidebar-body">
-      <SettingsPanel
-        v-if="props.title === 'Settings'"
-        :map="props.map"
-        :activeBaseLayer="props.activeBaseLayer"
-        :heatFlowSchema="heatFlowSchema"
-        @handle-legend-event="handleLegendEvent"
-      />
-      <FilterPanal
-        v-if="props.title === 'Filter'"
-        :map="props.map"
-        :heatFlowSchema="heatFlowSchema"
-      />
-      <StatisticsPanal v-if="props.title === 'Statistics'" />
-      <AnalysisPanal v-if="props.title === 'Analysis'" />
-    </div>
-  </simplebar>
+  <!-- <simplebar data-simplebar-auto-hide="false"> -->
+  <div class="overflow-auto">
+    <!-- <div class="sidebar-body"> -->
+    <SettingsPanel
+      v-if="props.title === 'Settings'"
+      :map="props.map"
+      :activeBaseLayer="props.activeBaseLayer"
+      :heatFlowSchema="heatFlowSchema"
+      @handle-legend-event="handleLegendEvent"
+    />
+    <FilterPanal
+      v-if="props.title === 'Filter'"
+      :map="props.map"
+      :heatFlowSchema="heatFlowSchema"
+    />
+    <StatisticsPanal v-if="props.title === 'Statistics'" />
+    <AnalysisPanal v-if="props.title === 'Analysis'" />
+  </div>
+  <!-- </simplebar> -->
 </template>
 
 <style scoped>

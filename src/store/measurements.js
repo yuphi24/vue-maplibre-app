@@ -5,7 +5,7 @@ import * as SwaggerParser from "@apidevtools/swagger-parser";
 import axios from "axios";
 import gjv from "geojson-validation";
 
-export const useMeasruementsStore = defineStore("measurements", () => {
+export const useMeasurementStore = defineStore("measurements", () => {
   /**
    * ref()s become state properties
    * computed()s become getters
@@ -24,7 +24,7 @@ export const useMeasruementsStore = defineStore("measurements", () => {
       let parser = new SwaggerParser();
       parser.dereference(url).then((apiSchema) => {
         dataSchema.value = apiSchema.components.schemas.Measurement;
-        console.log(apiSchema);
+        console.log(dataSchema.value);
       });
     } catch (e) {
       console.log("error in fetching data schema" + e);

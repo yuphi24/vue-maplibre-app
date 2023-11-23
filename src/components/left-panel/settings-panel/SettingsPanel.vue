@@ -38,11 +38,7 @@ watch(props, (newProps) => {
     <ClusterSettings />
   </div> -->
   <div class="settings-content">
-    <CircleStylingSettings
-      :map="props.map"
-      :heatFlowSchema="heatFlowSchema"
-      @send-legend="handleLegendEvent"
-    />
+    <CircleStylingSettings :map="props.map" @send-legend="handleLegendEvent" />
   </div>
   <!-- <div class="settings-content">
     <GraticuleSettings />
