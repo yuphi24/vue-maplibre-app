@@ -7,17 +7,10 @@
     "attribution": "&copy; OpenStreetMap Contributors"
   },
   {
-    "id": "bm_stamen_terrain",
-    "title": "Stamen Terrain",
-    "cardImage": "https://stamen-tiles.a.ssl.fastly.net/terrain/0/0/0.jpg",
-    "tiles": "https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg",
-    "attribution": "Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL."
-  },
-  {
-    "id": "bm_stamen_toner",
-    "title": "Stamen Toner",
-    "cardImage": "https://stamen-tiles.a.ssl.fastly.net/toner/0/0/0.png",
-    "tiles": "https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png",
+    "id": "bm_otm",
+    "title": "OpenTopoMap",
+    "cardImage": "https://a.tile.opentopomap.org/0/0/0.png",
+    "tiles": "https://a.tile.opentopomap.org/{z}/{x}/{y}.png",
     "attribution": "Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL."
   },
   {
