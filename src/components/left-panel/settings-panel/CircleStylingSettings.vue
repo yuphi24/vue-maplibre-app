@@ -23,7 +23,7 @@ const selectedProperty = ref("Select attribute");
 const selectedPropertyDataType = ref();
 
 const colorSteps = ref(4);
-const selectedColorPalette = ref("BrBg");
+const selectedColorPalette = ref("BrBG");
 
 const classificationTypes = ref({
   jenks: "Jenks (natural breakes)",
@@ -321,9 +321,13 @@ function dataDrivenColorisation() {
     // TODO: Qualitativ Farpalette
     // handling properties of data type string + enum
     let classes = getEnumClasses(selectedProperty.value);
+    colorSteps.value = classes.length;
+    console.log("selectedProperty");
+    console.log(selectedProperty.value);
     console.log("classes");
     console.log(classes);
-    colorSteps.value = classes.length;
+    console.log("colorbrewer");
+    console.log(colorbrewer[selectedColorPalette.value][colorSteps.value]);
     const paintProperty = generateEnumPaintProperty(
       selectedProperty.value,
       classes,
