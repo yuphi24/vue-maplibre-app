@@ -22,6 +22,7 @@ const propertyOptions = getSelectableProperties(measurements.dataSchema);
 const selectedProperty = ref(null);
 const selectedPropertyDataType = ref();
 
+const legalSteps = ref([3, 4, 5, 6, 7, 8, 9, 10, 11]);
 const colorSteps = ref(4);
 const selectedColorPalette = ref("BrBG");
 
@@ -499,6 +500,7 @@ function setCircleColor(colorHEX) {
   </p>
   <div class="collapse" id="dataDrivenColoring">
     <div class="card card-body">
+      <!-- Select property for coloring -->
       <VueMultiselect
         v-model="selectedProperty"
         :options="propertyOptions"
@@ -518,6 +520,16 @@ function setCircleColor(colorHEX) {
         :options="classificationTypes"
         label="title"
         placeholder="Select data classification"
+        @select="dataDrivenColorisation(), sendLegend()"
+      >
+      </VueMultiselect>
+
+      <!-- Select classification method for number values -->
+      <VueMultiselect
+        v-if="selectedPropertyDataType == 'number'"
+        v-model="colorSteps"
+        :options="legalSteps"
+        placeholder="Number of Classes"
         @select="dataDrivenColorisation(), sendLegend()"
       >
       </VueMultiselect>
