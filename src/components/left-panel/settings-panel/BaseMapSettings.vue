@@ -23,7 +23,7 @@ function changeBaseLayer(oldBaseLayer, newBaseLayer) {
 
 <template>
   <div class="base-map-settings">
-    <p class="d-inline-flex gap-1">
+    <p class="d-grid gap-2">
       <button
         class="btn btn-primary"
         type="button"

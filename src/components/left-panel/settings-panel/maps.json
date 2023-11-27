@@ -11,7 +11,7 @@
     "title": "OpenTopoMap",
     "cardImage": "https://a.tile.opentopomap.org/0/0/0.png",
     "tiles": "https://a.tile.opentopomap.org/{z}/{x}/{y}.png",
-    "attribution": "Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL."
+    "attribution": "Kartendaten: <a href='https://openstreetmap.org/copyright'>© OpenStreetMap-Mitwirkende</a>, <a href='http://viewfinderpanoramas.org/'>SRTM</a> | Kartendarstellung: <a href='https://opentopomap.org/'>© OpenTopoMap</a> <a href='https://creativecommons.org/licenses/by-sa/3.0/'>CC-BY-SA</a>"
   },
   {
     "id": "bm_world_bathymetry",
