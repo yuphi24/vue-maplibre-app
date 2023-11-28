@@ -24,8 +24,6 @@ import MapLegend from "./map/MapLegend.vue";
 import { useMeasurementStore } from "@/store/measurements";
 const measurements = useMeasurementStore();
 measurements.fetchAPIDataSchema("http://139.17.54.176:8010/api/v1/schema/");
-console.log("schema");
-console.log(measurements.dataSchema);
 
 const mapContainer = ref();
 const map = ref();
@@ -33,7 +31,6 @@ const navbarTitles = ref(["Settings", "Filter", "Statistics", "Analysis"]); // T
 const panelTitle = ref("");
 const basemaps = ref(maps);
 const activeBaseLayer = ref("");
-// const sites = ref(sitesURL);
 
 const defaultCircleColor = ref("#41b6c4");
 const isCollapsed = ref(true);
@@ -165,7 +162,6 @@ onMounted(() => {
 
   map.value.once("load", async () => {
     // add data source
-
     try {
       await measurements.fetchAPIData(
         "http://139.17.54.176:8010/api/v1/measurements/heat-flow/?format=json"

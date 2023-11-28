@@ -24,7 +24,9 @@ const selectedPropertyDataType = ref();
 
 const legalSteps = ref([3, 4, 5, 6, 7, 8, 9, 10, 11]);
 const colorSteps = ref(4);
-const selectedColorPalette = ref("BrBG");
+const colorPaletteOptions = ref(null);
+setColorPaletteOptions(colorSteps.value);
+const selectedColorPalette = ref(colorPaletteOptions.value[0]);
 
 const classificationTypes = ref([
   {
@@ -51,33 +53,47 @@ watch(circleRadius, (currentValue) => {
   props.map.setPaintProperty("sites", "circle-radius", parseInt(currentValue));
 });
 
-/** Pseudo code data driven colring algorithm
- * - [X] getProperties from data schema
- * - [X] make property selectable through <select> and <option> elements
- * - [X] set default properties or get selected propertie of user
- * - [X] get datatype of selected property (number or string)
- * - [X] IF (number)
- *          - [X] get nr. of classes (either default or user input)
- *          - [X] get type of classification
- *                - [X] quantil https://mathjs.org/docs/reference/functions/quantileSeq.html
- *                - [X] jenks natural breaks turfjs
- *          - [X] calculate breaks and return list
- * - [X] ELSE IF (string)
- *          - [X] get enum classes
- * - [X] ELSE
- *      - [X] throw ERROR
- * - [X] get selected color palette
- * - [X] adjust amount of steps according to nr of classes
- * - [X] write circle-color object for maplibre function setPaintProperties()
+/**
+ * set new color options when amount of classes (colorSteps) is changing
  */
+watch(colorSteps, (newColorSteps) => {
+  setColorPaletteOptions(newColorSteps);
+});
 
 /**
- * @description Setter for current selected color palette
- * @param {String} colorPalette
+ * @description set Circle color
+ * @param {String} colorHEX
+ * @returns {Void}
  */
-// function setSelectedColorPalette(colorPalette) {
-//   selectedColorPalette.value = colorPalette;
-// }
+function setCircleColor(colorHEX) {
+  if (props.map.getPaintProperty("sites", "circle-color") == colorHEX) {
+    return;
+  } else {
+    props.map.setPaintProperty("sites", "circle-color", colorHEX);
+  }
+}
+
+/**
+ * @description
+ * @param {Number} classes
+ */
+function setColorPaletteOptions(classes) {
+  if (classes >= 12) {
+    console.log("Number of classes out of range");
+    return;
+  }
+  let schemaGroup = [];
+
+  colorbrewer.schemeGroups.diverging.forEach((schema) => {
+    const value = {
+      name: schema,
+      colors: colorbrewer[schema][classes],
+    };
+    schemaGroup.push(value);
+  });
+
+  colorPaletteOptions.value = schemaGroup;
+}
 
 /**
  * @description
@@ -169,8 +185,6 @@ function getEnumClasses(enumProperty) {
       });
     }
   );
-  console.log("getEnumClasses");
-  console.log(classes);
 
   return classes;
 }
@@ -222,6 +236,7 @@ function getQuantilBreaks(geoJson, property, steps) {
   // add max value to end of array
   breaks.push(Math.max.apply(null, values));
 
+  console.log("läuft durch");
   return breaks;
 }
 
@@ -233,8 +248,8 @@ function getQuantilBreaks(geoJson, property, steps) {
  * @returns {Array} [minValue, break1, ..., breakN, maxValue]
  */
 function getNumberBreaks(property) {
-  console.log("inside getNumberBreaks");
-  console.log(selectedClassificationType.value);
+  console.log("getNumberBreaks");
+  console.log(colorSteps.value);
   if (selectedClassificationType.value.name == "jenks") {
     return getJenksNaturalBreaks(
       props.map.getSource("sites")._data,
@@ -259,11 +274,6 @@ function getNumberBreaks(property) {
  */
 function generateEnumPaintProperty(property, classes, colors) {
   let paintProperty = [];
-
-  console.log("generateEnumPaintProperty classes");
-  console.log(classes);
-  console.log("generateEnumPaintProperty colors");
-  console.log(colors);
 
   paintProperty.push("match");
   paintProperty.push(["get", property]);
@@ -326,8 +336,6 @@ function setLegendObject(classes, colors) {
     }
   }
 
-  console.log("legend");
-  console.log(legend.value);
   return legend;
 }
 
@@ -336,8 +344,9 @@ function setLegendObject(classes, colors) {
  * @returns {Void}
  */
 function dataDrivenColorisation() {
-  console.log("inside dataDrivenColorisation");
-  console.log(selectedPropertyDataType.value);
+  // setColorPaletteOptions(colorSteps.value);
+  // console.log("inside dataDrivenColorisation");
+  // console.log(selectedPropertyDataType.value);
   if (!selectedProperty.value) {
     console.error("no property selected");
   } else if (selectedPropertyDataType.value == "number") {
@@ -347,43 +356,32 @@ function dataDrivenColorisation() {
     const paintProperty = generateContinuousPaintProperty(
       selectedProperty.value.key,
       classes,
-      colorbrewer[selectedColorPalette.value][colorSteps.value]
+      colorbrewer[selectedColorPalette.value.name][colorSteps.value]
     );
+    console.log("dataDriven color palette");
+    console.log(selectedColorPalette.value);
     props.map.setPaintProperty("sites", "circle-color", paintProperty);
     setLegendObject(
       classes,
-      colorbrewer[selectedColorPalette.value][colorSteps.value]
+      colorbrewer[selectedColorPalette.value.name][colorSteps.value]
     );
   } else if (selectedPropertyDataType.value == undefined) {
-    // TODO: Qualitativ Farpalette
+    // TODO: Qualitativ Farbpalette
     // handling properties of data type string + enum
     let classes = getEnumClasses(selectedProperty.value.key);
     colorSteps.value = classes.length;
     const paintProperty = generateEnumPaintProperty(
       selectedProperty.value.key,
       classes,
-      colorbrewer[selectedColorPalette.value][colorSteps.value]
+      colorbrewer[selectedColorPalette.value.name][colorSteps.value]
     );
     props.map.setPaintProperty("sites", "circle-color", paintProperty);
     setLegendObject(
       classes,
-      colorbrewer[selectedColorPalette.value][colorSteps.value]
+      colorbrewer[selectedColorPalette.value.name][colorSteps.value]
     );
   } else if (selectedPropertyDataType.value == "boolean") {
     console.log(selectedProperty.value.key + " is boolean");
-  }
-}
-
-/**
- * @description set Circle color
- * @param {String} colorHEX
- * @returns {Void}
- */
-function setCircleColor(colorHEX) {
-  if (props.map.getPaintProperty("sites", "circle-color") == colorHEX) {
-    return;
-  } else {
-    props.map.setPaintProperty("sites", "circle-color", colorHEX);
   }
 }
 </script>
@@ -505,7 +503,8 @@ function setCircleColor(colorHEX) {
         v-model="selectedProperty"
         :options="propertyOptions"
         label="title"
-        placeholder="Select property"
+        placeholder="Property"
+        :allow-empty="false"
         @select="
           setPropertyDataType(selectedProperty),
             dataDrivenColorisation(),
@@ -519,7 +518,8 @@ function setCircleColor(colorHEX) {
         v-model="selectedClassificationType"
         :options="classificationTypes"
         label="title"
-        placeholder="Select data classification"
+        placeholder="Data classification method"
+        :allow-empty="false"
         @select="dataDrivenColorisation(), sendLegend()"
       >
       </VueMultiselect>
@@ -529,237 +529,47 @@ function setCircleColor(colorHEX) {
         v-if="selectedPropertyDataType == 'number'"
         v-model="colorSteps"
         :options="legalSteps"
-        placeholder="Number of Classes"
-        @select="dataDrivenColorisation(), sendLegend()"
+        placeholder="Number of classes"
+        :allow-empty="false"
+        @select="
+          printOut(colorPaletteOptions), dataDrivenColorisation(), sendLegend()
+        "
       >
       </VueMultiselect>
+
+      <!-- TODO:Select color palette -->
+      <VueMultiselect
+        v-model="selectedColorPalette"
+        :options="colorPaletteOptions"
+        :multiple="false"
+        :close-on-select="true"
+        :allow-empty="false"
+        @select="dataDrivenColorisation(), sendLegend()"
+      >
+        <template #singleLabel="{ option }">
+          <div class="btn-group">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              v-for="color in option.colors"
+              :key="color"
+              :style="{ backgroundColor: color }"
+            ></button>
+          </div>
+        </template>
+        <template #option="{ option }">
+          <div class="btn-group">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              v-for="color in option.colors"
+              :key="color"
+              :style="{ backgroundColor: color }"
+            ></button>
+          </div> </template
+      ></VueMultiselect>
     </div>
   </div>
-
-  <!--  -->
-  <!-- <div
-    class="data-classification-type"
-    v-if="selectedPropertyDataType == 'number'"
-  >
-    <label for="data-classification-type">Data Classification</label>
-    <select
-      class="form-select form-select-sm"
-      name="data-classification-type"
-      id="data-classification-type"
-      v-model="selectedClassificationType"
-      @change="dataDrivenColorisation(), sendLegend()"
-    >
-      <option
-        v-for="(value, key) in classificationTypes"
-        :key="key"
-        :selectedClassificationType="{ key }"
-      >
-        {{ value }}
-      </option>
-    </select>
-  </div> -->
-
-  <!-- <div class="settings-content-title">
-        <h3>Data driven coloring</h3>
-      </div>
-      <div class="circle-settings">
-        <fieldset>
-          <div class="data-driven-coloring">
-            <div class="color-selection">
-              <label for="color-selection">Color Palette</label>
-              <button
-                class="btn-color-palette"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseExample"
-                aria-expanded="false"
-                aria-controls="collapseExample"
-              >
-                Select color palette
-              </button>
-              <div class="collapse" id="collapseExample">
-                <div class="card card-body">
-                  TODO: show selected color palette via changeing backround on click
-                  <div
-                    class="color-palette"
-                    v-for="(value, index) in colorbrewer.schemeGroups.diverging"
-                    :key="index"
-                    @click="
-                      setSelectedColorPalette(value),
-                        dataDrivenColorisation(),
-                        sendLegend()
-                    "
-                  >
-                    <div
-                      class="color"
-                      v-for="color in colorbrewer[value][colorSteps]"
-                      :key="color"
-                      :style="{ backgroundColor: color }"
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="data-classification-type"
-              v-if="selectedPropertyDataType == 'number'"
-            >
-              <label for="data-classification-type">Data Classification</label>
-              <select
-                class="form-select form-select-sm"
-                name="data-classification-type"
-                id="data-classification-type"
-                v-model="selectedClassificationType"
-                @change="dataDrivenColorisation(), sendLegend()"
-              >
-                <option
-                  v-for="(value, key) in classificationTypes"
-                  :key="key"
-                  :selectedClassificationType="{ key }"
-                >
-                  {{ value }}
-                </option>
-              </select>
-            </div>
-
-            <div
-              class="data-driven-coloring-steps"
-              v-if="selectedPropertyDataType == 'number'"
-            >
-              <label>Number of Classes</label>
-              <select
-                class="form-select form-select-sm"
-                name="data-driven-coloring"
-                id="data-driven-coloring"
-                v-model="colorSteps"
-                @change="dataDrivenColorisation(), sendLegend()"
-              >
-                <option v-for="n in 8" :key="n">
-                  {{ n + 2 }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </fieldset>
-      </div> -->
 </template>
 
-<style scoped>
-/* .btn-color-palette {
-  display: block;
-  width: 100%;
-  padding: 0.375rem 2.25rem 0.375rem 0.75rem;
-  font-size: 0.875rem;
-  text-align: left;
-  line-height: 1.5;
-  color: #212529;
-  background-color: #fff;
-  background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%23343a40%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  background-size: 16px 12px;
-  border: 1px solid #ced4da; 
-  border-radius: 0.25rem; 
-  appearance: none;
-  cursor: pointer; 
-
-  &:after {
-    
-    position: absolute;
-    right: 0.5em;
-    pointer-events: none; 
-  }
-
-  
-  &:hover {
-    border-color: #b5b5b5;
-  }
-
-  &:active,
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-    border-color: #0d6efd;
-  }
-} */
-
-/* .card {
-  cursor: default;
-  width: 100%;
-} */
-
-/* .color-palette {
-  width: 100%;
-  display: flex;
-  padding: 1px;
-} */
-
-/* .color {
-  flex: 1;
-  float: left;
-  width: calc(100% / colorSteps);
-  box-sizing: border-box;
-}
-.settings-content-body {
-  display: flex;
-  justify-content: center;
-}
-
-.circle-settings {
-  width: 100%;
-  background-color: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-.circle-color fieldset {
-  border: none;
-  padding: 0;
-  margin: 0 0 10px;
-}
-
-.circle-color fieldset:last-child {
-  margin: 0;
-}
-
-.circle-color select {
-  width: 100%;
-}
-
-label {
-  display: block;
-  font-weight: bold;
-  margin: 0 0 5px;
-}
-
-.circle-color button {
-  display: inline-block;
-  width: 36px;
-  height: 20px;
-  border: none;
-  cursor: pointer;
-}
-
-.circle-color button:focus {
-  outline: none;
-}
-
-.circle-color button:hover {
-  box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.1);
-}
-
-.color {
-  display: inline-block;
-  width: 36px;
-  height: 20px;
-  border: none;
-  cursor: pointer;
-}
-
-.color-palette-inner:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-} */
-</style>
+<style scoped></style>
