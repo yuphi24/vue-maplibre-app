@@ -236,7 +236,6 @@ function getQuantilBreaks(geoJson, property, steps) {
   // add max value to end of array
   breaks.push(Math.max.apply(null, values));
 
-  console.log("läuft durch");
   return breaks;
 }
 
@@ -248,8 +247,6 @@ function getQuantilBreaks(geoJson, property, steps) {
  * @returns {Array} [minValue, break1, ..., breakN, maxValue]
  */
 function getNumberBreaks(property) {
-  console.log("getNumberBreaks");
-  console.log(colorSteps.value);
   if (selectedClassificationType.value.name == "jenks") {
     return getJenksNaturalBreaks(
       props.map.getSource("sites")._data,
@@ -344,9 +341,6 @@ function setLegendObject(classes, colors) {
  * @returns {Void}
  */
 function dataDrivenColorisation() {
-  // setColorPaletteOptions(colorSteps.value);
-  // console.log("inside dataDrivenColorisation");
-  // console.log(selectedPropertyDataType.value);
   if (!selectedProperty.value) {
     console.error("no property selected");
   } else if (selectedPropertyDataType.value == "number") {
@@ -358,8 +352,6 @@ function dataDrivenColorisation() {
       classes,
       colorbrewer[selectedColorPalette.value.name][colorSteps.value]
     );
-    console.log("dataDriven color palette");
-    console.log(selectedColorPalette.value);
     props.map.setPaintProperty("sites", "circle-color", paintProperty);
     setLegendObject(
       classes,
@@ -531,14 +523,13 @@ function dataDrivenColorisation() {
         :options="legalSteps"
         placeholder="Number of classes"
         :allow-empty="false"
-        @select="
-          printOut(colorPaletteOptions), dataDrivenColorisation(), sendLegend()
-        "
+        @select="dataDrivenColorisation(), sendLegend()"
       >
       </VueMultiselect>
 
       <!-- TODO:Select color palette -->
       <VueMultiselect
+        v-if="selectedProperty"
         v-model="selectedColorPalette"
         :options="colorPaletteOptions"
         :multiple="false"
