@@ -28,29 +28,18 @@ watch(props, (newProps) => {
 </script>
 
 <template>
-  <div class="settings-content">
+  <div class="overflow-auto px-1 pt-1 pb-1">
     <BaseMapSettings
       :map="props.map"
       :activeBaseLayer="props.activeBaseLayer"
     />
-  </div>
-  <!-- <div class="settings-content">
-    <ClusterSettings />
-  </div> -->
-  <div class="settings-content">
+
+    <!-- <ClusterSettings /> -->
+
     <CircleStylingSettings :map="props.map" @send-legend="handleLegendEvent" />
+
+    <!-- <GraticuleSettings /> -->
   </div>
-  <!-- <div class="settings-content">
-    <GraticuleSettings />
-  </div> -->
 </template>
 
-<style scoped>
-.settings-content {
-  display: block;
-  padding: 2px;
-  margin: 2px;
-  border-top: 4px inset;
-  overflow: auto;
-}
-</style>
+<style scoped></style>
