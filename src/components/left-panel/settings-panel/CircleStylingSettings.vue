@@ -373,6 +373,7 @@ function dataDrivenColorisation() {
       colorbrewer[selectedColorPalette.value.name][colorSteps.value]
     );
   } else if (selectedPropertyDataType.value == "boolean") {
+    // TODO: generateBooleanPaintProperty() method
     console.log(selectedProperty.value.key + " is boolean");
   }
 }
@@ -527,7 +528,7 @@ function dataDrivenColorisation() {
       >
       </VueMultiselect>
 
-      <!-- TODO:Select color palette -->
+      <!-- Select color palette -->
       <VueMultiselect
         v-if="selectedProperty"
         v-model="selectedColorPalette"
@@ -537,6 +538,7 @@ function dataDrivenColorisation() {
         :allow-empty="false"
         @select="dataDrivenColorisation(), sendLegend()"
       >
+        <!-- TODO: selected color palette is not changing when number of colorSteps is changing -->
         <template #singleLabel="{ option }">
           <div class="btn-group">
             <button
