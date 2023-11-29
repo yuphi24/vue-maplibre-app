@@ -48,6 +48,18 @@ const handleLegendEvent = (legend) => {
     <div style="clear: both"></div>
   </div>
 
+  <span
+    class="d-inline-block"
+    tabindex="0"
+    data-bs-toggle="popover"
+    data-bs-trigger="hover focus"
+    data-bs-content="Disabled popover"
+  >
+    <button class="btn btn-primary" type="button" disabled>
+      Disabled button
+    </button>
+  </span>
+
   <!-- <simplebar data-simplebar-auto-hide="false"> -->
   <div class="overflow-auto">
     <!-- <div class="sidebar-body"> -->

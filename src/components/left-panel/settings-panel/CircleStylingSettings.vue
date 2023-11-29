@@ -1,6 +1,7 @@
 <script setup>
 import { defineEmits, defineProps, ref, watch } from "vue";
 import { useMeasurementStore } from "@/store/measurements";
+import { useLegendStore } from "@/store/legend";
 
 import VueMultiselect from "vue-multiselect";
 
@@ -15,6 +16,7 @@ const props = defineProps({ map: Map });
 const emit = defineEmits(["send-legend"]);
 
 const measurements = useMeasurementStore();
+const legend = useLegendStore();
 
 const circleRadius = ref(5);
 
@@ -40,9 +42,9 @@ const classificationTypes = ref([
 ]);
 const selectedClassificationType = ref(classificationTypes.value[0]);
 
-const legend = ref({});
+const legend123 = ref({});
 const sendLegend = () => {
-  emit("send-legend", legend.value);
+  emit("send-legend", legend123.value);
 };
 
 /**
@@ -375,6 +377,7 @@ function dataDrivenColorisation() {
   } else if (selectedPropertyDataType.value == "boolean") {
     // TODO: generateBooleanPaintProperty() method
     console.log(selectedProperty.value.key + " is boolean");
+    return;
   }
 }
 </script>
@@ -515,6 +518,64 @@ function dataDrivenColorisation() {
         :allow-empty="false"
         @select="dataDrivenColorisation(), sendLegend()"
       >
+        <template #option="{ option }">
+          <!-- Custom template for options in the dropdown -->
+          <div class="d-flex align-items-center">
+            <span>{{ option.title }}</span>
+            <span
+              class="d-inline-block ms-2"
+              data-bs-toggle="popover"
+              data-bs-trigger="hover"
+              :data-bs-content="'Popover content for ' + option.title"
+            >
+              <button class="btn btn-primary" type="button" disabled>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-info-circle"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"
+                  />
+                  <path
+                    d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"
+                  />
+                </svg>
+              </button>
+            </span>
+          </div>
+        </template>
+        <!-- <template #option="{ option }"
+          >{{ option.title }}
+          <span
+            class="d-inline-block"
+            tabindex="0"
+            data-bs-toggle="popover"
+            data-bs-trigger="hover focus"
+            data-bs-content="Disabled popover"
+          >
+            <button class="btn btn-primary" type="button" disabled>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="inherite"
+                class="bi bi-info-circle"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"
+                />
+                <path
+                  d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0"
+                />
+              </svg>
+            </button>
+          </span>
+        </template> -->
       </VueMultiselect>
 
       <!-- Select classification method for number values -->
