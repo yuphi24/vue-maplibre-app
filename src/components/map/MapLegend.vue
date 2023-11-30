@@ -1,20 +1,12 @@
 <!-- Map Legend -->
 <script setup>
-import { defineProps, ref, watch } from "vue";
+import { useLegendStore } from "@/store/legend";
 
-const props = defineProps({ legend: Object });
-const legend = ref(null);
-
-watch(props, (newProps) => {
-  legend.value = newProps.legend;
-
-  console.log("--------legend");
-  console.log(legend.value);
-});
+const legend = useLegendStore();
 </script>
 
 <template>
-  <div class="legend-container" v-if="legend != null">
+  <div class="legend-container" v-if="legend.legend != null">
     <button
       class="btn-color-palette"
       type="button"
@@ -26,9 +18,13 @@ watch(props, (newProps) => {
       Legend
     </button>
 
-    <div class="collapse" id="collapseLegend" v-if="legend != null">
+    <div class="collapse" id="collapseLegend" v-if="legend.legend != null">
       <div class="card card-body">
-        <div class="legend-entries" v-for="entry in legend" :key="entry.id">
+        <div
+          class="legend-entries"
+          v-for="entry in legend.legend"
+          :key="entry.id"
+        >
           <button
             class="legend-color-btn"
             :style="{

@@ -24,14 +24,7 @@ watch(props, (newProps) => {
   // console.log(heatFlowSchema.value);
 });
 
-const emit = defineEmits([
-  "collapse-event",
-  "toggle-event",
-  "handle-legend-event",
-]);
-const handleLegendEvent = (legend) => {
-  emit("handle-legend-event", legend);
-};
+const emit = defineEmits(["collapse-event", "toggle-event"]);
 </script>
 
 <template>
@@ -44,7 +37,7 @@ const handleLegendEvent = (legend) => {
       class="btn-close btn-close-white pull-right"
       data-bs-dismiss="sidebar"
       aria-label="Close"
-      @click="$emit('collapse-event'), $emit('toggle-event')"
+      @click="emit('collapse-event'), emit('toggle-event')"
     ></button>
     <div style="clear: both"></div>
   </div>
@@ -56,7 +49,6 @@ const handleLegendEvent = (legend) => {
       :map="props.map"
       :activeBaseLayer="props.activeBaseLayer"
       :heatFlowSchema="heatFlowSchema"
-      @handle-legend-event="handleLegendEvent"
     />
     <FilterPanal
       v-if="props.title === 'Filter'"

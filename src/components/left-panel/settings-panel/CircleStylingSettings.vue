@@ -1,5 +1,5 @@
 <script setup>
-import { defineEmits, defineProps, ref, watch } from "vue";
+import { defineProps, ref, watch } from "vue";
 import { useMeasurementStore } from "@/store/measurements";
 import { useLegendStore } from "@/store/legend";
 
@@ -14,7 +14,6 @@ import colorbrewer from "colorbrewer";
 
 // Variables
 const props = defineProps({ map: Map });
-const emit = defineEmits(["send-legend"]);
 
 const measurements = useMeasurementStore();
 const legend = useLegendStore();
@@ -46,11 +45,6 @@ const classificationTypes = ref([
   },
 ]);
 const selectedClassificationType = ref(classificationTypes.value[0]);
-
-const legend123 = ref({});
-const sendLegend = () => {
-  emit("send-legend", legend123.value);
-};
 
 /**
  * If user changes size of circles, the watch method keeps track of it and adjust it synchron
@@ -318,32 +312,6 @@ function generateContinuousPaintProperty(property, classes, colors) {
 }
 
 /**
- * @description set up an object with relevant information for creating a legend
- * @param {Array} classes
- * @param {Array} colors
- */
-function setLegendObject(classes, colors) {
-  legend.value = {};
-  for (var i = 0; i < colors.length; i++) {
-    if (colors.length == classes.length) {
-      legend.value[i] = {
-        id: i,
-        text: classes[i],
-        colorHEX: colors[i],
-      };
-    } else if (colors.length < classes.length) {
-      legend.value[i] = {
-        id: i,
-        text: classes[i].toFixed(2) + " - " + classes[i + 1].toFixed(2),
-        colorHEX: colors[i],
-      };
-    }
-  }
-
-  return legend;
-}
-
-/**
  * @description programm for providing and reacting to user driven colorisation of data according to properties
  * @returns {Void}
  */
@@ -360,7 +328,7 @@ function dataDrivenColorisation() {
       colorbrewer[selectedColorPalette.value.name][colorSteps.value]
     );
     props.map.setPaintProperty("sites", "circle-color", paintProperty);
-    setLegendObject(
+    legend.setLegendObject(
       classes,
       colorbrewer[selectedColorPalette.value.name][colorSteps.value]
     );
@@ -375,7 +343,7 @@ function dataDrivenColorisation() {
       colorbrewer[selectedColorPalette.value.name][colorSteps.value]
     );
     props.map.setPaintProperty("sites", "circle-color", paintProperty);
-    setLegendObject(
+    legend.setLegendObject(
       classes,
       colorbrewer[selectedColorPalette.value.name][colorSteps.value]
     );
@@ -464,7 +432,7 @@ function dataDrivenColorisation() {
           v-for="colorHEX in colorbrewer['Paired'][12]"
           :key="colorHEX"
           :style="{ 'background-color': colorHEX }"
-          @click="setCircleColor(colorHEX)"
+          @click="setCircleColor(colorHEX), legend.setLegendToNull()"
         ></button>
       </div>
     </div>
@@ -507,9 +475,7 @@ function dataDrivenColorisation() {
         placeholder="Property"
         :allow-empty="false"
         @select="
-          setPropertyDataType(selectedProperty),
-            dataDrivenColorisation(),
-            sendLegend()
+          setPropertyDataType(selectedProperty), dataDrivenColorisation()
         "
       >
       </VueMultiselect>
@@ -521,7 +487,7 @@ function dataDrivenColorisation() {
         label="title"
         placeholder="Data classification method"
         :allow-empty="false"
-        @select="dataDrivenColorisation(), sendLegend()"
+        @select="dataDrivenColorisation()"
       >
         <template #option="{ option }"
           >{{ option.title }}
@@ -560,7 +526,7 @@ function dataDrivenColorisation() {
         :options="legalSteps"
         placeholder="Number of classes"
         :allow-empty="false"
-        @select="dataDrivenColorisation(), sendLegend()"
+        @select="dataDrivenColorisation()"
       >
       </VueMultiselect>
 
@@ -572,7 +538,7 @@ function dataDrivenColorisation() {
         :multiple="false"
         :close-on-select="true"
         :allow-empty="false"
-        @select="dataDrivenColorisation(), sendLegend()"
+        @select="dataDrivenColorisation()"
       >
         <!-- TODO: selected color palette is not changing when number of colorSteps is changing -->
         <template #singleLabel="{ option }">

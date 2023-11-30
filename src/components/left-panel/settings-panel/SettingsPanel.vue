@@ -1,5 +1,5 @@
 <script setup>
-import { defineEmits, defineProps, ref, watch } from "vue";
+import { defineProps, ref, watch } from "vue";
 
 import BaseMapSettings from "./BaseMapSettings.vue";
 // import ClusterSettings from "./content/ClusterSettings.vue";
@@ -13,11 +13,6 @@ const props = defineProps({
   heatFlowSchema: Object,
 });
 const heatFlowSchema = ref(props.heatFlowSchema);
-
-const emit = defineEmits(["handle-legend-event"]);
-const handleLegendEvent = (legend) => {
-  emit("handle-legend-event", legend);
-};
 
 watch(props, (newProps) => {
   heatFlowSchema.value = newProps.heatFlowSchema;
@@ -36,7 +31,7 @@ watch(props, (newProps) => {
 
     <!-- <ClusterSettings /> -->
 
-    <CircleStylingSettings :map="props.map" @send-legend="handleLegendEvent" />
+    <CircleStylingSettings :map="props.map" />
 
     <!-- <GraticuleSettings /> -->
   </div>
