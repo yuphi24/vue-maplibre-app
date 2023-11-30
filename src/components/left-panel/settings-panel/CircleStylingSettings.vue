@@ -498,7 +498,7 @@ function dataDrivenColorisation() {
               {{ option.desc }}
             </template>
             <template #toggler="{ on }">
-              <CButton color="inherit" v-on="on">
+              <CButton color="transparent" v-on="on">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
