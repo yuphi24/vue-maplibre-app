@@ -20,7 +20,6 @@ const legend = useLegendStore();
 
 const circleRadius = ref(5);
 
-const propertyOptions = getSelectableProperties(measurements.dataSchema);
 const selectedProperty = ref(null);
 const selectedPropertyDataType = ref();
 
@@ -94,68 +93,6 @@ function setColorPaletteOptions(classes) {
   });
 
   colorPaletteOptions.value = schemaGroup;
-}
-
-/**
- * @description
- * @param {*} property
- * @returns {Boolean}
- */
-function isPropertySelectable(property) {
-  let isSelectable = null;
-
-  if (
-    measurements.dataSchema.properties[property].type == "string" &&
-    !measurements.dataSchema.properties[property].enum
-  ) {
-    console.log(property + " is not suitable for data driven coloring");
-    isSelectable = false;
-  } else if (
-    measurements.dataSchema.properties[property].type == "integer" &&
-    (!measurements.dataSchema.properties[property].minimum ||
-      !measurements.dataSchema.properties[property].maximum)
-  ) {
-    console.log(property + " is not suitable for data driven coloring");
-    isSelectable = false;
-  } else if (measurements.dataSchema.properties[property].type == "object") {
-    console.log(property + " is not suitable for data driven coloring");
-    isSelectable = false;
-  } else {
-    isSelectable = true;
-  }
-  return isSelectable;
-}
-
-/**
- * @description Takes property name and brings it to structure necessary for VueMultiselect component
- * @param {String} propertyName
- * @returns {Object}
- */
-function createVueMultiselectOption(propertyName) {
-  const propertyObj = measurements.dataSchema.properties[propertyName];
-  let optionsObject = {};
-  optionsObject["title"] = propertyObj.title;
-  optionsObject["key"] = propertyName;
-
-  return optionsObject;
-}
-
-/**
- * @description Throw out all properties options which are not suitable for the data driven coloring e.g. name, data points either be already classified (enum) or should be able to classify (continouse numerbs)
- * @param {*} schema
- * @returns {Array}
- */
-function getSelectableProperties(schema) {
-  const propertiesKey = Object.keys(schema.properties);
-  let selectableProperties = [];
-
-  propertiesKey.forEach((propertyName) => {
-    if (isPropertySelectable(propertyName)) {
-      selectableProperties.push(createVueMultiselectOption(propertyName));
-    }
-  });
-
-  return selectableProperties;
 }
 
 /**
@@ -470,7 +407,7 @@ function dataDrivenColorisation() {
       <!-- Select property for coloring -->
       <VueMultiselect
         v-model="selectedProperty"
-        :options="propertyOptions"
+        :options="measurements.selectableProperties"
         label="title"
         placeholder="Property"
         :allow-empty="false"

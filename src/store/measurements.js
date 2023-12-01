@@ -13,18 +13,20 @@ export const useMeasurementStore = defineStore("measurements", () => {
    */
   const geojson = ref(null);
   const dataSchema = ref(null);
+  const selectableProperties = ref(null);
 
   /**
    * @description
    * @param {String} url
    */
-  function fetchAPIDataSchema(url) {
+  async function fetchAPIDataSchema(url) {
     //   /api/v1/schema/
     try {
       let parser = new SwaggerParser();
-      parser.dereference(url).then((apiSchema) => {
+      await parser.dereference(url).then((apiSchema) => {
         dataSchema.value = apiSchema.components.schemas.Measurement;
         console.log(dataSchema.value);
+        setSelectableProperties();
       });
     } catch (e) {
       console.log("error in fetching data schema" + e);
@@ -143,11 +145,77 @@ export const useMeasurementStore = defineStore("measurements", () => {
    */
   async function fetchAPIData(url) {
     geojson.value = await convertAPIData2GeoJSON(url);
-    // console.log("data");
-    // console.log(data);
-
-    // return data;
   }
 
-  return { geojson, dataSchema, fetchAPIData, fetchAPIDataSchema };
+  /**
+   * @description
+   * @param {*} property
+   * @returns {Boolean}
+   */
+  function isPropertySelectable(property) {
+    let isSelectable = null;
+
+    if (
+      dataSchema.value.properties[property].type == "string" &&
+      !dataSchema.value.properties[property].enum
+    ) {
+      console.log(property + " is not suitable for data driven coloring");
+      isSelectable = false;
+    } else if (
+      dataSchema.value.properties[property].type == "integer" &&
+      (!dataSchema.value.properties[property].minimum ||
+        !dataSchema.value.properties[property].maximum)
+    ) {
+      console.log(property + " is not suitable for data driven coloring");
+      isSelectable = false;
+    } else if (dataSchema.value.properties[property].type == "object") {
+      console.log(property + " is not suitable for data driven coloring");
+      isSelectable = false;
+    } else {
+      isSelectable = true;
+    }
+    return isSelectable;
+  }
+
+  /**
+   * @description Takes property name and brings it to structure necessary for VueMultiselect component
+   * @param {String} propertyName
+   * @returns {Object}
+   */
+  function createVueMultiselectOption(propertyName) {
+    const propertyObj = dataSchema.value.properties[propertyName];
+    let optionsObject = {};
+    optionsObject["title"] = propertyObj.title;
+    optionsObject["key"] = propertyName;
+
+    return optionsObject;
+  }
+
+  /**
+   * @description Throw out all properties options which are not suitable for the data driven coloring e.g. name, data points either be already classified (enum) or should be able to classify (continouse numerbs)
+   * @param {*} schema
+   * @returns {Array}
+   */
+  function setSelectableProperties() {
+    const propertiesKey = Object.keys(dataSchema.value.properties);
+    let selection = [];
+
+    propertiesKey.forEach((propertyName) => {
+      if (isPropertySelectable(propertyName)) {
+        selection.push(createVueMultiselectOption(propertyName));
+      }
+    });
+
+    selectableProperties.value = selection;
+    console.log("check selectable properties");
+    console.log(selectableProperties.value);
+  }
+
+  return {
+    geojson,
+    dataSchema,
+    selectableProperties,
+    fetchAPIData,
+    fetchAPIDataSchema,
+  };
 });

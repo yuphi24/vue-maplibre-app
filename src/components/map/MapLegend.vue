@@ -44,7 +44,7 @@ const visible = ref(false);
                 ></CButton>
               </CCol>
 
-              <CCol class="d-flex align-self-end" xs="8">
+              <CCol class="d-flex align-self-end" xs="10">
                 {{ entry.text }}
               </CCol>
             </CRow>

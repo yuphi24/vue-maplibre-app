@@ -24,6 +24,7 @@ import MapLegend from "./map/MapLegend.vue";
 import { useMeasurementStore } from "@/store/measurements";
 const measurements = useMeasurementStore();
 measurements.fetchAPIDataSchema("http://139.17.54.176:8010/api/v1/schema/");
+// measurements.setSelectableProperties();
 
 const mapContainer = ref();
 const map = ref();
