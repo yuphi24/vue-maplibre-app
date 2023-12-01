@@ -9,6 +9,8 @@ import {
   CCard,
   CCardBody,
   CContainer,
+  CRow,
+  CCol,
 } from "@coreui/bootstrap-vue";
 
 const legend = useLegendStore();
@@ -28,16 +30,24 @@ const visible = ref(false);
       <CCollapse :visible="visible">
         <CCard class="mt-3">
           <CCardBody>
-            <div class="d-flex" v-for="entry in legend.legend" :key="entry.id">
-              <CButton
-                :style="{
-                  'background-color': entry.colorHEX,
-                }"
-                @click="visible = !visible"
-              ></CButton>
+            <CRow
+              class="align-items-start"
+              v-for="entry in legend.legend"
+              :key="entry.id"
+            >
+              <CCol class="align-self-start" xs="2">
+                <CButton
+                  :style="{
+                    'background-color': entry.colorHEX,
+                  }"
+                  @click="visible = !visible"
+                ></CButton>
+              </CCol>
 
-              <div>{{ entry.text }}</div>
-            </div>
+              <CCol class="d-flex align-self-end" xs="8">
+                {{ entry.text }}
+              </CCol>
+            </CRow>
           </CCardBody>
         </CCard>
       </CCollapse>
