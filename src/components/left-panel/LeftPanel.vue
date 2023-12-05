@@ -3,6 +3,13 @@
 
 import { defineEmits, defineProps, ref, watch } from "vue";
 
+import {
+  COffcanvasHeader,
+  COffcanvasTitle,
+  CCloseButton,
+  COffcanvasBody,
+} from "@coreui/bootstrap-vue";
+
 import SettingsPanel from "./settings-panel/SettingsPanel.vue";
 import FilterPanal from "./filter-panel/FilterPanal.vue";
 import StatisticsPanal from "./statistics-panel/StatisticsPanal.vue";
@@ -28,61 +35,23 @@ const emit = defineEmits(["collapse-event", "toggle-event"]);
 </script>
 
 <template>
-  <div class="sidebar-header">
-    <h3 v-if="props.title" class="sidebar-title" id="sidebarTitle">
-      {{ props.title }}
-    </h3>
-    <button
-      type="button"
-      class="btn-close btn-close-white pull-right"
-      data-bs-dismiss="sidebar"
-      aria-label="Close"
+  <COffcanvasHeader class="bg-primary">
+    <COffcanvasTitle class="text-white">{{ props.title }}</COffcanvasTitle>
+    <CCloseButton
+      class="text-reset"
       @click="emit('collapse-event'), emit('toggle-event')"
-    ></button>
-    <div style="clear: both"></div>
-  </div>
-  <!-- <simplebar data-simplebar-auto-hide="false"> -->
-  <div class="px-1 pt-1 pb-1">
-    <!-- <div class="sidebar-body"> -->
+    />
+  </COffcanvasHeader>
+  <COffcanvasBody>
     <SettingsPanel
       v-if="props.title === 'Settings'"
       :map="props.map"
       :activeBaseLayer="props.activeBaseLayer"
-      :heatFlowSchema="heatFlowSchema"
     />
     <FilterPanal v-if="props.title === 'Filter'" :map="props.map" />
     <StatisticsPanal v-if="props.title === 'Statistics'" />
     <AnalysisPanal v-if="props.title === 'Analysis'" />
-  </div>
-  <!-- </simplebar> -->
+  </COffcanvasBody>
 </template>
 
-<style scoped>
-@import "simplebar-vue/dist/simplebar.min.css";
-.sidebar-header {
-  background-color: #304b9b;
-  border-bottom: 0.2rem solid #8eb7e2;
-}
-
-.sidebar-title {
-  display: inline-block;
-  color: #8eb7e2;
-  font-weight: bold;
-  padding-top: 10px;
-  padding-bottom: 5px;
-  padding-left: 15px;
-}
-
-.btn-close {
-  float: right;
-  color: #8eb7e2;
-  display: inline-block;
-  margin-top: 15px;
-  margin-right: 15px;
-}
-
-.sidebar-body {
-  background-color: lightgrey;
-  padding: 5px;
-}
-</style>
+<style scoped></style>

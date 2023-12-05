@@ -13,6 +13,15 @@ import maps from "./left-panel/settings-panel/maps.json";
 
 // components
 // import AttributeTable from "./common/AttributeTable.vue";
+import {
+  CButton,
+  CButtonGroup,
+  // COffcanvasHeader,
+  // COffcanvasTitle,
+  COffcanvas,
+  // CCloseButton,
+  // COffcanvasBody,
+} from "@coreui/bootstrap-vue";
 import CursorCoordinates from "./map/CursorCoordinates.vue";
 import DataSources from "./map/DataSources.vue";
 import LeftPanel from "./left-panel/LeftPanel.vue";
@@ -35,24 +44,9 @@ const activeBaseLayer = ref("");
 
 const defaultCircleColor = ref("#41b6c4");
 const isCollapsed = ref(true);
+const visibleScrolling = ref(false);
 
 const setIsCollapsed = () => (isCollapsed.value = !isCollapsed.value);
-const toggleSidebar = () => {
-  // Source code for sidebar https://docs.mapbox.com/mapbox-gl-js/example/offset-vanishing-point-with-padding/
-  const elem = document.getElementById("left-panel");
-  // Add or remove the 'collapsed' CSS class from the sidebar element.
-  // Returns boolean "true" or "false" whether 'collapsed' is in the class list.
-  const collapsed = elem.classList.toggle("collapsed");
-  const padding = {};
-  // 'id' is 'right' or 'left'. When run at start, this object looks like: '{left: 300}';
-  padding["left-panel"] = collapsed ? 0 : 300; // 0 if collapsed, 300 px if not. This matches the width of the sidebars in the .sidebar CSS class.
-  // Use `map.easeTo()` with a padding option to adjust the map's center accounting for the position of sidebars.
-};
-
-// const showsDataTable = ref(false);
-// const toggleDataTable = () => {
-//   showsDataTable.value = !showsDataTable.value;
-// };
 
 /**
  * @description
@@ -190,6 +184,10 @@ onMounted(() => {
   onUnmounted(() => {
     map.value?.remove();
   });
+
+function toggleVisibleScrolling() {
+  visibleScrolling.value = !visibleScrolling.value;
+}
 </script>
 
 <template>
@@ -203,38 +201,49 @@ onMounted(() => {
 
       <!-- Navigation buttons -->
       <div class="fixed-bottom">
-        <button
-          v-for="title in navbarTitles"
-          :key="title"
-          @click="
-            isCollapsed ? setPanelTitle($event) : 0,
-              toggleSidebar(),
-              setIsCollapsed()
-          "
-          type="button"
-          class="btn btn-primary"
-        >
-          {{ title }}
-        </button>
-        <div class="cursor-div">
-          <CursorCoordinates :map="map" />
-        </div>
-      </div>
+        <CButtonGroup role="group" aria-label="Basic example">
+          <CButton
+            color="primary"
+            v-for="title in navbarTitles"
+            :key="title"
+            @click="
+              isCollapsed ? setPanelTitle($event) : 0,
+                // toggleSidebar(),
+                setIsCollapsed(),
+                toggleVisibleScrolling()
+            "
+            type="button"
+            class="btn btn-primary"
+          >
+            {{ title }}
+          </CButton>
+        </CButtonGroup>
 
-      <div id="left-panel" class="sidebar flex-center left collapsed">
-        <div class="sidebar-content rounded-rect">
+        <COffcanvas
+          :backdrop="false"
+          placement="start"
+          scroll
+          :visible="visibleScrolling"
+          @hide="
+            () => {
+              visibleScrolling = !visibleScrolling;
+            }
+          "
+        >
           <LeftPanel
             :title="panelTitle"
             :map="map"
             :activeBaseLayer="activeBaseLayer"
             :heatFlowSchema="heatFlowSchema"
             @collapse-event="setIsCollapsed()"
-            @toggle-event="toggleSidebar()"
+            @toggle-event="toggleVisibleScrolling()"
           />
+        </COffcanvas>
+
+        <div class="cursor-div">
+          <CursorCoordinates :map="map" />
         </div>
       </div>
-
-      <!-- <div id="legend" class="sidebar flex-center right collapsed"></div> -->
 
       <!-- <div class="trigger-data-table">
         <button
@@ -281,68 +290,8 @@ onMounted(() => {
   z-index: 1;
 }
 
-.btn {
-  background-color: #304b9b;
-  color: #8eb7e2;
-  font-weight: bold;
-  border: solid transparent;
-  z-index: 1;
-}
-
-.btn:hover {
-  background-color: #8eb7e2;
-  color: #304b9b;
-  border: solid transparent;
-}
-
 .cursor-position {
   background: rgba(255, 255, 255, 0.5);
-  z-index: 1;
-}
-
-.sidebar {
-  transition: transform 1s;
-  z-index: 1;
-  width: 400px;
-  height: 100%;
-  padding-top: 2.5%;
-  padding-bottom: 2.5%;
-}
-
-.flex-center {
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.flex-center.left {
-  left: 0px;
-}
-
-.left.collapsed {
-  transform: translateX(-395px);
-}
-
-.sidebar-content {
-  width: 95%;
-  height: 100%;
-  font-family: Arial, Helvetica, sans-serif;
-  color: grey;
-  overflow-y: hidden;
-}
-
-.rounded-rect {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 0 50px -25px black;
-}
-
-.btn-trigger-data-table {
-  position: relative;
-  width: fit-content;
-  height: fit-content;
-  margin: 0 auto;
   z-index: 1;
 }
 </style>
