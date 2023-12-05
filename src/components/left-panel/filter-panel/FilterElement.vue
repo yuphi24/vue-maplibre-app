@@ -2,28 +2,23 @@
 import { defineProps, defineEmits, ref, watch } from "vue";
 import VueMultiselect from "vue-multiselect";
 import VueSlider from "vue-slider-component";
+import { CRow, CCol } from "@coreui/bootstrap-vue";
 
-const props = defineProps({ id: Number, map: Map, heatFlowSchema: Object });
+import { useMeasurementStore } from "@/store/measurements";
+import { useFilterStore } from "@/store/filter";
+
+const props = defineProps({ id: Number, map: Map });
 const emit = defineEmits(["send-filterExpression", "remove-filterElement"]);
 
-const propertyOptions = ref(getSelectableProperties(props.heatFlowSchema));
+const measurements = useMeasurementStore();
+const filter = useFilterStore();
+
 const selectedProperty = ref(null);
 const selectedPropertyType = ref(null);
 
 const valueOptions = ref(null);
 const selectedValues = ref([]);
-// const onlyNullValue = ref(false);
 const filterExpression = ref([]);
-
-/**
- * @description Send filter expression to filterPanel
- */
-const sendFilterExpression = () => {
-  emit("send-filterExpression", {
-    expression: filterExpression.value,
-    id: props.id,
-  });
-};
 
 /**
  * @description remove filterElement and corresponding filterExpression from filterPanel
@@ -31,29 +26,6 @@ const sendFilterExpression = () => {
 const removeFilterElement = () => {
   emit("remove-filterElement", { id: props.id });
 };
-
-/**
- * @description Throw out all properties options which are not suitable for the data driven coloring e.g. name, data points either be already classified (enum) or should be able to classify (continouse numerbs)
- * @param {*} schema
- * @returns {Array}
- */
-function getSelectableProperties(schema) {
-  const propertiesKey = Object.keys(schema.properties);
-  let selectableOptions = [];
-
-  propertiesKey.forEach((property) => {
-    if (
-      props.heatFlowSchema.properties[property].type == "string" &&
-      !props.heatFlowSchema.properties[property].enum
-    ) {
-      console.log(property + " is not suitable for filtering");
-    } else {
-      selectableOptions.push(property);
-    }
-  });
-
-  return selectableOptions;
-}
 
 /**
  * @description
@@ -68,82 +40,53 @@ watch(selectedValues, () => {
 });
 
 /**
- * @description
- * @param {Number} value
- * @param {Number} min
- * @param {Number} max
- * @returns {Boolean}
- */
-function isValueInRange(value, min, max) {
-  if (value >= min && value <= max) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-// TODO: case, maxValue > selectedValues.value[1] < selectedValues.value[0]
-watch(selectedValues, (newSelectedValues) => {
-  if (selectedPropertyType.value == "number") {
-    /* check if value in range */
-    if (
-      isValueInRange(
-        newSelectedValues[0],
-        valueOptions.value[0],
-        valueOptions.value[1]
-      )
-    ) {
-      if (newSelectedValues[0] < newSelectedValues[1]) {
-        selectedValues.value[0] = newSelectedValues[0];
-      }
-    } else {
-      console.log(
-        "newSelectedValue[0] " +
-          newSelectedValues[0] +
-          "  is  < than min " +
-          valueOptions.value[0]
-      );
-      selectedValues.value[0] = valueOptions.value[0];
-    }
-    /* check if value in range */
-    if (
-      isValueInRange(
-        newSelectedValues[1],
-        valueOptions.value[0],
-        valueOptions.value[1]
-      )
-    ) {
-      if (newSelectedValues[1] > newSelectedValues[0]) {
-        selectedValues.value[1] = newSelectedValues[1];
-      }
-    } else {
-      console.log(
-        "newSelectedValue[1] " +
-          newSelectedValues[1] +
-          "  is  > than max " +
-          valueOptions.value[1]
-      );
-      selectedValues.value[1] = valueOptions.value[1];
-    }
-  }
-});
-
-/**
  * @description Store data type of selected property
  * @param {String} selectedProperty
  */
 function setSelectedPropertyType(selectedProperty) {
   selectedPropertyType.value =
-    props.heatFlowSchema.properties[selectedProperty].type;
+    measurements.dataSchema.properties[selectedProperty].type;
+}
+
+/**
+ * @description Resets the array with the selected filter values
+ */
+function resetSelectedValues() {
+  if (
+    selectedPropertyType.value == "number" &&
+    valueOptions.value.length != 0
+  ) {
+    selectedValues.value = [valueOptions.value[0], valueOptions.value[1]];
+  } else {
+    selectedValues.value = [];
+  }
+}
+
+function resetFilterExpression() {
+  filterExpression.value = [];
 }
 
 /**
  * @description Collects all leagle enum classes from the data schema
- * @param {String} enumProperty
+ * @param {Object} enumProperty
  * @returns {Array}
  */
 function getEnumClasses(enumProperty) {
-  return props.heatFlowSchema.properties[enumProperty].enum;
+  let classes = [];
+
+  measurements.dataSchema.properties[enumProperty].oneOf.forEach(
+    (enumSchema) => {
+      enumSchema.enum.forEach((enumClass) => {
+        if (enumClass) {
+          classes.push(enumClass);
+        } else {
+          // classes.push("null");
+        }
+      });
+    }
+  );
+
+  return classes;
 }
 
 /**
@@ -172,8 +115,8 @@ function propertyValuesToArray(geoJson, property) {
 function getRange(geoJson, property) {
   const values = propertyValuesToArray(geoJson, property).filter(Boolean);
 
-  const min = Math.min.apply(null, values);
-  const max = Math.max.apply(null, values);
+  const min = Math.floor(Math.min.apply(null, values));
+  const max = Math.ceil(Math.max.apply(null, values));
 
   const bounds = [min, max];
 
@@ -185,33 +128,15 @@ function getRange(geoJson, property) {
  * @param {String} selectedProperty
  */
 function setValueOptions(selectedProperty) {
-  if (selectedPropertyType.value == "string") {
+  if (selectedPropertyType.value == undefined) {
     valueOptions.value = getEnumClasses(selectedProperty);
   } else if (selectedPropertyType.value == "number") {
-    const geoJson = props.map.getSource("sites")._data;
+    const geoJson = measurements.geojson;
     valueOptions.value = getRange(geoJson, selectedProperty);
     selectedValues.value = [valueOptions.value[0], valueOptions.value[1]];
   } else {
     console.log("Data type of property is not defined");
   }
-}
-
-/**
- * @description Resets the array with the selected filter values
- */
-function resetSelectedValues() {
-  if (
-    selectedPropertyType.value == "number" &&
-    valueOptions.value.length != 0
-  ) {
-    selectedValues.value = [valueOptions.value[0], valueOptions.value[1]];
-  } else {
-    selectedValues.value = [];
-  }
-}
-
-function resetFilterExpression() {
-  filterExpression.value = [];
 }
 
 /**
@@ -240,6 +165,9 @@ function writeContinuousFilter(property, values) {
   const minValue = values[0];
   const maxValue = values[1];
 
+  console.log("writeContinuousFilter");
+  console.log(property + " : " + values + " type of: " + typeof values[1]);
+
   let filterExpression = [
     "all",
     [">=", ["get", property], minValue],
@@ -257,46 +185,41 @@ function setFilterExpression(property, values) {
   if (!selectedProperty.value) {
     console.error("no property selected");
     return;
-  } else if (selectedPropertyType.value == "string") {
+  } else if (selectedPropertyType.value == undefined) {
     filterExpression.value = writeEnumFilter(property, values);
   } else if (selectedPropertyType.value == "number") {
     filterExpression.value = writeContinuousFilter(property, values);
   }
 }
 
-function updateSlider() {
-  selectedValues.value = [selectedValues.value[0], selectedValues.value[1]];
-}
-
 /**
  * Helper function
  */
-function printOutSelectedValues() {
+function printOutValues(value) {
   console.log("hier selectedValue");
-  console.log(selectedValues.value);
+  console.log(value);
 }
 </script>
 
 <template>
   <div class="filter-element">
-    <div class="filter-property">
-      <!-- 
-      Multiselect:
-      https://vue-multiselect.js.org/
-     -->
-      <VueMultiselect
-        v-model="selectedProperty"
-        :options="propertyOptions"
-        placeholder="Select property"
-        @select="
-          printOutValues, setSelectedPropertyType(selectedProperty);
-          setValueOptions(selectedProperty);
-          resetSelectedValues();
-          printOutSelectedValues();
-        "
-      >
-      </VueMultiselect>
-      <div class="remove-filter-btn">
+    <CRow class="d-felx justify-content-start">
+      <CCol xs="10">
+        <VueMultiselect
+          v-model="selectedProperty"
+          :options="measurements.selectableProperties"
+          label="title"
+          :allow-empty="false"
+          placeholder="Select property"
+          @select="
+            setSelectedPropertyType(selectedProperty.key);
+            setValueOptions(selectedProperty.key);
+            resetSelectedValues();
+          "
+        >
+        </VueMultiselect>
+      </CCol>
+      <CCol xs="">
         <button class="btn btn-primary" @click="removeFilterElement()">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -314,91 +237,48 @@ function printOutSelectedValues() {
             />
           </svg>
         </button>
-      </div>
-    </div>
+      </CCol>
+    </CRow>
 
     <div class="filter-values" v-if="selectedProperty">
       <div class="filter-controller">
-        <div v-if="selectedPropertyType === 'string'">
+        <div v-if="selectedPropertyType === undefined">
           <VueMultiselect
             v-model="selectedValues"
             :options="valueOptions"
             :multiple="true"
             placeholder="Select value(s)"
             @select="
-              printOutSelectedValues();
-              setFilterExpression(selectedProperty, selectedValues);
-              sendFilterExpression();
+              printOutValues();
+              setFilterExpression(selectedProperty.key, selectedValues);
+              filter.addFilterExpression(filterExpression, id);
             "
             @remove="
-              setFilterExpression(selectedProperty, selectedValues);
-              sendFilterExpression();
+              setFilterExpression(selectedProperty.key, selectedValues);
+              filter.addFilterExpression(filterExpression, id);
             "
           >
           </VueMultiselect>
         </div>
 
         <!-- 
-      Slider:
-      https://www.npmjs.com/package/vue-slider-component 
-      -->
+        Slider:
+        https://www.npmjs.com/package/vue-slider-component 
+        -->
         <div class="slider" v-if="selectedPropertyType === 'number'">
           <vue-slider
             v-model="selectedValues"
-            :enableCross="false"
             :min="valueOptions[0]"
             :max="valueOptions[1]"
             :interval="0.01"
             @change="
-              printOutSelectedValues();
-              setFilterExpression(selectedProperty, selectedValues);
-              sendFilterExpression();
+              printOutValues(valueOptions);
+              setFilterExpression(selectedProperty.key, selectedValues);
+              filter.addFilterExpression(filterExpression, id);
             "
           ></vue-slider>
 
           <!-- TODO: Include null value OR select only null values as filter criteria -->
-          <form>
-            <div class="row">
-              <div class="col-sm-6">
-                <div class="form-group">
-                  <input
-                    v-model.number="selectedValues[0]"
-                    type="number"
-                    class="form-control"
-                    step=".01"
-                    :min="valueOptions[0]"
-                    :max="selectedValues[1]"
-                    id="minNumberInput"
-                    placeholder="Enter a min"
-                    @keyup.enter="
-                      updateSlider(),
-                        setFilterExpression(selectedProperty, selectedValues),
-                        sendFilterExpression()
-                    "
-                  />
-                </div>
-              </div>
-              <div class="col-sm-6">
-                <div class="form-group">
-                  <input
-                    v-model.number="selectedValues[1]"
-                    type="number"
-                    class="form-control"
-                    step=".01"
-                    :min="selectedValues[0]"
-                    :max="valueOptions[1]"
-                    id="maxNumberInput"
-                    placeholder="Enter a max"
-                    @keyup.enter="
-                      updateSlider(),
-                        setFilterExpression(selectedProperty, selectedValues),
-                        sendFilterExpression()
-                    "
-                  />
-                </div>
-              </div>
-            </div>
-          </form>
         </div>
       </div>
       <div class="reset-filter-btn" v-if="selectedValues.length > 0">
@@ -407,7 +287,7 @@ function printOutSelectedValues() {
           @click="
             resetSelectedValues();
             resetFilterExpression();
-            sendFilterExpression();
+            filter.removeFilterExpression(id);
           "
         >
           <svg

@@ -7,7 +7,15 @@ export const useFilterStore = defineStore("filter", () => {
    * computed()s become getters
    * function()s become actions
    */
-  const filterExpressions = ref(null);
+  const filterExpressions = ref({});
 
-  return { filterExpressions };
+  function addFilterExpression(filterExpression, filterId) {
+    filterExpressions.value[filterId] = filterExpression;
+  }
+
+  function removeFilterExpression(filterId) {
+    delete filterExpressions.value[filterId];
+  }
+
+  return { filterExpressions, addFilterExpression, removeFilterExpression };
 });

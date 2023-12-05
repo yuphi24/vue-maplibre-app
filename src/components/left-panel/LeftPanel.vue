@@ -42,7 +42,7 @@ const emit = defineEmits(["collapse-event", "toggle-event"]);
     <div style="clear: both"></div>
   </div>
   <!-- <simplebar data-simplebar-auto-hide="false"> -->
-  <div class="overflow-auto">
+  <div class="px-1 pt-1 pb-1">
     <!-- <div class="sidebar-body"> -->
     <SettingsPanel
       v-if="props.title === 'Settings'"
@@ -50,11 +50,7 @@ const emit = defineEmits(["collapse-event", "toggle-event"]);
       :activeBaseLayer="props.activeBaseLayer"
       :heatFlowSchema="heatFlowSchema"
     />
-    <FilterPanal
-      v-if="props.title === 'Filter'"
-      :map="props.map"
-      :heatFlowSchema="heatFlowSchema"
-    />
+    <FilterPanal v-if="props.title === 'Filter'" :map="props.map" />
     <StatisticsPanal v-if="props.title === 'Statistics'" />
     <AnalysisPanal v-if="props.title === 'Analysis'" />
   </div>

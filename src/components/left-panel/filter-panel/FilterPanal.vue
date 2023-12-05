@@ -2,19 +2,22 @@
 import { defineProps, ref, watch } from "vue";
 import { Map } from "maplibre-gl";
 
+import { useFilterStore } from "@/store/filter";
+
 import FilterElement from "./FilterElement.vue";
 
 const props = defineProps({ map: Map, heatFlowSchema: Object });
 
+const filters = useFilterStore();
+
 const filterIds = ref([]);
-const filterExpressions = ref({});
 const maxNrOfFilters = ref(4);
 const reachedFilterLimit = ref(false);
 
 /**
  * @description Watches changes in filterExpressions object and set the filter to map.
  */
-watch(filterExpressions.value, () => {
+watch(filters.filterExpressions, () => {
   console.log("jo wird gecheckt wenn sich was ändert");
   applyFilterToMap();
 });
@@ -32,16 +35,6 @@ function addFilterElement() {
 }
 
 /**
- * @description Set id of filter als key and expression as value
- * @param {Object} event
- */
-const setSendFilterExpression = (event) => {
-  filterExpressions.value[event.id] = event.expression;
-  console.log("FilterPanel");
-  console.log(filterExpressions.value);
-};
-
-/**
  * @description remove corresponding id of filter from array and filterExpressions object.
  * @param {Object} event
  */
@@ -51,7 +44,7 @@ const removeFilterElement = (event) => {
     const ix = filterIds.value.indexOf(event.id);
     filterIds.value.splice(ix, 1);
     /*remove filterExpression from object */
-    delete filterExpressions.value[event.id];
+    delete filters.filterExpressions[event.id];
   } else {
     console.log("FilterElement ID is not in filterIds array");
   }
@@ -68,9 +61,9 @@ const removeFilterElement = (event) => {
 function writeFilterExpression() {
   let expression = ["all"];
 
-  Object.entries(filterExpressions.value).forEach(([key]) => {
-    if (filterExpressions.value[key].length != 0) {
-      expression.push(filterExpressions.value[key]);
+  Object.entries(filters.filterExpressions).forEach(([key]) => {
+    if (filters.filterExpressions[key].length != 0) {
+      expression.push(filters.filterExpressions[key]);
     } else {
       console.log("Empty filterExpression for filter with key: " + key);
     }
@@ -98,7 +91,6 @@ function applyFilterToMap() {
       :id="id"
       :heatFlowSchema="heatFlowSchema"
       :map="map"
-      @send-filterExpression="setSendFilterExpression($event)"
       @remove-filterElement="removeFilterElement($event)"
     >
     </FilterElement>

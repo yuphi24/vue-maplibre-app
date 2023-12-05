@@ -23,18 +23,13 @@ watch(props, (newProps) => {
 </script>
 
 <template>
-  <div class="overflow-auto px-1 pt-1 pb-1">
-    <BaseMapSettings
-      :map="props.map"
-      :activeBaseLayer="props.activeBaseLayer"
-    />
+  <BaseMapSettings :map="props.map" :activeBaseLayer="props.activeBaseLayer" />
 
-    <!-- <ClusterSettings /> -->
+  <!-- <ClusterSettings /> -->
 
-    <CircleStylingSettings :map="props.map" />
+  <CircleStylingSettings :map="props.map" />
 
-    <!-- <GraticuleSettings /> -->
-  </div>
+  <!-- <GraticuleSettings /> -->
 </template>
 
 <style scoped></style>
