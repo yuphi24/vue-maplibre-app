@@ -16,6 +16,8 @@ import colorbrewer from "colorbrewer";
 const props = defineProps({ map: Map });
 
 const measurements = useMeasurementStore();
+console.log("data schema");
+console.log(measurements.dataSchema);
 const legend = useLegendStore();
 
 const circleRadius = ref(5);

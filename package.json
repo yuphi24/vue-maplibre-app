@@ -65,10 +65,10 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-vue": "^8.0.3",
-    "jest": "^27.0.5",
     "prettier": "^2.4.1",
     "sass": "^1.26.11",
     "sass-loader": "^10.0.2",
+    "vitest": "^1.0.4",
     "vue-cli-plugin-bootstrap-vue": "~0.8.2",
     "vue-cli-plugin-pinia": "~0.2.4"
   },

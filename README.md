@@ -36,3 +36,6 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 | vue-slider-component | 3.2.24  | MIT          | [vue-slider-component](https://github.com/NightCatSama/vue-slider-component)  |
 | swagger-parser       | 10.0.3  | MIT          | [APIDevTools/swagger-parser](https://github.com/APIDevTools/swagger-parser)   |
 | geojson-validation   | 1.0.2   | LGPL-3       | [GeoJSON-Validation](https://gitlab.com/mjbecze/GeoJSON-Validation)           |
+
+## Publish a Package on npm
+[How to Publish a Package on npm](https://www.makeuseof.com/npm-publish-package-how/)

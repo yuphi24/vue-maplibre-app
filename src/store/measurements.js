@@ -14,6 +14,7 @@ export const useMeasurementStore = defineStore("measurements", () => {
   const geojson = ref(null);
   const dataSchema = ref(null);
   const selectableProperties = ref(null);
+  const isLoading = ref(true);
 
   /**
    * @description
@@ -25,11 +26,12 @@ export const useMeasurementStore = defineStore("measurements", () => {
       let parser = new SwaggerParser();
       await parser.dereference(url).then((apiSchema) => {
         dataSchema.value = apiSchema.components.schemas.Measurement;
-        console.log(dataSchema.value);
+        console.log("dataschema");
+        console.log(apiSchema);
         setSelectableProperties();
       });
     } catch (e) {
-      console.log("error in fetching data schema" + e);
+      console.log("error in fetching data schema. " + e);
     }
   }
 
@@ -145,6 +147,9 @@ export const useMeasurementStore = defineStore("measurements", () => {
    */
   async function fetchAPIData(url) {
     geojson.value = await convertAPIData2GeoJSON(url);
+    console.log("fetchAPIData");
+    console.log(geojson.value);
+    isLoading.value = false;
   }
 
   /**
@@ -215,6 +220,7 @@ export const useMeasurementStore = defineStore("measurements", () => {
     geojson,
     dataSchema,
     selectableProperties,
+    isLoading,
     fetchAPIData,
     fetchAPIDataSchema,
   };

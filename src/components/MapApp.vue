@@ -9,18 +9,16 @@ import { Map } from "maplibre-gl";
 
 // data
 import maps from "./left-panel/settings-panel/maps.json";
-// import sitesURL from "@/assets/data/small_sites.geojson";
+import dataURL from "@/assets/data/heatflow_sample_data.geojson";
+import schemaURL from "@/assets/data/api_schema.json";
 
 // components
 // import AttributeTable from "./common/AttributeTable.vue";
 import {
   CButton,
   CButtonGroup,
-  // COffcanvasHeader,
-  // COffcanvasTitle,
   COffcanvas,
-  // CCloseButton,
-  // COffcanvasBody,
+  CSpinner,
 } from "@coreui/bootstrap-vue";
 import CursorCoordinates from "./map/CursorCoordinates.vue";
 import DataSources from "./map/DataSources.vue";
@@ -32,7 +30,9 @@ import MapLegend from "./map/MapLegend.vue";
 
 import { useMeasurementStore } from "@/store/measurements";
 const measurements = useMeasurementStore();
-measurements.fetchAPIDataSchema("http://139.17.54.176:8010/api/v1/schema/");
+measurements.fetchAPIDataSchema(schemaURL);
+measurements.geojson = dataURL;
+measurements.isLoading = false;
 // measurements.setSelectableProperties();
 
 const mapContainer = ref();
@@ -150,18 +150,17 @@ onMounted(() => {
 
   map.value.once("load", async () => {
     // add data source
-    try {
-      await measurements.fetchAPIData(
-        "http://139.17.54.176:8010/api/v1/measurements/heat-flow/?format=json"
-      );
-    } catch (error) {
-      console.log(error);
-    }
+    // try {
+    //   await measurements.fetchAPIData(
+    //     "http://139.17.54.176:8010/api/v1/measurements/heat-flow/?format=json"
+    //   );
+    // } catch (error) {
+    //   console.log(error);
+    // }
 
     map.value.addSource("sites", {
       type: "geojson",
       data: measurements.geojson,
-      // data: sites.value,
     });
 
     // add data layer
@@ -192,6 +191,23 @@ function toggleVisibleScrolling() {
 
 <template>
   <div class="map-wrap">
+    <div
+      v-if="measurements.isLoading"
+      class="position-relative col border-end d-flex justify-content-center align-items-center"
+      :style="{ 'z-index': 100 }"
+    >
+      <CButton disabled class="border border-0">
+        <!-- TODO: Arange spinner obove map and siable interaction with other elemnts -->
+        <CSpinner
+          component="span"
+          size="xxl"
+          variant="grow"
+          aria-hidden="true"
+        />
+        Loading Data ...
+      </CButton>
+    </div>
+
     <div class="map" ref="mapContainer" @mousemove="updateLatLng">
       <DataSources :map="map" />
       <DataLayer :map="map" />
@@ -208,7 +224,6 @@ function toggleVisibleScrolling() {
             :key="title"
             @click="
               isCollapsed ? setPanelTitle($event) : 0,
-                // toggleSidebar(),
                 setIsCollapsed(),
                 toggleVisibleScrolling()
             "
@@ -259,6 +274,7 @@ function toggleVisibleScrolling() {
       </div> -->
     </div>
   </div>
+
   <!-- <AttributeTable
     v-if="showsDataTable"
     @toggle-dt-event="toggleDataTable()"

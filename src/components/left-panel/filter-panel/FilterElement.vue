@@ -2,7 +2,13 @@
 import { defineProps, defineEmits, ref, watch } from "vue";
 import VueMultiselect from "vue-multiselect";
 import VueSlider from "vue-slider-component";
-import { CRow, CCol } from "@coreui/bootstrap-vue";
+import {
+  CRow,
+  CCol,
+  // CFormInput,
+  // CFormLabel,
+  // CFormFloating,
+} from "@coreui/bootstrap-vue";
 
 import { useMeasurementStore } from "@/store/measurements";
 import { useFilterStore } from "@/store/filter";
@@ -36,6 +42,67 @@ watch(selectedValues, () => {
     setFilterExpression(selectedProperty.value, selectedValues.value);
   } else if (selectedValues.value.length == 0) {
     // props.map.setFilter("sites", undefined);
+  }
+});
+
+/**
+ * @description
+ * @param {Number} value
+ * @param {Number} min
+ * @param {Number} max
+ * @returns {Boolean}
+ */
+function isValueInRange(value, min, max) {
+  if (value >= min && value <= max) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+// TODO: case, maxValue > selectedValues.value[1] < selectedValues.value[0]
+watch(selectedValues, (newSelectedValues) => {
+  if (selectedPropertyType.value == "number") {
+    /* check if value in range */
+    if (
+      isValueInRange(
+        newSelectedValues[0],
+        valueOptions.value[0],
+        valueOptions.value[1]
+      )
+    ) {
+      if (newSelectedValues[0] < newSelectedValues[1]) {
+        selectedValues.value[0] = newSelectedValues[0];
+      }
+    } else {
+      console.log(
+        "newSelectedValue[0] " +
+          newSelectedValues[0] +
+          "  is  < than min " +
+          valueOptions.value[0]
+      );
+      selectedValues.value[0] = valueOptions.value[0];
+    }
+    /* check if value in range */
+    if (
+      isValueInRange(
+        newSelectedValues[1],
+        valueOptions.value[0],
+        valueOptions.value[1]
+      )
+    ) {
+      if (newSelectedValues[1] > newSelectedValues[0]) {
+        selectedValues.value[1] = newSelectedValues[1];
+      }
+    } else {
+      console.log(
+        "newSelectedValue[1] " +
+          newSelectedValues[1] +
+          "  is  > than max " +
+          valueOptions.value[1]
+      );
+      selectedValues.value[1] = valueOptions.value[1];
+    }
   }
 });
 
@@ -199,6 +266,10 @@ function printOutValues(value) {
   console.log("hier selectedValue");
   console.log(value);
 }
+
+// function updateSlider() {
+//   selectedValues.value = [selectedValues.value[0], selectedValues.value[1]];
+// }
 </script>
 
 <template>
@@ -219,7 +290,7 @@ function printOutValues(value) {
         >
         </VueMultiselect>
       </CCol>
-      <CCol xs="">
+      <CCol xs="2">
         <button class="btn btn-primary" @click="removeFilterElement()">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -277,7 +348,70 @@ function printOutValues(value) {
               filter.addFilterExpression(filterExpression, id);
             "
           ></vue-slider>
+          <!-- <CRow>
+            <CCol xs>
+              <CFormFloating>
+                <CFormInput
+                  class="form-control"
+                  id="minimum"
+                  type="number"
+                  v-model.number="selectedValues[0]"
+                />
+                <CFormLabel for="Min">Min</CFormLabel>
+              </CFormFloating>
+            </CCol>
+            <CCol xs>
+              <CFormFloating>
+                <CFormInput
+                  class="form-control"
+                  id="maximum"
+                  v-model.number="selectedValues[1]"
+                />
+                <CFormLabel for="Min">Max</CFormLabel>
+              </CFormFloating>
+            </CCol>
+          </CRow> -->
 
+          <!-- <form>
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <input
+                    v-model.number="selectedValues[0]"
+                    type="number"
+                    class="form-control"
+                    step=".01"
+                    :min="valueOptions[0]"
+                    :max="selectedValues[1]"
+                    id="minNumberInput"
+                    placeholder="Enter a min"
+                    @keyup.enter="
+                      updateSlider(),
+                        setFilterExpression(selectedProperty, selectedValues)
+                    "
+                  />
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="form-group">
+                  <input
+                    v-model.number="selectedValues[1]"
+                    type="number"
+                    class="form-control"
+                    step=".01"
+                    :min="selectedValues[0]"
+                    :max="valueOptions[1]"
+                    id="maxNumberInput"
+                    placeholder="Enter a max"
+                    @keyup.enter="
+                      updateSlider(),
+                        setFilterExpression(selectedProperty, selectedValues)
+                    "
+                  />
+                </div>
+              </div>
+            </div>
+          </form> -->
           <!-- TODO: Include null value OR select only null values as filter criteria -->
         </div>
       </div>
@@ -341,9 +475,5 @@ function printOutValues(value) {
 /* If you want the filter-controller to take most of the available space */
 .filter-controller {
   flex: 1;
-}
-
-.slider {
-  padding: 15px;
 }
 </style>
